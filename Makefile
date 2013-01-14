@@ -7,7 +7,7 @@ LDFLAGS=-lc -lm -lpthread
 
 BINS=jdtest
 BINOBJ=$(addsuffix .o,$(BINS))
-MISCOBJ=jsondata.o jd_string.o
+MISCOBJ=jsondata.o jd_string.o jd_array.o
 OBJS=$(BINOBJ) $(MISCOBJ)
 DEPS=$(OBJS:.o=.d) 
 INST_BINS=$(PREFIX)/bin

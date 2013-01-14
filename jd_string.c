@@ -4,19 +4,23 @@
 
 #include <string.h>
 
-jd_string *jd_string_new(size_t size) {
-  jd_string *jds = jd_alloc(sizeof(jd_string));
-  jds->str = jd_alloc(size);
+jd_string *jd_string_init(jd_string *jds, size_t size) {
+  jds->data = jd_alloc(size);
   jds->size = size;
   jds->used = 0;
   jds->hdr.refs = 1; /* or maybe 0... */
   return jds;
 }
 
+jd_string *jd_string_new(size_t size) {
+  jd_string *jds = jd_alloc(sizeof(jd_string));
+  return jd_string_init(jds, size);
+}
+
 jd_string *jd_string_from(const char *s) {
   size_t len = strlen(s) + 1;
   jd_string *jds = jd_string_new(len);
-  memcpy(jds->str, s, len);
+  memcpy(jds->data, s, len);
   jds->used = len;
   return jds;
 }
@@ -24,15 +28,24 @@ jd_string *jd_string_from(const char *s) {
 jd_string *jd_string_ensure(jd_string *jds, size_t size) {
   if (jds->size < size) {
     char *nstr = jd_alloc(size);
-    memcpy(nstr, jds->str, jds->used);
-    jd_free(jds->str);
-    jds->str = nstr;
+    memcpy(nstr, jds->data, jds->used);
+    jd_free(jds->data);
+    jds->data = nstr;
+  }
+  return jds;
+}
+
+jd_string *jd_string_space(jd_string *jds, size_t minspace) {
+  if (jds->size - jds->used < minspace) {
+    size_t newsize = jds->used + minspace;
+    if (newsize < jds->size * 2) newsize = jds->size * 2;
+    return jd_string_ensure(jds, newsize);
   }
   return jds;
 }
 
 void jd_string_free(jd_string *jds) {
-  jd_free(jds->str);
+  jd_free(jds->data);
   jd_free(jds);
 }
 

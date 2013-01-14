@@ -2,13 +2,24 @@
 
 #include "jsondata.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-static void oom(void) {
-  fprintf(stderr, "Out of memory\n");
+void jd_die(const char *msg, ...) {
+  va_list ap;
+  va_start(ap, msg);
+  fprintf(stderr, "Fatal: ");
+  vfprintf(stderr, msg, ap);
+  fprintf(stderr, "\n");
+  va_end(ap);
   exit(1);
+}
+
+
+static void oom(void) {
+  jd_die("Out of memory");
 }
 
 void *jd_alloc(size_t sz) {
@@ -33,6 +44,8 @@ void jd_release(jd_var *v) {
     jd_string_release(v->v.s);
     break;
   case ARRAY:
+    jd_array_release(v->v.a);
+    break;
   case HASH:
     break;
   }
@@ -50,6 +63,8 @@ void jd_retain(jd_var *v) {
     jd_string_retain(v->v.s);
     break;
   case ARRAY:
+    jd_array_retain(v->v.a);
+    break;
   case HASH:
     break;
   }
@@ -67,6 +82,14 @@ jd_var *jd_set_string(jd_var *v, const char *s) {
   jd_release(v);
   v->type = STRING;
   v->v.s = jds;
+  return v;
+}
+
+jd_var *jd_set_array(jd_var *v, size_t size) {
+  jd_array *jda = jd_array_new(size);
+  jd_release(v);
+  v->type = ARRAY;
+  v->v.a = jda;
   return v;
 }
 

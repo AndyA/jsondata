@@ -8,7 +8,7 @@ int main(void) {
   jd_set_string(&v1, "Hello, World");
   jd_assign(&v2, &v1);
   jd_release(&v1);
-  printf("%s\n", v2.v.s->str);
+  printf("%s\n", v2.v.s->data);
   jd_release(&v2);
   return 0;
 }
