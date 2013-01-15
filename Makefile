@@ -35,11 +35,12 @@ tags:
 
 clean:
 	rm -f $(OBJS) $(DEPS) $(BINS) tags version.h
+	cd t && $(MAKE) clean
 
 version:
 	perl tools/bump_version.pl VERSION
 
-test:
+test: $(LIB)
 	cd t && $(MAKE) test
 
 install: $(BINS)

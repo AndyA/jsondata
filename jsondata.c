@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+void *(*jd_alloc_hook)(size_t) = malloc;
+void (*jd_free_hook)(void *) = free;
+
 void jd_die(const char *msg, ...) {
   va_list ap;
   va_start(ap, msg);
@@ -23,14 +26,14 @@ static void oom(void) {
 }
 
 void *jd_alloc(size_t sz) {
-  void *m = malloc(sz);
+  void *m = jd_alloc_hook(sz);
   if (!m) oom();
   memset(m, 0, sz);
   return m;
 }
 
 void jd_free(void *m) {
-  free(m);
+  jd_free_hook(m);
 }
 
 void jd_release(jd_var *v) {

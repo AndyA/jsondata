@@ -6,7 +6,7 @@ TESTS=$(wildcard *.t)
 LIB=../libjsondata.a
 TESTOBJ=$(TESTS:.t=.o)
 TESTBIN=$(TESTS:.t=)
-MISCOBJ=tap.o
+MISCOBJ=tap.o util.o
 OBJ=$(TESTOBJ) $(MISCOBJ)
 DEPS=$(OBJ:.o=.d) 
 

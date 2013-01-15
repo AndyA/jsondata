@@ -43,6 +43,7 @@ jd_var *jd_insert(jd_array *jda, int idx, size_t count) {
       return v;
     }
     need -= jda->seek;
+
     /* TODO */
   }
   return NULL;

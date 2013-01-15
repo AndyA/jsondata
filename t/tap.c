@@ -6,8 +6,7 @@
 
 #include "tap.h"
 
-static int test_no = -1;
-static int planned = 0;
+static int test_no = 0;
 
 void diag(const char *fmt, ...) {
   va_list ap;
@@ -27,26 +26,12 @@ void die(const char *fmt, ...) {
   exit(1);
 }
 
-static void cleanup(void) {
-  if (test_no != planned) {
-    die("Planned %d tests but ran %d", planned, test_no);
-  }
-}
-
-void plan(int tests) {
-  if (test_no != -1) {
-    die("Already planned (on test %d)", test_no);
-  }
-  printf("1..%d\n", tests);
-  test_no = 0;
-  planned = tests;
-  atexit(cleanup);
+void done_testing(void) {
+  if (0 == test_no) die("No tests run!");
+  printf("1..%d\n", test_no);
 }
 
 static void test(int flag, const char *msg, va_list ap) {
-  if (test_no == -1) {
-    die("Test without plan");
-  }
   printf("%sok %d - ", flag ? "" : "not ", ++test_no);
   vprintf(msg, ap);
   printf("\n");

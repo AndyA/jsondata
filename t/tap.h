@@ -5,7 +5,7 @@
 
 void diag(const char *fmt, ...);
 void die(const char *fmt, ...);
-void plan(int tests);
+void done_testing(void);
 int ok(int flag, const char *msg, ...);
 int pass(const char *msg, ...);
 int fail(const char *msg, ...);

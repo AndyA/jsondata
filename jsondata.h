@@ -52,6 +52,9 @@ struct _jd_var {
 
 #define JD_INIT { .type = VOID }
 
+extern void *(*jd_alloc_hook)(size_t);
+extern void (*jd_free_hook)(void *);
+
 void jd_die(const char *msg, ...);
 void *jd_alloc(size_t sz);
 void jd_free(void *m);
