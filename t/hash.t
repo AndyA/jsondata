@@ -7,9 +7,8 @@
 #include "tap.h"
 #include "jsondata.h"
 
-
 static void test_hash(size_t sz) {
-  jd_var ha = JD_INIT;
+  jd_var ha = JD_INIT, keys = JD_INIT;
   jd_var k1 = JD_INIT, k2 = JD_INIT, k3 = JD_INIT;
   jd_var v1 = JD_INIT, v2 = JD_INIT, v3 = JD_INIT;
   int got;
@@ -27,10 +26,15 @@ static void test_hash(size_t sz) {
   jd_assign(jd_get_key(&ha, &k1, 1), &v1);
   jd_assign(jd_get_key(&ha, &k2, 1), &v2);
 
+  is(jd_count(&ha), 2, "count = 2");
+
   ok(jd_compare(jd_get_key(&ha, &k1, 0), &v1) == 0, "found foo");
   null(jd_get_key(&ha, &k3, 0), "not found baz");
 
   jd_assign(jd_get_key(&ha, &k3, 1), &v3);
+
+  jd_keys(&ha, &keys);
+  /* TODO actually check the keys... */
 
   ok(jd_compare(jd_get_key(&ha, &k1, 0), &v1) == 0, "found foo again");
   ok(jd_compare(jd_get_key(&ha, &k3, 0), &v3) == 0, "found baz");
@@ -42,6 +46,7 @@ static void test_hash(size_t sz) {
   ok(jd_compare(jd_get_key(&ha, &k2, 0), &v2) == 0, "bar's there too");
 
   jd_release(&ha);
+  jd_release(&keys);
   jd_release(&k1);
   jd_release(&k2);
   jd_release(&k3);

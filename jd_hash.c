@@ -6,10 +6,10 @@ jd_hash *jd_hash_new(size_t size) {
   jd_hash *jdh = jd_alloc(sizeof(jd_hash));
   jdh->b = jd_alloc(sizeof(jd_hash_bucket *) * size);
   jdh->size = size;
+  jdh->used = 0;
   jdh->hdr.refs = 1;
   return jdh;
 }
-
 
 jd_hash *jd_hash_retain(jd_hash *jdh) {
   jdh->hdr.refs++;
@@ -40,6 +40,10 @@ jd_hash *jd_hash_release(jd_hash *jdh) {
   return jdh;
 }
 
+size_t jd_hash_count(jd_hash *jdh) {
+  return jdh->used;
+}
+
 static jd_hash_bucket *hash_find(jd_hash *jdh, jd_var *key, jd_hash_bucket ***ins) {
   unsigned long hash = jd_hashcalc(key);
   unsigned long slot = hash % jdh->size;
@@ -60,6 +64,7 @@ jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify) {
     b = jd_alloc(sizeof(jd_hash_bucket));
     jd_assign(&b->key, key);
     *prev = b;
+    jdh->used++;
   }
   return &b->value;
 }
@@ -73,7 +78,24 @@ int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot) {
   jd_release(&b->value);
   *prev = b->next;
   jd_free(b);
+  jdh->used--;
   return 1;
+}
+
+jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys) {
+  size_t count = jd_hash_count(jdh);
+  unsigned i;
+
+  jd_set_array(keys, count);
+  jd_var *slot = jd_push(keys, count);
+
+  for (i = 0; i < jdh->size; i++) {
+    jd_hash_bucket *b;
+    for (b = jdh->b[i]; b; b = b->next) {
+      jd_assign(slot++, &b->key);
+    }
+  }
+  return keys;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

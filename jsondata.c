@@ -52,7 +52,7 @@ void jd_release(jd_var *v) {
     jd_hash_release(v->v.h);
     break;
   }
-  v->type = VOID;
+  memset(v, 0, sizeof(*v));
 }
 
 void jd_retain(jd_var *v) {
@@ -143,6 +143,17 @@ jd_var *jd_append(jd_var *v, jd_var *v2) {
   return v;
 }
 
+size_t jd_count(jd_var *v) {
+  switch (v->type) {
+  case ARRAY:
+    return jd_array_count(jd_as_array(v));
+  case HASH:
+    return jd_hash_count(jd_as_hash(v));
+  default:
+    return 0;
+  }
+}
+
 jd_var *jd_insert(jd_var *v, int idx, size_t count) {
   return jd_array_insert(jd_as_array(v), idx, count);
 }
@@ -201,6 +212,10 @@ unsigned long jd_hashcalc(jd_var *v) {
     jd_die("Can't compute hash");
     return 0;
   }
+}
+
+jd_var *jd_keys(jd_var *v, jd_var *keys) {
+  return jd_hash_keys(jd_as_hash(v), keys);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

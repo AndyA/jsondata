@@ -44,6 +44,7 @@ typedef struct {
 typedef struct {
   jd_ohdr hdr;
   size_t size;
+  size_t used;
   jd_hash_bucket **b;
 } jd_hash;
 
@@ -94,10 +95,12 @@ jd_var *jd_get_idx(jd_var *v, int idx);
 jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify);
 int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot);
 size_t jd_length(jd_var *v);
+size_t jd_count(jd_var *v);
 jd_var *jd_append(jd_var *v, jd_var *v2);
 jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar);
 int jd_compare(jd_var *a, jd_var *b);
 unsigned long jd_hashcalc(jd_var *v);
+jd_var *jd_keys(jd_var *v, jd_var *keys);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);
 jd_string *jd_string_new(size_t size);
@@ -130,8 +133,10 @@ jd_array *jd_array_append(jd_array *jda, jd_var *v);
 jd_hash *jd_hash_new(size_t size);
 jd_hash *jd_hash_retain(jd_hash *jdh);
 jd_hash *jd_hash_release(jd_hash *jdh);
+size_t jd_hash_count(jd_hash *jdh);
 jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify);
 int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot);
+jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys);
 
 #endif
 
