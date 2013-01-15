@@ -27,10 +27,9 @@ static void release(jd_array *jda, unsigned from, size_t count) {
 }
 
 jd_array *jd_array_release(jd_array *jda) {
-  if (jd_string_release(&jda->s)) return jda;
-  release(jda, 0, jd_array_count(jda));
-
-  return NULL;
+  if (jda->s.hdr.refs == 1)
+    release(jda, 0, jd_array_count(jda));
+  return jd_string_release(&jda->s) ? jda : NULL;
 }
 
 static unsigned cook_idx(int idx, size_t count, size_t max) {

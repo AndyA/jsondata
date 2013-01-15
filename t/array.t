@@ -8,7 +8,7 @@
 #include "jsondata.h"
 
 static void check_ar(jd_var *ar, const char *expect, const char *test) {
-  jd_var sep, all;
+  jd_var sep = JD_INIT, all = JD_INIT;
   jd_set_string(&sep, "|");
   jd_join(&all, &sep, ar);
   if (!ok(!strcmp(all.v.s->data, expect), "array: %s", test)) {
