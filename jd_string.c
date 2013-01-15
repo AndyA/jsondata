@@ -33,6 +33,7 @@ jd_string *jd_string_ensure(jd_string *jds, size_t size) {
     memcpy(nstr, jds->data, jds->used);
     jd_free(jds->data);
     jds->data = nstr;
+    jds->size = size;
   }
   return jds;
 }

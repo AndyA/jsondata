@@ -35,6 +35,11 @@ static void t_array(void) {
 
   check_ar(&ar, "foo|foo|foo");
 
+  size_t got = jd_shift(&ar, 1, NULL);
+  is(got, 1, "shift count");
+
+  check_ar(&ar, "foo|foo");
+
   jd_release(&ar);
 }
 

@@ -125,6 +125,10 @@ jd_var *jd_push(jd_var *v, size_t count) {
   return jd_array_push(jd_as_array(v), count);
 }
 
+size_t jd_shift(jd_var *v, size_t count, jd_var *slot) {
+  return jd_array_shift(jd_as_array(v), count, slot);
+}
+
 jd_var *jd_get(jd_var *v, int idx) {
   return jd_array_get(jd_as_array(v), idx);
 }

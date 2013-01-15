@@ -1,5 +1,7 @@
 /* jd_array.c */
 
+#include <string.h>
+
 #include "jsondata.h"
 
 jd_array *jd_array_new(size_t size) {
@@ -31,16 +33,14 @@ jd_var *jd_array_get(jd_array *jda, int idx) {
   return ELT(jda, check_idx(jda, idx));
 }
 
-jd_array *jd_array_release(jd_array *jda) {
+static void release(jd_array *jda, unsigned from, unsigned to) {
   unsigned i;
-  size_t ac;
+  for (i = from; i < to; i++) jd_release(ELT(jda, i));
+}
 
+jd_array *jd_array_release(jd_array *jda) {
   if (jd_string_release(&jda->s)) return jda;
-
-  ac = jd_array_count(jda);
-  for (i = 0; i < ac; i++) {
-    jd_release(ELT(jda, i));
-  }
+  release(jda, 0, jd_array_count(jda));
 
   return NULL;
 }
@@ -78,6 +78,15 @@ jd_var *jd_array_push(jd_array *jda, size_t count) {
     return v;
   }
   return NULL;
+}
+
+size_t jd_array_shift(jd_array *jda, size_t count, jd_var *slot) {
+  size_t avail = jd_array_count(jda);
+  if (count > avail) count = avail;
+  if (slot) memcpy(slot, ELT(jda, 0), count * sizeof(jd_var));
+  else release(jda, 0, count);
+  jda->seek += count * sizeof(jd_var);
+  return count;
 }
 
 jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
