@@ -1,24 +1,27 @@
-.PHONY: all clean tags install version
+.PHONY: all clean tags install version test
+
+include common.mk
 
 PREFIX ?= /usr/local
 
-CFLAGS=-Wall -O2 -D_LARGEFILE64_SOURCE
-LDFLAGS=-lc -lm -lpthread
-
 BINS=jdtest
 BINOBJ=$(addsuffix .o,$(BINS))
-MISCOBJ=jsondata.o jd_string.o jd_array.o
-OBJS=$(BINOBJ) $(MISCOBJ)
+LIB=libjsondata.a
+LIBOBJ=jsondata.o jd_string.o jd_array.o
+OBJS=$(BINOBJ) $(LIBOBJ)
 DEPS=$(OBJS:.o=.d) 
 INST_BINS=$(PREFIX)/bin
 
-all: $(BINS)
+all: $(LIB) $(BINS)
 
 version.h: VERSION
 	perl tools/version.pl > version.h
 
-%: %.o $(MISCOBJ)
+%: %.o $(LIB)
 	$(CC) -o $@ $^ $(LDFLAGS)
+
+$(LIB): $(LIBOBJ)
+	ar rcs $@ $^
 
 %.d: %.c version.h
 	@$(SHELL) -ec '$(CC) -MM $(CFLAGS) $< \
@@ -35,6 +38,9 @@ clean:
 
 version:
 	perl tools/bump_version.pl VERSION
+
+test:
+	cd t && $(MAKE) test
 
 install: $(BINS)
 	touch VERSION
