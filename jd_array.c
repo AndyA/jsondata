@@ -4,6 +4,11 @@
 
 #include "jsondata.h"
 
+#define BASE(jda) \
+  ((jd_var *)((jda)->s.data + (jda)->seek))
+#define ELT(jda, idx) \
+  (BASE(jda) + (idx))
+
 jd_array *jd_array_new(size_t size) {
   jd_array *jda = jd_alloc(sizeof(jd_array));
   jd_string_init(&jda->s, size * sizeof(jd_var));
@@ -14,6 +19,18 @@ jd_array *jd_array_new(size_t size) {
 jd_array *jd_array_retain(jd_array *jda) {
   jd_string_retain(&jda->s);
   return jda;
+}
+
+static void release(jd_array *jda, unsigned from, size_t count) {
+  unsigned i;
+  for (i = from; i < from + count; i++) jd_release(ELT(jda, i));
+}
+
+jd_array *jd_array_release(jd_array *jda) {
+  if (jd_string_release(&jda->s)) return jda;
+  release(jda, 0, jd_array_count(jda));
+
+  return NULL;
 }
 
 static unsigned cook_idx(int idx, size_t count, size_t max) {
@@ -33,25 +50,8 @@ static unsigned check_idx_open(jd_array *jda, int idx) {
   return cook_idx(idx, count, count + 1);
 }
 
-#define BASE(jda) \
-  ((jd_var *)((jda)->s.data + (jda)->seek))
-#define ELT(jda, idx) \
-  (BASE(jda) + (idx))
-
 jd_var *jd_array_get(jd_array *jda, int idx) {
   return ELT(jda, check_idx(jda, idx));
-}
-
-static void release(jd_array *jda, unsigned from, size_t count) {
-  unsigned i;
-  for (i = from; i < from + count; i++) jd_release(ELT(jda, i));
-}
-
-jd_array *jd_array_release(jd_array *jda) {
-  if (jd_string_release(&jda->s)) return jda;
-  release(jda, 0, jd_array_count(jda));
-
-  return NULL;
 }
 
 size_t jd_array_count(jd_array *jda) {

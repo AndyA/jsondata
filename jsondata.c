@@ -49,6 +49,7 @@ void jd_release(jd_var *v) {
     jd_array_release(v->v.a);
     break;
   case HASH:
+    jd_hash_release(v->v.h);
     break;
   }
   v->type = VOID;
@@ -68,6 +69,7 @@ void jd_retain(jd_var *v) {
     jd_array_retain(v->v.a);
     break;
   case HASH:
+    jd_hash_retain(v->v.h);
     break;
   }
 }
@@ -95,10 +97,16 @@ jd_var *jd_set_string(jd_var *v, const char *s) {
 }
 
 jd_var *jd_set_array(jd_var *v, size_t size) {
-  jd_array *jda = jd_array_new(size);
   jd_release(v);
   v->type = ARRAY;
-  v->v.a = jda;
+  v->v.a = jd_array_new(size);
+  return v;
+}
+
+jd_var *jd_set_hash(jd_var *v, size_t size) {
+  jd_release(v);
+  v->type = HASH;
+  v->v.h = jd_hash_new(size);
   return v;
 }
 
@@ -110,6 +118,11 @@ jd_string *jd_as_string(jd_var *v) {
 jd_array *jd_as_array(jd_var *v) {
   if (v->type != ARRAY) jd_die("Not an array");
   return v->v.a;
+}
+
+jd_hash *jd_as_hash(jd_var *v) {
+  if (v->type != HASH) jd_die("Not a hash");
+  return v->v.h;
 }
 
 size_t jd_length(jd_var *v) {
@@ -154,12 +167,16 @@ size_t jd_shift(jd_var *v, size_t count, jd_var *slot) {
   return jd_array_shift(jd_as_array(v), count, slot);
 }
 
-jd_var *jd_get(jd_var *v, int idx) {
+jd_var *jd_get_idx(jd_var *v, int idx) {
   return jd_array_get(jd_as_array(v), idx);
 }
 
 jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar) {
   return jd_array_join(out, sep, jd_as_array(ar));
+}
+
+jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify) {
+  return jd_hash_get(jd_as_hash(v), key, vivify);
 }
 
 int jd_compare(jd_var *a, jd_var *b) {
@@ -168,6 +185,16 @@ int jd_compare(jd_var *a, jd_var *b) {
     return jd_string_compare(jd_as_string(a), b);
   default:
     jd_die("Can't compare");
+    return 0;
+  }
+}
+
+unsigned long jd_hashcalc(jd_var *v) {
+  switch (v->type) {
+  case STRING:
+    return jd_string_hashcalc(jd_as_string(v));
+  default:
+    jd_die("Can't compute hash");
     return 0;
   }
 }

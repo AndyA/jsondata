@@ -18,6 +18,7 @@ typedef enum {
 } jd_type;
 
 typedef struct _jd_var jd_var;
+typedef struct _jd_hash_bucket jd_hash_bucket;
 
 typedef struct {
   unsigned refs;
@@ -39,8 +40,11 @@ typedef struct {
   size_t seek;
 } jd_array;
 
+
 typedef struct {
-  jd_string s;
+  jd_ohdr hdr;
+  size_t size;
+  jd_hash_bucket **b;
 } jd_hash;
 
 struct _jd_var {
@@ -53,6 +57,12 @@ struct _jd_var {
     jd_array *a;
     jd_hash *h;
   } v;
+};
+
+struct _jd_hash_bucket {
+  jd_var key;
+  jd_var value;
+  struct _jd_hash_bucket *next;
 };
 
 #define JD_INIT { .type = VOID }
@@ -69,8 +79,10 @@ jd_var *jd_assign(jd_var *dst, jd_var *src);
 jd_var *jd_set_string(jd_var *v, const char *s);
 jd_var *jd_set_empty_string(jd_var *v, size_t size);
 jd_var *jd_set_array(jd_var *v, size_t size);
+jd_var *jd_set_hash(jd_var *v, size_t size);
 jd_string *jd_as_string(jd_var *v);
 jd_array *jd_as_array(jd_var *v);
+jd_hash *jd_as_hash(jd_var *v);
 jd_var *jd_insert(jd_var *v, int idx, size_t count);
 size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot);
 jd_var *jd_push(jd_var *v, size_t count);
@@ -78,11 +90,13 @@ size_t jd_pop(jd_var *v, size_t count, jd_var *slot);
 jd_var *jd_unshift(jd_var *v, size_t count);
 size_t jd_shift(jd_var *v, size_t count, jd_var *slot);
 size_t jd_array_pop(jd_array *jda, size_t count, jd_var *slot);
-jd_var *jd_get(jd_var *v, int idx);
+jd_var *jd_get_idx(jd_var *v, int idx);
+jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify);
 size_t jd_length(jd_var *v);
 jd_var *jd_append(jd_var *v, jd_var *v2);
 jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar);
 int jd_compare(jd_var *a, jd_var *b);
+unsigned long jd_hashcalc(jd_var *v);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);
 jd_string *jd_string_new(size_t size);
@@ -95,6 +109,7 @@ jd_string *jd_string_release(jd_string *jds);
 size_t jd_string_length(jd_string *jds);
 jd_string *jd_string_append(jd_string *jds, jd_var *v);
 int jd_string_compare(jd_string *jds, jd_var *v);
+unsigned long jd_string_hashcalc(jd_string *jds);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
@@ -110,6 +125,11 @@ jd_var *jd_array_get(jd_array *jda, int idx);
 jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda);
 jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v);
 jd_array *jd_array_append(jd_array *jda, jd_var *v);
+
+jd_hash *jd_hash_new(size_t size);
+jd_hash *jd_hash_retain(jd_hash *jdh);
+jd_hash *jd_hash_release(jd_hash *jdh);
+jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify);
 
 #endif
 

@@ -89,5 +89,15 @@ int jd_string_compare(jd_string *jds, jd_var *v) {
   return la < lb ? -1 : la > lb ? 1 : 0;
 }
 
+unsigned long jd_string_hashcalc(jd_string *jds) {
+  unsigned long h = 0;
+  size_t len = jd_string_length(jds);
+  unsigned i;
+  for (i = 0; i < len; i++) {
+    h = 31 * h + jds->data[i];
+  }
+  return h;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

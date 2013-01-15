@@ -36,7 +36,7 @@ void test_main(void) {
 
   check_ar(&ar, "foo|bar|baz", "init");
 
-  jd_assign(jd_get(&ar, 1), jd_get(&ar, 2));
+  jd_assign(jd_get_idx(&ar, 1), jd_get_idx(&ar, 2));
 
   check_ar(&ar, "foo|baz|baz", "copy 2->1");
 
