@@ -121,8 +121,24 @@ jd_var *jd_append(jd_var *v, jd_var *v2) {
   return v;
 }
 
+jd_var *jd_insert(jd_var *v, int idx, size_t count) {
+  return jd_array_insert(jd_as_array(v), idx, count);
+}
+
+size_t jd_remove(jd_var *v, int idx, size_t count, jd_var *slot) {
+  return jd_array_remove(jd_as_array(v), idx, count, slot);
+}
+
 jd_var *jd_push(jd_var *v, size_t count) {
   return jd_array_push(jd_as_array(v), count);
+}
+
+size_t jd_pop(jd_var *v, size_t count, jd_var *slot) {
+  return jd_array_pop(jd_as_array(v), count, slot);
+}
+
+jd_var *jd_unshift(jd_var *v, size_t count) {
+  return jd_array_unshift(jd_as_array(v), count);
 }
 
 size_t jd_shift(jd_var *v, size_t count, jd_var *slot) {
