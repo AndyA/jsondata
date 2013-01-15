@@ -3,6 +3,8 @@
 #include "jsondata.h"
 
 #include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 jd_string *jd_string_init(jd_string *jds, size_t size) {
   jds->data = jd_alloc(size);
@@ -16,6 +18,12 @@ jd_string *jd_string_new(size_t size) {
   jd_string *jds = jd_alloc(sizeof(jd_string));
   jd_string_init(jds, size);
   jds->used = 1; /* trailing \0 */
+  return jds;
+}
+
+jd_string *jd_string_empty(jd_string *jds) {
+  jds->used = 1;
+  jds->data[0] = '\0';
   return jds;
 }
 
@@ -97,6 +105,30 @@ unsigned long jd_string_hashcalc(jd_string *jds) {
     h = 31 * h + jds->data[i];
   }
   return h;
+}
+
+jd_string *jd_string_vprintf(jd_string *jds, const char *fmt, va_list ap) {
+  jd_string_empty(jds);
+  for (;;) {
+    va_list aq;
+    va_copy(aq, ap);
+    size_t sz = vsnprintf(jds->data, jds->size, fmt, aq);
+    va_end(aq);
+    if (sz < jds->size) {
+      jds->used = sz + 1;
+      return jds;
+      break;
+    }
+    jd_string_ensure(jds, sz + 1);
+  }
+}
+
+jd_string *jd_string_printf(jd_string *jds, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  jd_string_vprintf(jds, fmt, ap);
+  va_end(ap);
+  return jds;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

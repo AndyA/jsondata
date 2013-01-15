@@ -36,6 +36,7 @@ void jd_free(void *m) {
 }
 
 void jd_release(jd_var *v) {
+  void *rc = NULL;
   switch (v->type) {
   case VOID:
   case BOOL:
@@ -43,16 +44,16 @@ void jd_release(jd_var *v) {
   case REAL:
     break;
   case STRING:
-    jd_string_release(v->v.s);
+    rc = jd_string_release(v->v.s);
     break;
   case ARRAY:
-    jd_array_release(v->v.a);
+    rc = jd_array_release(v->v.a);
     break;
   case HASH:
-    jd_hash_release(v->v.h);
+    rc = jd_hash_release(v->v.h);
     break;
   }
-  memset(v, 0, sizeof(*v));
+  if (!rc) memset(v, 0, sizeof(*v));
 }
 
 void jd_retain(jd_var *v) {
@@ -109,6 +110,34 @@ jd_var *jd_set_hash(jd_var *v, size_t size) {
   v->v.h = jd_hash_new(size);
   return v;
 }
+
+jd_var *jd_set_int(jd_var *v, jd_int i) {
+  jd_release(v);
+  v->type = INTEGER;
+  v->v.i = i;
+  return v;
+}
+
+jd_var *jd_set_real(jd_var *v, double r) {
+  jd_release(v);
+  v->type = REAL;
+  v->v.r = r;
+  return v;
+}
+
+jd_var *jd_set_bool(jd_var *v, int b) {
+  jd_release(v);
+  v->type = BOOL;
+  v->v.b = !!b;
+  return v;
+}
+
+jd_var *jd_set_void(jd_var *v) {
+  jd_release(v);
+  v->type = VOID;
+  return v;
+}
+
 
 jd_string *jd_as_string(jd_var *v) {
   if (v->type != STRING) jd_die("Not a string");
@@ -216,6 +245,43 @@ unsigned long jd_hashcalc(jd_var *v) {
 
 jd_var *jd_keys(jd_var *v, jd_var *keys) {
   return jd_hash_keys(jd_as_hash(v), keys);
+}
+
+jd_var *jd_printf(jd_var *v, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  jd_string_vprintf(jd_as_string(v), fmt, ap);
+  va_end(ap);
+  return v;
+}
+
+jd_var *jd_stringify(jd_var *out, jd_var *v) {
+  /* TODO move conversion of out into a string into jd_printf */
+  jd_var tmp = JD_INIT;
+  jd_set_empty_string(&tmp, 20);
+  switch (v->type) {
+  case VOID:
+    jd_set_string(&tmp, "null");
+    break;
+  case BOOL:
+    jd_set_string(&tmp, v->v.b ? "true" : "false");
+    break;
+  case INTEGER:
+    jd_printf(&tmp, "%lld", v->v.i);
+    break;
+  case REAL:
+    jd_printf(&tmp, "%g", v->v.r);
+    break;
+  case STRING:
+    jd_assign(&tmp, v);
+    break;
+  default:
+    jd_die("Can't stringify");
+    return NULL;
+  }
+  jd_assign(out, &tmp);
+  jd_release(&tmp);
+  return out;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

@@ -45,6 +45,9 @@ static void test_hash(size_t sz) {
   ok(jd_compare(jd_get_key(&ha, &k3, 0), &v3) == 0, "found baz again");
   ok(jd_compare(jd_get_key(&ha, &k2, 0), &v2) == 0, "bar's there too");
 
+  jd_assign(jd_get_key(&ha, &k3, 1), &v1);
+  ok(jd_compare(jd_get_key(&ha, &k3, 0), &v1) == 0, "found baz with new value");
+
   jd_release(&ha);
   jd_release(&keys);
   jd_release(&k1);

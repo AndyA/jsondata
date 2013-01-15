@@ -1,5 +1,6 @@
 /*.a
 /*.d
 /*.o
+/core
 /jdtest
 /version.h

@@ -4,6 +4,7 @@
 #define __JSONDATA_H
 
 #include <stddef.h>
+#include <stdarg.h>
 
 typedef long long jd_int;
 
@@ -81,6 +82,10 @@ jd_var *jd_set_string(jd_var *v, const char *s);
 jd_var *jd_set_empty_string(jd_var *v, size_t size);
 jd_var *jd_set_array(jd_var *v, size_t size);
 jd_var *jd_set_hash(jd_var *v, size_t size);
+jd_var *jd_set_int(jd_var *v, jd_int i);
+jd_var *jd_set_real(jd_var *v, double r);
+jd_var *jd_set_bool(jd_var *v, int b);
+jd_var *jd_set_void(jd_var *v);
 jd_string *jd_as_string(jd_var *v);
 jd_array *jd_as_array(jd_var *v);
 jd_hash *jd_as_hash(jd_var *v);
@@ -101,9 +106,12 @@ jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar);
 int jd_compare(jd_var *a, jd_var *b);
 unsigned long jd_hashcalc(jd_var *v);
 jd_var *jd_keys(jd_var *v, jd_var *keys);
+jd_var *jd_printf(jd_var *v, const char *fmt, ...);
+jd_var *jd_stringify(jd_var *out, jd_var *v);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);
 jd_string *jd_string_new(size_t size);
+jd_string *jd_string_empty(jd_string *jds);
 jd_string *jd_string_from(const char *s);
 jd_string *jd_string_ensure(jd_string *jds, size_t size);
 jd_string *jd_string_space(jd_string *jds, size_t minspace);
@@ -114,6 +122,8 @@ size_t jd_string_length(jd_string *jds);
 jd_string *jd_string_append(jd_string *jds, jd_var *v);
 int jd_string_compare(jd_string *jds, jd_var *v);
 unsigned long jd_string_hashcalc(jd_string *jds);
+jd_string *jd_string_vprintf(jd_string *jds, const char *fmt, va_list ap);
+jd_string *jd_string_printf(jd_string *jds, const char *fmt, ...);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
