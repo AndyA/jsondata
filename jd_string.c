@@ -14,7 +14,9 @@ jd_string *jd_string_init(jd_string *jds, size_t size) {
 
 jd_string *jd_string_new(size_t size) {
   jd_string *jds = jd_alloc(sizeof(jd_string));
-  return jd_string_init(jds, size);
+  jd_string_init(jds, size);
+  jds->used = 1; /* trailing \0 */
+  return jds;
 }
 
 jd_string *jd_string_from(const char *s) {
@@ -60,6 +62,19 @@ jd_string *jd_string_release(jd_string *jds) {
     return NULL;
   }
   jds->hdr.refs--;
+  return jds;
+}
+
+size_t jd_string_length(jd_string *jds) {
+  return jds->used - 1;
+}
+
+jd_string *jd_string_append(jd_string *jds, jd_var *v) {
+  jd_string *vs = jd_as_string(v);
+  size_t len = jd_string_length(vs);
+  jd_string_space(jds, len);
+  memcpy(jds->data + jds->used - 1, vs->data, len + 1);
+  jds->used += len;
   return jds;
 }
 

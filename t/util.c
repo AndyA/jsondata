@@ -8,9 +8,12 @@
 
 #include "jsondata.h"
 
+#define SIG 0x1A2B3C4D
+
 struct memhdr {
   size_t size;
   struct memhdr *next;
+  unsigned sig;
 };
 
 struct memhdr *memlist = NULL;
@@ -23,12 +26,14 @@ static void *t_alloc(size_t size) {
   if (!h)return NULL;
   h->size = size;
   h->next = memlist;
+  h->sig = SIG;
   memlist = h;
   return MEM(h);
 }
 
 static struct memhdr *unhook(struct memhdr *list, struct memhdr *h) {
   if (list == h) return list->next;
+  if (h->sig != SIG) die("Block %p trampled: %08x", h, h->sig);
   list->next = unhook(list->next, h);
   return list;
 }
@@ -47,6 +52,8 @@ static size_t get_leaks(unsigned *count) {
   *count = 0;
 
   for (h = memlist; h; h = h->next) {
+    if (h->sig != SIG)
+      die("Bad block %p (%08x)", h, h->sig);
     sz += h->size;
     (*count)++;
   }
