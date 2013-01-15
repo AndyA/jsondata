@@ -119,5 +119,20 @@ jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
   return out;
 }
 
+jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v) {
+  jd_array *va = jd_as_array(v);
+  size_t count = jd_array_count(va);
+  jd_var *slot = jd_array_insert(jda, idx, count);
+  unsigned i;
+  for (i = 0; i < count; i++) {
+    jd_assign(&slot[i], ELT(va, i));
+  }
+  return jda;
+}
+
+jd_array *jd_array_append(jd_array *jda, jd_var *v) {
+  return jd_array_splice(jda, jd_array_count(jda), v);
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

@@ -79,5 +79,15 @@ jd_string *jd_string_append(jd_string *jds, jd_var *v) {
   return jds;
 }
 
+int jd_string_compare(jd_string *jds, jd_var *v) {
+  jd_string *vs = jd_as_string(v);
+  size_t la = jd_string_length(jds);
+  size_t lb = jd_string_length(vs);
+  size_t lc = la < lb ? la : lb;
+  int cmp = memcmp(jds->data, vs->data, lc);
+  if (cmp) return cmp;
+  return la < lb ? -1 : la > lb ? 1 : 0;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

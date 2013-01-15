@@ -7,7 +7,7 @@ PREFIX ?= /usr/local
 BINS=jdtest
 BINOBJ=$(addsuffix .o,$(BINS))
 LIB=libjsondata.a
-LIBOBJ=jsondata.o jd_string.o jd_array.o
+LIBOBJ=jsondata.o jd_string.o jd_array.o jd_hash.o
 OBJS=$(BINOBJ) $(LIBOBJ)
 DEPS=$(OBJS:.o=.d) 
 INST_BINS=$(PREFIX)/bin

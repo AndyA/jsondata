@@ -19,8 +19,9 @@ static void check_ar(jd_var *ar, const char *expect, const char *test) {
   jd_release(&sep);
 }
 
-static void t_array(void) {
-  jd_var ar = JD_INIT, v1 = JD_INIT, v2 = JD_INIT, v3 = JD_INIT;
+void test_main(void) {
+  jd_var ar = JD_INIT;
+  jd_var v1 = JD_INIT, v2 = JD_INIT, v3 = JD_INIT;
   size_t got;
 
   jd_set_string(&v1, "foo");
@@ -52,14 +53,14 @@ static void t_array(void) {
 
   check_ar(&ar, "foo|baz|baz|bar", "unshift");
 
+  jd_append(&ar, &ar);
+
+  check_ar(&ar, "foo|baz|baz|bar|foo|baz|baz|bar", "self append");
+
   jd_release(&ar);
   jd_release(&v1);
   jd_release(&v2);
   jd_release(&v3);
-}
-
-void test_main(void) {
-  t_array();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

@@ -39,6 +39,10 @@ typedef struct {
   size_t seek;
 } jd_array;
 
+typedef struct {
+  jd_string s;
+} jd_hash;
+
 struct _jd_var {
   jd_type type;
   union {
@@ -47,6 +51,7 @@ struct _jd_var {
     double r;
     jd_string *s;
     jd_array *a;
+    jd_hash *h;
   } v;
 };
 
@@ -77,6 +82,7 @@ jd_var *jd_get(jd_var *v, int idx);
 size_t jd_length(jd_var *v);
 jd_var *jd_append(jd_var *v, jd_var *v2);
 jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar);
+int jd_compare(jd_var *a, jd_var *b);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);
 jd_string *jd_string_new(size_t size);
@@ -88,6 +94,7 @@ jd_string *jd_string_retain(jd_string *jds);
 jd_string *jd_string_release(jd_string *jds);
 size_t jd_string_length(jd_string *jds);
 jd_string *jd_string_append(jd_string *jds, jd_var *v);
+int jd_string_compare(jd_string *jds, jd_var *v);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
@@ -101,6 +108,8 @@ size_t jd_array_shift(jd_array *jda, size_t count, jd_var *slot);
 size_t jd_array_count(jd_array *jda);
 jd_var *jd_array_get(jd_array *jda, int idx);
 jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda);
+jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v);
+jd_array *jd_array_append(jd_array *jda, jd_var *v);
 
 #endif
 

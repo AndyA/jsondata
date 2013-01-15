@@ -117,7 +117,16 @@ size_t jd_length(jd_var *v) {
 }
 
 jd_var *jd_append(jd_var *v, jd_var *v2) {
-  jd_string_append(jd_as_string(v), v2);
+  switch (v->type) {
+  case STRING:
+    jd_string_append(jd_as_string(v), v2);
+    break;
+  case ARRAY:
+    jd_array_append(jd_as_array(v), v2);
+    break;
+  default:
+    jd_die("Can't append"); /* TODO type name */
+  }
   return v;
 }
 
@@ -151,6 +160,16 @@ jd_var *jd_get(jd_var *v, int idx) {
 
 jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar) {
   return jd_array_join(out, sep, jd_as_array(ar));
+}
+
+int jd_compare(jd_var *a, jd_var *b) {
+  switch (a->type) {
+  case STRING:
+    return jd_string_compare(jd_as_string(a), b);
+  default:
+    jd_die("Can't compare");
+    return 0;
+  }
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
