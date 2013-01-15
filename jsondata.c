@@ -103,7 +103,7 @@ jd_var *jd_set_array(jd_var *v, size_t size) {
 }
 
 jd_string *jd_as_string(jd_var *v) {
-  if (v->type != STRING) jd_die("Not an string");
+  if (v->type != STRING) jd_die("Not a string");
   return v->v.s;
 }
 

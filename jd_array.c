@@ -63,7 +63,7 @@ jd_var *jd_array_insert(jd_array *jda, int idx, size_t count) {
   size_t sz = jd_array_count(jda);
   size_t need = count * sizeof(jd_var);
   jd_string_space(&jda->s, need);
-  memmove(ELT(jda, ix), ELT(jda, ix + count), (sz - ix) * sizeof(jd_var));
+  memmove(ELT(jda, ix + count), ELT(jda, ix), (sz - ix) * sizeof(jd_var));
   memset(ELT(jda, ix), 0, count * sizeof(jd_var));
   jda->s.used += need;
   return ELT(jda, ix);
