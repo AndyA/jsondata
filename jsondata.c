@@ -179,6 +179,10 @@ jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify) {
   return jd_hash_get(jd_as_hash(v), key, vivify);
 }
 
+int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
+  return jd_hash_delete(jd_as_hash(v), key, slot);
+}
+
 int jd_compare(jd_var *a, jd_var *b) {
   switch (a->type) {
   case STRING:

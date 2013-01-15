@@ -6,6 +6,8 @@
 void diag(const char *fmt, ...);
 void die(const char *fmt, ...);
 void done_testing(void);
+void nest_in(const char *p);
+void nest_out(void);
 int ok(int flag, const char *msg, ...);
 int pass(const char *msg, ...);
 int fail(const char *msg, ...);

@@ -64,5 +64,17 @@ jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify) {
   return &b->value;
 }
 
+int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot) {
+  jd_hash_bucket **prev, *b;
+  b = hash_find(jdh, key, &prev);
+  if (!b) return 0;
+  if (slot) jd_assign(slot, &b->value);
+  jd_release(&b->key);
+  jd_release(&b->value);
+  *prev = b->next;
+  jd_free(b);
+  return 1;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

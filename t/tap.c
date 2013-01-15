@@ -6,7 +6,12 @@
 
 #include "tap.h"
 
+#define MAX_PREFIX 10
+
 static int test_no = 0;
+
+static const char *pfx[MAX_PREFIX];
+static size_t npfx = 0;
 
 void diag(const char *fmt, ...) {
   va_list ap;
@@ -31,8 +36,26 @@ void done_testing(void) {
   printf("1..%d\n", test_no);
 }
 
+void nest_in(const char *p) {
+  if (npfx == MAX_PREFIX) die("Too many prefixes");
+  pfx[npfx++] = p;
+}
+
+void nest_out(void) {
+  if (npfx == 0) die("Can't go out a level - we're at the top");
+  npfx--;
+}
+
+static void prefix(void) {
+  unsigned i;
+  for (i = 0; i < npfx; i++) {
+    printf("%s: ", pfx[i]);
+  }
+}
+
 static void test(int flag, const char *msg, va_list ap) {
   printf("%sok %d - ", flag ? "" : "not ", ++test_no);
+  prefix();
   vprintf(msg, ap);
   printf("\n");
 }

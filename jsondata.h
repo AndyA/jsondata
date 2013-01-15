@@ -92,6 +92,7 @@ size_t jd_shift(jd_var *v, size_t count, jd_var *slot);
 size_t jd_array_pop(jd_array *jda, size_t count, jd_var *slot);
 jd_var *jd_get_idx(jd_var *v, int idx);
 jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify);
+int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot);
 size_t jd_length(jd_var *v);
 jd_var *jd_append(jd_var *v, jd_var *v2);
 jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar);
@@ -130,6 +131,7 @@ jd_hash *jd_hash_new(size_t size);
 jd_hash *jd_hash_retain(jd_hash *jdh);
 jd_hash *jd_hash_release(jd_hash *jdh);
 jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify);
+int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot);
 
 #endif
 
