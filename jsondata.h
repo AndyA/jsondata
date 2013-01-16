@@ -115,6 +115,9 @@ jd_var *jd_stringify(jd_var *out, jd_var *v);
 jd_var *jd_substr(jd_var *out, jd_var *v, int from, int len);
 int jd_find(jd_var *haystack, jd_var *needle, int pos);
 jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep);
+jd_var *jd_numify(jd_var *out, jd_var *v);
+jd_int jd_get_int(jd_var *v);
+double jd_get_real(jd_var *v);
 
 jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path);
@@ -138,6 +141,7 @@ jd_string *jd_string_printf(jd_string *jds, const char *fmt, ...);
 jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out);
 int jd_string_find(jd_string *jds, jd_var *pat, int from);
 jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out);
+jd_var *jd_string_numify(jd_string *jds, jd_var *out);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);

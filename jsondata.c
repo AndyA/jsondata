@@ -290,6 +290,19 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
   return out;
 }
 
+jd_var *jd_numify(jd_var *out, jd_var *v) {
+  switch (v->type) {
+  case HASH:
+  case ARRAY:
+    jd_die("Can't numify");
+    return NULL;
+  default:
+    return jd_assign(out, v);
+  case STRING:
+    return jd_string_numify(jd_as_string(v), out);
+  }
+}
+
 jd_var *jd_substr(jd_var *out, jd_var *v, int from, int len) {
   jd_string_sub(jd_as_string(v), from, len, out);
   return out;
@@ -302,6 +315,34 @@ int jd_find(jd_var *haystack, jd_var *needle, int pos) {
 jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
   return jd_string_split(jd_as_string(v), sep, out);
 }
+
+#define JD_CAST(vtype, name) \
+  vtype name(jd_var *v) {                   \
+    jd_var tmp = JD_INIT;                   \
+    vtype rv;                               \
+    jd_numify(&tmp, v);                     \
+    switch (tmp.type) {                     \
+    case INTEGER:                           \
+      rv = (vtype) tmp.v.i;                 \
+      break;                                \
+    case REAL:                              \
+      rv = (vtype) tmp.v.r;                 \
+      break;                                \
+    case BOOL:                              \
+      rv = (vtype) tmp.v.b;                 \
+      break;                                \
+    default:                                \
+      jd_die("Oops - expected a numeric");  \
+    case VOID:                              \
+      rv = 0;                               \
+      break;                                \
+    }                                       \
+    jd_release(&tmp);                       \
+    return rv;                              \
+  }
+
+JD_CAST(jd_int, jd_get_int)
+JD_CAST(double, jd_get_real)
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

@@ -2,9 +2,10 @@
 
 #include "jsondata.h"
 
-#include <string.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 jd_string *jd_string_init(jd_string *jds, size_t size) {
   jds->data = jd_alloc(size);
@@ -183,6 +184,39 @@ jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out) {
   }
   jd_string_sub(jds, pos, jd_string_length(jds) - pos, jd_push(out, 1));
   return out;
+}
+
+static int str_is(jd_string *jds, const char *s) {
+  size_t jl = jd_string_length(jds);
+  size_t sl = strlen(s);
+  return jl == sl && memcmp(jds->data, s, jl) == 0;
+}
+
+jd_var *jd_string_numify(jd_string *jds, jd_var *out) {
+  char *end;
+  jd_int iv;
+  double rv;
+  size_t sl;
+
+  if (str_is(jds, "true"))
+    return jd_set_bool(out, 1);
+  if (str_is(jds, "false"))
+    return jd_set_bool(out, 0);
+  if (str_is(jds, "null"))
+    return jd_set_void(out);
+
+  sl = jd_string_length(jds);
+  iv = (jd_int) strtoll(jds->data, &end, 10);
+  if (end - jds->data == sl)
+    return jd_set_int(out, iv);
+
+  rv = strtod(jds->data, &end);
+  if (end - jds->data == sl)
+    return jd_set_real(out, rv);
+
+  jd_die("Can't convert to a number");
+
+  return NULL;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

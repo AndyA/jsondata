@@ -69,11 +69,15 @@ jd_var *jd_array_insert(jd_array *jda, int idx, size_t count) {
 }
 
 size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot) {
-  unsigned ix = check_idx(jda, idx);
+  unsigned ix = check_idx_open(jda, idx);
   size_t avail = jd_array_count(jda) - ix;
   if (count > avail) count = avail;
-  if (slot) memcpy(slot, ELT(jda, ix), count * sizeof(jd_var));
-  else release(jda, ix, count);
+  if (slot) {
+    unsigned i;
+    for (i = 0; i < count; i++)
+      jd_assign(slot++, ELT(jda, ix + i));
+  }
+  release(jda, ix, count);
   if (idx == 0)
     jda->seek += count * sizeof(jd_var);
   else
