@@ -19,6 +19,13 @@ void test_main(void) {
   jd_to_json(&vout, &vin);
   ok(jd_compare(&vout, &vwant) == 0, "json");
 
+  jd_set_string(jd_lv(&vin, "$.2.name"), "a hash");
+
+  jd_set_string(&vwant, "[\"foo\",12345,{\"name\":\"a hash\"}]");
+
+  jd_to_json(&vout, &vin);
+  ok(jd_compare(&vout, &vwant) == 0, "json");
+
   jd_release(&vin);
   jd_release(&vout);
   jd_release(&vwant);
