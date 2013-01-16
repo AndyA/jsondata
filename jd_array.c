@@ -101,7 +101,19 @@ size_t jd_array_pop(jd_array *jda, size_t count, jd_var *slot) {
   return jd_array_remove(jda, -(int) count, count, slot);
 }
 
-jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
+static jd_var *array_stringify(jd_var *out, jd_array *jda) {
+  size_t count = jd_array_count(jda);
+  jd_set_array(out, count);
+  unsigned i;
+
+  for (i = 0; i < count; i++) {
+    jd_stringify(jd_push(out, 1), ELT(jda, i));
+  }
+
+  return out;
+}
+
+static jd_var *array_join(jd_var *out, jd_var *sep, jd_array *jda) {
   size_t len = 0;
   size_t count = jd_array_count(jda);
   size_t slen = jd_length(sep);
@@ -119,6 +131,14 @@ jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
     jd_append(out, ELT(jda, i));
   }
 
+  return out;
+}
+
+jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
+  jd_var ar = JD_INIT;
+  array_stringify(&ar, jda);
+  array_join(out, sep, jd_as_array(&ar));
+  jd_release(&ar);
   return out;
 }
 
