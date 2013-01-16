@@ -24,6 +24,10 @@ static void oom(void) {
   jd_die("Out of memory");
 }
 
+static void notnull(void *v) {
+  if (!v) jd_die("Null pointer");
+}
+
 void *jd_alloc(size_t sz) {
   void *m = jd_alloc_hook(sz);
   if (!m) oom();
@@ -37,6 +41,7 @@ void jd_free(void *m) {
 
 void jd_release(jd_var *v) {
   void *rc = NULL;
+  notnull(v);
   switch (v->type) {
   case VOID:
   case BOOL:
@@ -57,6 +62,7 @@ void jd_release(jd_var *v) {
 }
 
 void jd_retain(jd_var *v) {
+  notnull(v);
   switch (v->type) {
   case VOID:
   case BOOL:
@@ -282,6 +288,19 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
   jd_assign(out, &tmp);
   jd_release(&tmp);
   return out;
+}
+
+jd_var *jd_substr(jd_var *out, jd_var *v, int from, int len) {
+  jd_string_sub(jd_as_string(v), from, len, out);
+  return out;
+}
+
+int jd_find(jd_var *haystack, jd_var *needle, int pos) {
+  return jd_string_find(jd_as_string(haystack), needle, pos);
+}
+
+jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
+  return jd_string_split(jd_as_string(v), sep, out);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

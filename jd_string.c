@@ -131,5 +131,59 @@ jd_string *jd_string_printf(jd_string *jds, const char *fmt, ...) {
   return jds;
 }
 
+jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {
+  size_t sl = jd_string_length(jds);
+  jd_string *jo;
+
+  if (from < 0) from += sl;
+  if (len <= 0 || from < 0 || from >= sl) {
+    jd_set_string(out, "");
+    return out;
+  }
+  if (from + len > sl) len = sl - from;
+  jd_set_empty_string(out, len + 1);
+  jo = jd_as_string(out);
+  memcpy(jo->data, jds->data + from, len);
+  jo->data[len] = '\0';
+  jo->used = len + 1;
+  return out;
+}
+
+static const char *memfind(const char *haystack, size_t hslen,
+                           const char *needle, size_t nlen) {
+  const char *hsend = haystack + hslen - nlen;
+
+  while (haystack <= hsend) {
+    if (memcmp(haystack, needle, nlen) == 0) return haystack;
+    haystack++;
+  }
+
+  return NULL;
+}
+
+int jd_string_find(jd_string *jds, jd_var *pat, int from) {
+  jd_string *ps = jd_as_string(pat);
+  size_t sl = jd_string_length(jds);
+  size_t pl = jd_string_length(ps);
+  if (from < 0) from += sl;
+  if (from < 0 || from + pl > sl) return -1;
+  const char *hit = memfind(jds->data + from, sl - from, ps->data, pl);
+  if (hit) return hit - jds->data;
+  return -1;
+}
+
+jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out) {
+  int pos;
+  jd_set_array(out, 10);
+  for (pos = 0; ;) {
+    int hit = jd_string_find(jds, pat, pos);
+    if (hit == -1) break;
+    jd_string_sub(jds, pos, hit - pos, jd_push(out, 1));
+    pos = hit + 1;
+  }
+  jd_string_sub(jds, pos, jd_string_length(jds) - pos, jd_push(out, 1));
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

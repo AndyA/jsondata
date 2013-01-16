@@ -67,6 +67,10 @@ struct _jd_hash_bucket {
   struct _jd_hash_bucket *next;
 };
 
+typedef struct {
+  /* TODO */
+} jd_context;
+
 #define JD_INIT { .type = VOID }
 
 extern void *(*jd_alloc_hook)(size_t);
@@ -108,6 +112,13 @@ unsigned long jd_hashcalc(jd_var *v);
 jd_var *jd_keys(jd_var *v, jd_var *keys);
 jd_var *jd_printf(jd_var *v, const char *fmt, ...);
 jd_var *jd_stringify(jd_var *out, jd_var *v);
+jd_var *jd_substr(jd_var *out, jd_var *v, int from, int len);
+int jd_find(jd_var *haystack, jd_var *needle, int pos);
+jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep);
+
+jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify);
+jd_var *jd_lv(jd_var *root, const char *path);
+jd_var *jd_rv(jd_var *root, const char *path);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);
 jd_string *jd_string_new(size_t size);
@@ -124,6 +135,9 @@ int jd_string_compare(jd_string *jds, jd_var *v);
 unsigned long jd_string_hashcalc(jd_string *jds);
 jd_string *jd_string_vprintf(jd_string *jds, const char *fmt, va_list ap);
 jd_string *jd_string_printf(jd_string *jds, const char *fmt, ...);
+jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out);
+int jd_string_find(jd_string *jds, jd_var *pat, int from);
+jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
