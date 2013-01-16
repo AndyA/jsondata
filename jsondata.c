@@ -316,7 +316,7 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
   return jd_string_split(jd_as_string(v), sep, out);
 }
 
-#define JD_CAST(vtype, name) \
+#define CAST(vtype, name) \
   vtype name(jd_var *v) {                   \
     jd_var tmp = JD_INIT;                   \
     vtype rv;                               \
@@ -341,8 +341,8 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
     return rv;                              \
   }
 
-JD_CAST(jd_int, jd_get_int)
-JD_CAST(double, jd_get_real)
+CAST(jd_int, jd_get_int)
+CAST(double, jd_get_real)
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
