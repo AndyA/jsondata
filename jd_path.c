@@ -40,7 +40,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify) 
   jd_assign(jd_get_key(&wrap, &dollar, 1), root);
 
   ptr = &wrap;
-  while (jd_shift(&part, 1, &elt)) {
+  while (ptr && jd_shift(&part, 1, &elt)) {
     if (ptr->type == VOID) {
       /* empty slot: type depends on key format */
       if (is_positive_int(&elt))
@@ -54,8 +54,12 @@ jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify) 
       jd_int ix = jd_get_int(&elt);
       if (ix == ac && vivify)
         ptr = jd_push(ptr, 1);
-      else
+      else if (ix < ac)
         ptr = jd_get_idx(ptr, ix);
+      else {
+        ptr = NULL;
+        break;
+      }
     }
     else if (ptr->type == HASH) {
       ptr = jd_get_key(ptr, &elt, vivify);
