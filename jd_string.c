@@ -220,5 +220,10 @@ jd_var *jd_string_numify(jd_string *jds, jd_var *out) {
   return NULL;
 }
 
+const char *jd_string_bytes(jd_string *jds, size_t *sp) {
+  if (sp) *sp = jds->used;
+  return jds->data;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

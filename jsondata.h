@@ -125,6 +125,7 @@ jd_var *jd_lv(jd_var *root, const char *path);
 jd_var *jd_rv(jd_var *root, const char *path);
 
 jd_var *jd_to_json(jd_var *out, jd_var *v);
+const char *jd_bytes(jd_var *v, size_t *sp);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);
 jd_string *jd_string_new(size_t size);
@@ -145,6 +146,7 @@ jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out);
 int jd_string_find(jd_string *jds, jd_var *pat, int from);
 jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out);
 jd_var *jd_string_numify(jd_string *jds, jd_var *out);
+const char *jd_string_bytes(jd_string *jds, size_t *sp);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
