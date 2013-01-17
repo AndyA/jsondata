@@ -89,6 +89,14 @@ jd_string *jd_string_append(jd_string *jds, jd_var *v) {
   return jds;
 }
 
+jd_string *jd_string_append_bytes(jd_string *jds, const void *b, size_t size) {
+  jd_string_space(jds, size);
+  memcpy(jds->data + jds->used - 1, b, size);
+  jds->used += size;
+  jds->data[jds->used - 1] = '\0';
+  return jds;
+}
+
 int jd_string_compare(jd_string *jds, jd_var *v) {
   jd_string *vs = jd_as_string(v);
   size_t la = jd_string_length(jds);

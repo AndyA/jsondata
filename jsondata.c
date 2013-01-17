@@ -178,6 +178,11 @@ jd_var *jd_append(jd_var *v, jd_var *v2) {
   return v;
 }
 
+jd_var *jd_append_bytes(jd_var *v, const void *b, size_t size) {
+  jd_string_append_bytes(jd_as_string(v), b, size);
+  return v;
+}
+
 size_t jd_count(jd_var *v) {
   switch (v->type) {
   case ARRAY:
