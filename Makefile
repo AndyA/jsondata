@@ -1,4 +1,4 @@
-.PHONY: all clean tags install version test
+.PHONY: all clean tags install version test valgrind
 
 include common.mk
 
@@ -41,7 +41,10 @@ version:
 	perl tools/bump_version.pl VERSION
 
 test: $(LIB)
-	cd t && $(MAKE) test
+	$(MAKE) -C t test
+
+valgrind: $(LIB)
+	$(MAKE) -C t valgrind
 
 install: $(BINS)
 	touch VERSION

@@ -1,4 +1,4 @@
-.PHONY: test
+.PHONY: test valgrind
 
 include ../common.mk
 
@@ -35,3 +35,7 @@ clean:
 
 test: $(TESTBIN)
 	prove -e '' $(addprefix ./,$(TESTBIN))
+
+valgrind: $(TESTBIN)
+	prove -e 'valgrind -q' $(addprefix ./,$(TESTBIN))
+
