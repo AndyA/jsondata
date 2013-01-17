@@ -120,13 +120,14 @@ jd_var *jd_numify(jd_var *out, jd_var *v);
 jd_int jd_get_int(jd_var *v);
 double jd_get_real(jd_var *v);
 jd_var *jd_sort(jd_var *v);
+const char *jd_bytes(jd_var *v, size_t *sp);
 
 jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path);
 jd_var *jd_rv(jd_var *root, const char *path);
 
 jd_var *jd_to_json(jd_var *out, jd_var *v);
-const char *jd_bytes(jd_var *v, size_t *sp);
+jd_var *jd_from_json(jd_var *out, jd_var *json);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);
 jd_string *jd_string_new(size_t size);

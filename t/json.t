@@ -5,9 +5,10 @@
 
 #include "util.h"
 #include "tap.h"
+#include "jd_test.h"
 #include "jsondata.h"
 
-void test_main(void) {
+static void test_to_json(void) {
   jd_var vin = JD_INIT, vout = JD_INIT, vwant = JD_INIT;
 
   jd_set_array(&vin, 1);
@@ -30,6 +31,45 @@ void test_main(void) {
   jd_release(&vin);
   jd_release(&vout);
   jd_release(&vwant);
+}
+
+static void check_from_json(const char *json) {
+  jd_var vin = JD_INIT, vout = JD_INIT;
+
+  jd_set_string(&vin, json);
+  jd_from_json(&vout, &vin);
+
+  jdt_is_json(&vout, json, "parse %s", json);
+
+  jd_release(&vin);
+  jd_release(&vout);
+}
+
+static void test_from_json(void) {
+  int i;
+  static const char *json[] = {
+    "[]",
+    "\"foo\"",
+    "{}",
+    "[[],[]]",
+    "[\"foo\",\"bar\"]",
+    "{\"a\":\"b\"}",
+    "{\"a\":{}}",
+    "{\"a\":{},\"b\":{}}",
+    "true",
+    "false",
+    "null",
+    "[1,1.25,null,false,\"foo\",{\"k\":-1}]",
+    NULL
+  };
+
+  for (i = 0; json[i]; i++)
+    check_from_json(json[i]);
+}
+
+void test_main(void) {
+  test_to_json();
+  test_from_json();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
