@@ -167,5 +167,21 @@ jd_array *jd_array_sort(jd_array *jda) {
   return jda;
 }
 
+jd_var *jd_array_clone(jd_var *out, jd_array *jda, int deep) {
+  size_t count = jd_array_count(jda);
+  jd_var *slot;
+  unsigned i;
+
+  jd_set_array(out, count);
+  slot = jd_push(out, count);
+
+  for (i = 0; i < count; i++) {
+    if (deep) jd_clone(slot++, ELT(jda, i), 1);
+    else jd_assign(slot++, ELT(jda, i));
+  }
+
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

@@ -98,5 +98,26 @@ jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys) {
   return keys;
 }
 
+jd_var *jd_hash_merge(jd_var *out, jd_hash *jdh, int deep) {
+  unsigned i;
+  size_t count = jd_hash_count(jdh);
+  jd_var keys = JD_INIT;
+
+  jd_hash_keys(jdh, &keys);
+  for (i = 0; i < count; i++) {
+    jd_var *k = jd_get_idx(&keys, i);
+    if (deep) jd_clone(jd_get_key(out, k, 1), jd_hash_get(jdh, k, 0), 1);
+    else jd_assign(jd_get_key(out, k, 1), jd_hash_get(jdh, k, 0));
+  }
+
+  jd_release(&keys);
+  return out;
+}
+
+jd_var *jd_hash_clone(jd_var *out, jd_hash *jdh, int deep) {
+  jd_set_hash(out, jd_hash_count(jdh));
+  return jd_hash_merge(out, jdh, deep);
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

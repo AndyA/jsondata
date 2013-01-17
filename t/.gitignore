@@ -2,6 +2,7 @@
 /*.o
 /array
 /basic
+/clone
 /core
 /hash
 /json

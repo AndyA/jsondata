@@ -1,4 +1,4 @@
-/* path.t */
+/* json.t */
 
 #include <stdio.h>
 #include <string.h>

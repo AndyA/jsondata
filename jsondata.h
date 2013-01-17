@@ -121,6 +121,8 @@ jd_int jd_get_int(jd_var *v);
 double jd_get_real(jd_var *v);
 jd_var *jd_sort(jd_var *v);
 const char *jd_bytes(jd_var *v, size_t *sp);
+jd_var *jd_merge(jd_var *out, jd_var *v, int deep);
+jd_var *jd_clone(jd_var *out, jd_var *v, int deep);
 
 jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path);
@@ -166,6 +168,7 @@ jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda);
 jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v);
 jd_array *jd_array_append(jd_array *jda, jd_var *v);
 jd_array *jd_array_sort(jd_array *jda);
+jd_var *jd_array_clone(jd_var *out, jd_array *jda, int deep);
 
 jd_hash *jd_hash_new(size_t size);
 jd_hash *jd_hash_retain(jd_hash *jdh);
@@ -174,6 +177,8 @@ size_t jd_hash_count(jd_hash *jdh);
 jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify);
 int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot);
 jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys);
+jd_var *jd_hash_merge(jd_var *out, jd_hash *jdh, int deep);
+jd_var *jd_hash_clone(jd_var *out, jd_hash *jdh, int deep);
 
 #endif
 

@@ -359,5 +359,28 @@ const char *jd_bytes(jd_var *v, size_t *sp) {
   return jd_string_bytes(jd_as_string(v), sp);
 }
 
+jd_var *jd_merge(jd_var *out, jd_var *v, int deep) {
+  jd_hash_merge(out, jd_as_hash(v), deep);
+  return out;
+}
+
+jd_var *jd_clone(jd_var *out, jd_var *v, int deep) {
+  switch (v->type) {
+  case VOID:
+  case BOOL:
+  case INTEGER:
+  case REAL:
+    *out = *v;
+    return out;
+  case STRING:
+    return jd_substr(out, v, 0, jd_length(v));
+  case ARRAY:
+    return jd_array_clone(out, jd_as_array(v), deep);
+  case HASH:
+    return jd_hash_clone(out, jd_as_hash(v), deep);
+  }
+  return NULL;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
