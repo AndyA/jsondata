@@ -17,6 +17,7 @@ jd_string *jd_string_init(jd_string *jds, size_t size) {
 
 jd_string *jd_string_new(size_t size) {
   jd_string *jds = jd_alloc(sizeof(jd_string));
+  if (size == 0) size = 1;
   jd_string_init(jds, size);
   jds->used = 1; /* trailing \0 */
   return jds;

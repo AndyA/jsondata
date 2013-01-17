@@ -23,6 +23,7 @@ static int is_positive_int(jd_var *v) {
 jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify) {
   jd_var part = JD_INIT, wrap = JD_INIT, dollar = JD_INIT, elt = JD_INIT;
   jd_var *ptr;
+  unsigned depth = 0;
 
   if (path->type == ARRAY) {
     jd_assign(&part, path);
@@ -64,6 +65,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify) 
     else if (ptr->type == HASH) {
       ptr = jd_get_key(ptr, &elt, vivify);
     }
+    depth++;
   }
 
   jd_release(&part);
@@ -71,7 +73,18 @@ jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify) 
   jd_release(&dollar);
   jd_release(&elt);
 
-  return ptr;
+  /* Hack: depth 0 means empty path, depth 1 means root - so don't
+   * return a pointer to the innards of wrap. Anything else is inside
+   * the structure and safe to return directly. 
+   */
+  switch (depth) {
+  case 0:
+    return NULL;
+  case 1:
+    return root;
+  default:
+    return ptr;
+  }
 }
 
 static jd_var *getter(jd_var *root, const char *path, int vivify) {
