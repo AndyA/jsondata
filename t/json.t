@@ -48,6 +48,7 @@ static void check_from_json(const char *json) {
 static void test_from_json(void) {
   int i;
   static const char *json[] = {
+    "\"\\u00FF\"",
     "[]",
     "\"foo\"",
     "{}",
@@ -60,6 +61,10 @@ static void test_from_json(void) {
     "false",
     "null",
     "[1,1.25,null,false,\"foo\",{\"k\":-1}]",
+    "\"\\\"\\\"\"",
+    "\"\\b\\t\\n\\f\\r\\\\\\\"\"",
+    "\"\\b\\t\\n\\f\\r\\\\\\\"\\u00FF\"",
+    "\"\\b\\t\\n\\f\\r\\\\\\\"\\u00FFFF\"",
     NULL
   };
 
