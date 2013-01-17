@@ -1,5 +1,6 @@
 /* jd_array.c */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "jsondata.h"
@@ -155,6 +156,15 @@ jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v) {
 
 jd_array *jd_array_append(jd_array *jda, jd_var *v) {
   return jd_array_splice(jda, jd_array_count(jda), v);
+}
+
+static int cmp(const void *a, const void *b) {
+  return jd_compare((jd_var *) a, (jd_var *) b);
+}
+
+jd_array *jd_array_sort(jd_array *jda) {
+  qsort(jda->s.data, jd_array_count(jda), sizeof(jd_var), cmp);
+  return jda;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

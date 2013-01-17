@@ -53,20 +53,13 @@ static void prefix(void) {
   }
 }
 
-static void test(int flag, const char *msg, va_list ap) {
+int test(int flag, const char *msg, va_list ap) {
   printf("%sok %d - ", flag ? "" : "not ", ++test_no);
   prefix();
   vprintf(msg, ap);
   printf("\n");
+  return flag;
 }
-
-#define TF(flag) \
-  va_list ap;          \
-  int _c = (flag);     \
-  va_start( ap, msg ); \
-  test( _c, msg, ap ); \
-  va_end( ap );        \
-  return _c;
 
 int ok(int flag, const char *msg, ...) {
   TF(flag);

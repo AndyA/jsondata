@@ -5,6 +5,7 @@
 
 #include "util.h"
 #include "tap.h"
+#include "jd_test.h"
 #include "jsondata.h"
 
 static void check_ar(jd_var *ar, const char *expect, const char *test) {
@@ -17,6 +18,26 @@ static void check_ar(jd_var *ar, const char *expect, const char *test) {
   }
   jd_release(&all);
   jd_release(&sep);
+}
+
+static void test_sort(void) {
+  jd_var ar = JD_INIT;
+
+  jd_set_array(&ar, 10);
+  jd_set_string(jd_push(&ar, 1), "Xylo");
+  jd_set_string(jd_push(&ar, 1), "Glape");
+  jd_set_string(jd_push(&ar, 1), "Cunic");
+  jd_set_string(jd_push(&ar, 1), "Freeeb");
+  jd_set_string(jd_push(&ar, 1), "Aardvark");
+
+  jd_sort(&ar);
+
+  jdt_is_json(&ar,
+              "[\"Aardvark\",\"Cunic\",\"Freeeb\",\"Glape\",\"Xylo\"]",
+              "string sort");
+
+  jd_release(&ar);
+
 }
 
 static void test_join(void) {
@@ -88,6 +109,7 @@ static void test_basic(void) {
 void test_main(void) {
   test_basic();
   test_join();
+  test_sort();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

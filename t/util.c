@@ -61,7 +61,6 @@ static size_t get_leaks(unsigned *count) {
   return sz;
 }
 
-
 static void hook_alloc(void) {
   jd_alloc_hook = t_alloc;
   jd_free_hook = t_free;

@@ -35,6 +35,7 @@ static void to_json_hash(jd_var *out, jd_var *ha) {
   unsigned i;
 
   jd_keys(ha, &keys);
+  jd_sort(&keys);
   count = jd_count(&keys);
   jd_set_string(&sep, "");
   jd_set_array(&tmp, count * 4);

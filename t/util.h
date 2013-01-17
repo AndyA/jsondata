@@ -3,6 +3,8 @@
 #ifndef __UTIL_H
 #define __UTIL_H
 
+#include "jsondata.h"
+
 void test_init(void);
 void test_done(void);
 

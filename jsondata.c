@@ -230,6 +230,7 @@ int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
 }
 
 int jd_compare(jd_var *a, jd_var *b) {
+  if (b->type != a->type) return a->type - b->type;
   switch (a->type) {
   case STRING:
     return jd_string_compare(jd_as_string(a), b);
@@ -343,6 +344,11 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
 
 CAST(jd_int, jd_get_int)
 CAST(double, jd_get_real)
+
+jd_var *jd_sort(jd_var *v) {
+  jd_array_sort(jd_as_array(v));
+  return v;
+}
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

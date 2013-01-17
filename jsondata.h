@@ -118,6 +118,7 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep);
 jd_var *jd_numify(jd_var *out, jd_var *v);
 jd_int jd_get_int(jd_var *v);
 double jd_get_real(jd_var *v);
+jd_var *jd_sort(jd_var *v);
 
 jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path);
@@ -159,6 +160,7 @@ jd_var *jd_array_get(jd_array *jda, int idx);
 jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda);
 jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v);
 jd_array *jd_array_append(jd_array *jda, jd_var *v);
+jd_array *jd_array_sort(jd_array *jda);
 
 jd_hash *jd_hash_new(size_t size);
 jd_hash *jd_hash_retain(jd_hash *jdh);
