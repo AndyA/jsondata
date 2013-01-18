@@ -128,6 +128,7 @@ jd_var *jd_lv(jd_var *root, const char *path);
 jd_var *jd_rv(jd_var *root, const char *path);
 
 jd_var *jd_to_json(jd_var *out, jd_var *v);
+jd_var *jd_to_json_pretty(jd_var *out, jd_var *v);
 jd_var *jd_from_json(jd_var *out, jd_var *json);
 
 jd_string *jd_string_init(jd_string *jds, size_t size);

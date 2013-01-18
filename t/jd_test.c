@@ -6,7 +6,7 @@
 
 void jdt_dump(const char *label, jd_var *v) {
   jd_var json = JD_INIT;
-  jd_to_json(&json, v);
+  jd_to_json_pretty(&json, v);
   diag("%s: %s", label, jd_bytes(&json, NULL));
   jd_release(&json);
 }

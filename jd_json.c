@@ -7,6 +7,13 @@
 
 #include "jsondata.h"
 
+struct json_opt {
+  int pretty;
+  int pad;
+};
+
+static void to_json_flat(jd_var *out, jd_var *v, struct json_opt *opt, int depth);
+
 #define NEED_ESCAPE(c) \
   ((c) < ' ' || (c) >= 0x7f || (c) == '"' || (c) == '\\')
 
@@ -57,33 +64,49 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
   return out;
 }
 
-static void to_json_string(jd_var *out, jd_var *str) {
+static void pad(jd_var *out, struct json_opt *opt, int depth) {
+  if (opt->pretty && depth > 0) {
+    jd_var tab = JD_INIT;
+    size_t len = depth * opt->pad;
+    const char *spc = " ";
+    unsigned i;
+    jd_set_string(&tab, "\n");
+    for (i = 0; i < len; i++) jd_append_bytes(&tab, spc, 1);
+    jd_assign(jd_push(out, 1), &tab);
+    jd_release(&tab);
+  }
+}
+
+static void to_json_string(jd_var *out, jd_var *str, struct json_opt *opt, int depth) {
   jd_set_string(jd_push(out, 1), "\"");
   escape_string(jd_push(out, 1), str);
   jd_set_string(jd_push(out, 1), "\"");
 }
 
-static void to_json_array(jd_var *out, jd_var *ar) {
+static void to_json_array(jd_var *out, jd_var *ar, struct json_opt *opt, int depth) {
   jd_var tmp = JD_INIT, sep = JD_INIT;
   unsigned i;
   size_t count = jd_count(ar);
 
-  jd_set_string(&sep, ",");
+  jd_set_string(&sep, "");
   jd_set_array(&tmp, count);
 
   for (i = 0; i < count; i++) {
-    jd_to_json(jd_push(&tmp, 1), jd_get_idx(ar, i));
+    if (i) jd_set_string(jd_push(&tmp, 1), ",");
+    pad(&tmp, opt, depth + 1);
+    to_json_flat(jd_push(&tmp, 1), jd_get_idx(ar, i), opt, depth + 1);
   }
 
   jd_set_string(jd_push(out, 1), "[");
   jd_join(jd_push(out, 1), &sep, &tmp);
+  pad(out, opt, depth);
   jd_set_string(jd_push(out, 1), "]");
 
   jd_release(&sep);
   jd_release(&tmp);
 }
 
-static void to_json_hash(jd_var *out, jd_var *ha) {
+static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int depth) {
   jd_var tmp = JD_INIT, sep = JD_INIT;
   jd_var keys = JD_INIT;
   size_t count;
@@ -98,13 +121,15 @@ static void to_json_hash(jd_var *out, jd_var *ha) {
   for (i = 0; i < count; i++) {
     jd_var *k = jd_get_idx(&keys, i);
     if (i) jd_set_string(jd_push(&tmp, 1), ",");
-    jd_to_json(jd_push(&tmp, 1), k);
-    jd_set_string(jd_push(&tmp, 1), ":");
-    jd_to_json(jd_push(&tmp, 1), jd_get_key(ha, k, 0));
+    pad(&tmp, opt, depth + 1);
+    to_json_flat(jd_push(&tmp, 1), k, opt, depth + 1);
+    jd_set_string(jd_push(&tmp, 1), opt->pretty ? ": " : ":");
+    to_json_flat(jd_push(&tmp, 1), jd_get_key(ha, k, 0), opt, depth + 1);
   }
 
   jd_set_string(jd_push(out, 1), "{");
   jd_join(jd_push(out, 1), &sep, &tmp);
+  pad(out, opt, depth);
   jd_set_string(jd_push(out, 1), "}");
 
   jd_release(&sep);
@@ -112,16 +137,16 @@ static void to_json_hash(jd_var *out, jd_var *ha) {
   jd_release(&keys);
 }
 
-static void to_json(jd_var *out, jd_var *v) {
+static void to_json(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
   switch (v->type) {
   case STRING:
-    to_json_string(out, v);
+    to_json_string(out, v, opt, depth);
     break;
   case ARRAY:
-    to_json_array(out, v);
+    to_json_array(out, v, opt, depth);
     break;
   case HASH:
-    to_json_hash(out, v);
+    to_json_hash(out, v, opt, depth);
     break;
   default:
     jd_stringify(jd_push(out, 1), v);
@@ -129,14 +154,29 @@ static void to_json(jd_var *out, jd_var *v) {
   }
 }
 
-jd_var *jd_to_json(jd_var *out, jd_var *v) {
+static void to_json_flat(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
   jd_var tmp = JD_INIT, sep = JD_INIT;
   jd_set_array(&tmp, 1);
   jd_set_string(&sep, "");
-  to_json(&tmp, v);
+  to_json(&tmp, v, opt, depth);
   jd_join(out, &sep, &tmp);
   jd_release(&sep);
   jd_release(&tmp);
+}
+
+jd_var *jd_to_json_pretty(jd_var *out, jd_var *v) {
+  struct json_opt opt;
+  opt.pretty = 1;
+  opt.pad = 2;
+  to_json_flat(out, v, &opt, 0);
+  return out;
+}
+
+jd_var *jd_to_json(jd_var *out, jd_var *v) {
+  struct json_opt opt;
+  opt.pretty = 0;
+  opt.pad = 0;
+  to_json_flat(out, v, &opt, 0);
   return out;
 }
 
