@@ -8,7 +8,7 @@
 #include "jsondata.h"
 
 #define NEED_ESCAPE(c) \
-  ((c) < ' ' || (c) == 0x7f || (c) == '"' || (c) == '\\')
+  ((c) < ' ' || (c) >= 0x7f || (c) == '"' || (c) == '\\')
 
 static jd_var *escape_string(jd_var *out, jd_var *str) {
   size_t sz;
