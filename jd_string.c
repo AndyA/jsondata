@@ -142,6 +142,7 @@ jd_string *jd_string_printf(jd_string *jds, const char *fmt, ...) {
 }
 
 jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {
+  jd_var tmp = JD_INIT;
   size_t sl = jd_string_length(jds);
   jd_string *jo;
 
@@ -151,11 +152,13 @@ jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {
     return out;
   }
   if (from + len > sl) len = sl - from;
-  jd_set_empty_string(out, len + 1);
-  jo = jd_as_string(out);
+  jd_set_empty_string(&tmp, len + 1);
+  jo = jd_as_string(&tmp);
   memcpy(jo->data, jds->data + from, len);
   jo->data[len] = '\0';
   jo->used = len + 1;
+  jd_assign(out, &tmp);
+  jd_release(&tmp);
   return out;
 }
 

@@ -135,6 +135,16 @@ static void test_trim(void) {
   jd_trim(&out, &str);
   jdt_is_json(&out, "\"TRIM THIS\"", "trim (nop)");
 
+  jd_set_string(&str, "");
+  jd_ltrim(&out, &str);
+  jdt_is_json(&out, "\"\"", "ltrim empty");
+
+  jd_rtrim(&out, &str);
+  jdt_is_json(&out, "\"\"", "rtrim empty");
+
+  jd_trim(&out, &str);
+  jdt_is_json(&out, "\"\"", "trim empty");
+
   jd_release(&str);
   jd_release(&out);
 }
