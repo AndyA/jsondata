@@ -94,7 +94,7 @@ jd_string *jd_as_string(jd_var *v);
 jd_array *jd_as_array(jd_var *v);
 jd_hash *jd_as_hash(jd_var *v);
 jd_var *jd_insert(jd_var *v, int idx, size_t count);
-size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot);
+size_t jd_remove(jd_var *v, int idx, size_t count, jd_var *slot);
 jd_var *jd_push(jd_var *v, size_t count);
 size_t jd_pop(jd_var *v, size_t count, jd_var *slot);
 jd_var *jd_unshift(jd_var *v, size_t count);
