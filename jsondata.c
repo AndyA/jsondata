@@ -2,6 +2,7 @@
 
 #include "jsondata.h"
 
+#include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -380,6 +381,31 @@ jd_var *jd_clone(jd_var *out, jd_var *v, int deep) {
     return jd_hash_clone(out, jd_as_hash(v), deep);
   }
   return NULL;
+}
+
+static jd_var *subref(jd_var *out, jd_var *v, int from, int len) {
+  if (from == 0 && len == jd_length(v)) return jd_assign(out, v);
+  return jd_substr(out, v, from, len);
+}
+
+jd_var *jd_ltrim(jd_var *out, jd_var *v) {
+  size_t size;
+  const char *buf = jd_bytes(v, &size);
+  unsigned i;
+  for (i = 0; i < size && isspace(buf[i]); i++) ;
+  return subref(out, v, i, size - 1 - i);
+}
+
+jd_var *jd_rtrim(jd_var *out, jd_var *v) {
+  size_t size;
+  const char *buf = jd_bytes(v, &size);
+  unsigned i;
+  for (i = size - 1; i > 0 && isspace(buf[i - 1]); i--) ;
+  return subref(out, v, 0, i);
+}
+
+jd_var *jd_trim(jd_var *out, jd_var *v) {
+  return jd_ltrim(out, jd_rtrim(out, v));
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

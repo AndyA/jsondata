@@ -118,6 +118,27 @@ static void test_bytes(void) {
   jd_release(&v1);
 }
 
+static void test_trim(void) {
+  jd_var str = JD_INIT, out = JD_INIT;
+
+  jd_set_string(&str, "\n\t TRIM THIS\n\n");
+  jd_ltrim(&out, &str);
+  jdt_is_json(&out, "\"TRIM THIS\\n\\n\"", "ltrim");
+
+  jd_rtrim(&out, &str);
+  jdt_is_json(&out, "\"\\n\\t TRIM THIS\"", "rtrim");
+
+  jd_trim(&out, &str);
+  jdt_is_json(&out, "\"TRIM THIS\"", "trim");
+
+  jd_set_string(&str, "TRIM THIS");
+  jd_trim(&out, &str);
+  jdt_is_json(&out, "\"TRIM THIS\"", "trim (nop)");
+
+  jd_release(&str);
+  jd_release(&out);
+}
+
 static void test_misc(void) {
   jd_var v1 = JD_INIT, v2 = JD_INIT;
   jd_set_string(&v1, "foo");
@@ -154,6 +175,7 @@ void test_main(void) {
   test_find();
   test_split();
   test_bytes();
+  test_trim();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

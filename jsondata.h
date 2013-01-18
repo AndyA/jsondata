@@ -122,6 +122,9 @@ jd_var *jd_sort(jd_var *v);
 const char *jd_bytes(jd_var *v, size_t *sp);
 jd_var *jd_merge(jd_var *out, jd_var *v, int deep);
 jd_var *jd_clone(jd_var *out, jd_var *v, int deep);
+jd_var *jd_ltrim(jd_var *out, jd_var *v);
+jd_var *jd_rtrim(jd_var *out, jd_var *v);
+jd_var *jd_trim(jd_var *out, jd_var *v);
 
 jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path);
