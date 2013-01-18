@@ -16,7 +16,7 @@ jd_hash *jd_hash_retain(jd_hash *jdh) {
   return jdh;
 }
 
-void jd_hash_free(jd_hash *jdh) {
+static void free_contents(jd_hash *jdh) {
   unsigned i;
   for (i = 0; i < jdh->size; i++) {
     jd_hash_bucket *b, *next;
@@ -28,6 +28,11 @@ void jd_hash_free(jd_hash *jdh) {
     }
   }
   jd_free(jdh->b);
+  jdh->b = NULL;
+}
+
+void jd_hash_free(jd_hash *jdh) {
+  free_contents(jdh);
   jd_free(jdh);
 }
 
@@ -65,8 +70,39 @@ jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify) {
     jd_assign(&b->key, key);
     *prev = b;
     jdh->used++;
+    /* conditional rehash; if we rehash we have to find the key again */
+    if (jd_hash_maint(jdh))
+      b = hash_find(jdh, key, &prev);
   }
   return &b->value;
+}
+
+jd_hash *jd_hash_rehash(jd_hash *jdh) {
+  size_t count = jd_hash_count(jdh);
+  jd_hash *tmp = jd_hash_new(count * 2);
+  unsigned i;
+
+  for (i = 0; i < jdh->size; i++) {
+    jd_hash_bucket *b;
+    for (b = jdh->b[i]; b; b = b->next) {
+      jd_assign(jd_hash_get(tmp, &b->key, 1), &b->value);
+    }
+  }
+
+  free_contents(jdh);
+  jdh->b = tmp->b;
+  jdh->size = tmp->size;
+  jd_free(tmp);
+
+  return jdh;
+}
+
+int jd_hash_maint(jd_hash *jdh) {
+  if (jdh->used > jdh->size / 2) {
+    jd_hash_rehash(jdh);
+    return 1;
+  }
+  return 0;
 }
 
 int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot) {

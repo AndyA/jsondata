@@ -179,6 +179,8 @@ int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot);
 jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys);
 jd_var *jd_hash_merge(jd_var *out, jd_hash *jdh, int deep);
 jd_var *jd_hash_clone(jd_var *out, jd_hash *jdh, int deep);
+jd_hash *jd_hash_rehash(jd_hash *jdh);
+int jd_hash_maint(jd_hash *jdh);
 
 #endif
 
