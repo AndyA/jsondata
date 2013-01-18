@@ -99,7 +99,6 @@ jd_var *jd_push(jd_var *v, size_t count);
 size_t jd_pop(jd_var *v, size_t count, jd_var *slot);
 jd_var *jd_unshift(jd_var *v, size_t count);
 size_t jd_shift(jd_var *v, size_t count, jd_var *slot);
-size_t jd_array_pop(jd_array *jda, size_t count, jd_var *slot);
 jd_var *jd_get_idx(jd_var *v, int idx);
 jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify);
 int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot);
