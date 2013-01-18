@@ -1,0 +1,232 @@
+{
+   "config" : {
+      "deployers" : {
+         "s3" : {
+            "live" : {
+               "bucket" : "thespace-media-live",
+               "config" : "/home/andy/.s3/the-space-live.ini",
+               "profile" : "default"
+            },
+            "test" : {}
+         }
+      },
+      "packagers" : {
+         "default" : {
+            "webroot" : "webroot/live/hls"
+         }
+      },
+      "paths" : {
+         "tmp" : "/opt/newstream/tmp"
+      },
+      "profiles" : {
+         "config" : {
+            "pc" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p50",
+                  "p30",
+                  "p40",
+                  "p60",
+                  "p70"
+               ]
+            },
+            "pc_hd" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p50",
+                  "p30",
+                  "p40",
+                  "p60",
+                  "p70",
+                  "p80"
+               ]
+            },
+            "pc_hd_lite" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p60",
+                  "p40",
+                  "p80"
+               ]
+            },
+            "pc_lite" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p50",
+                  "p30",
+                  "p70"
+               ]
+            },
+            "thumbnail" : {
+               "encodes" : [
+                  "t10"
+               ]
+            }
+         },
+         "encodes" : {
+            "p10" : {
+               "a" : {
+                  "bitrate" : 24000,
+                  "profile" : "aac_he",
+                  "rate" : 22050
+               },
+               "v" : {
+                  "bitrate" : 32000,
+                  "height" : 126,
+                  "profile" : "baseline",
+                  "rate" : 5,
+                  "width" : 224
+               }
+            },
+            "p20" : {
+               "a" : {
+                  "bitrate" : 48000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 128000,
+                  "height" : 224,
+                  "level" : 3,
+                  "profile" : "baseline",
+                  "rate" : 12.5,
+                  "width" : 400
+               }
+            },
+            "p30" : {
+               "a" : {
+                  "bitrate" : 64000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 304000,
+                  "height" : 224,
+                  "level" : 3,
+                  "profile" : "baseline",
+                  "rate" : 25,
+                  "width" : 400
+               }
+            },
+            "p40" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 400000,
+                  "height" : 288,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 512
+               }
+            },
+            "p50" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 700000,
+                  "height" : 360,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 640
+               }
+            },
+            "p60" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 1200000,
+                  "height" : 396,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 704
+               }
+            },
+            "p70" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 2016000,
+                  "height" : 576,
+                  "level" : 3.1,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 1024
+               }
+            },
+            "p80" : {
+               "a" : {
+                  "bitrate" : 128000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 3372000,
+                  "height" : 720,
+                  "level" : 4,
+                  "profile" : "high",
+                  "rate" : 25,
+                  "width" : 1280
+               }
+            },
+            "p90" : {
+               "a" : {
+                  "bitrate" : 192000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 5100000,
+                  "height" : 1080,
+                  "level" : 4,
+                  "profile" : "high",
+                  "rate" : 25,
+                  "width" : 1920
+               }
+            },
+            "t10" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_he",
+                  "rate" : 22050
+               },
+               "v" : {
+                  "bitrate" : 200000,
+                  "height" : 126,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 224
+               }
+            }
+         }
+      },
+      "uri" : {
+         "crtmpserver" : "http://localhost:6502",
+         "home" : "http://thespace.org",
+         "rtmp_stream" : "rtmp://newstream.fenkle/live/%s",
+         "rtsp_stream" : "rtsp://newstream.fenkle:5544/%s"
+      }
+   },
+   "fragments" : {
+      "web" : {}
+   },
+   "hls" : {
+      "web" : {}
+   },
+   "streams" : {}
+}
