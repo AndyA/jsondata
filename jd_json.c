@@ -65,7 +65,7 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
 }
 
 static void pad(jd_var *out, struct json_opt *opt, int depth) {
-  if (opt->pretty && depth > 0) {
+  if (opt->pretty) {
     jd_var tab = JD_INIT;
     size_t len = depth * opt->pad;
     const char *spc = " ";
