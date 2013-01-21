@@ -6,14 +6,13 @@
 #include "jsondata.h"
 
 #define BASE(jda) \
-  ((jd_var *)((jda)->s.data + (jda)->seek))
+  ((jd_var *)((jda)->s.data))
 #define ELT(jda, idx) \
   (BASE(jda) + (idx))
 
 jd_array *jd_array_new(size_t size) {
   jd_array *jda = jd_alloc(sizeof(jd_array));
   jd_string_init(&jda->s, size * sizeof(jd_var));
-  jda->seek = 0;
   return jda;
 }
 
@@ -55,7 +54,7 @@ jd_var *jd_array_get(jd_array *jda, int idx) {
 }
 
 size_t jd_array_count(jd_array *jda) {
-  return (jda->s.used - jda->seek) / sizeof(jd_var);
+  return jda->s.used / sizeof(jd_var);
 }
 
 jd_var *jd_array_insert(jd_array *jda, int idx, size_t count) {
@@ -79,12 +78,8 @@ size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot) {
       jd_assign(slot++, ELT(jda, ix + i));
   }
   release(jda, ix, count);
-  if (idx == 0)
-    jda->seek += count * sizeof(jd_var);
-  else {
-    memmove(ELT(jda, ix), ELT(jda, ix + count), (avail - count) * sizeof(jd_var));
-    jda->s.used -= count * sizeof(jd_var);
-  }
+  memmove(ELT(jda, ix), ELT(jda, ix + count), (avail - count) * sizeof(jd_var));
+  jda->s.used -= count * sizeof(jd_var);
 
   return count;
 }

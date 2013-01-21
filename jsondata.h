@@ -42,7 +42,6 @@ typedef struct {
 
 typedef struct {
   jd_string s;
-  size_t seek;
 } jd_array;
 
 typedef struct {
