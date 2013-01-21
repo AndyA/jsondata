@@ -15,11 +15,15 @@ typedef enum {
   REAL,
   STRING,
   ARRAY,
-  HASH
+  HASH,
+  CLOSURE
 } jd_type;
 
 typedef struct _jd_var jd_var;
 typedef struct _jd_hash_bucket jd_hash_bucket;
+typedef struct _jd_closure jd_closure;
+
+typedef int (*jd_closure_func)(jd_var *result, jd_var *context, jd_var *args);
 
 typedef struct {
   unsigned refs;
@@ -41,7 +45,6 @@ typedef struct {
   size_t seek;
 } jd_array;
 
-
 typedef struct {
   jd_ohdr hdr;
   size_t size;
@@ -58,7 +61,14 @@ struct _jd_var {
     jd_string *s;
     jd_array *a;
     jd_hash *h;
+    jd_closure *c;
   } v;
+};
+
+struct _jd_closure {
+  jd_ohdr hdr;
+  jd_var ctx;
+  jd_closure_func f;
 };
 
 struct _jd_hash_bucket {
@@ -69,7 +79,7 @@ struct _jd_hash_bucket {
 
 typedef struct {
   /* TODO */
-} jd_context;
+} jd_path_context;
 
 #define JD_INIT { .type = VOID }
 
@@ -86,6 +96,7 @@ jd_var *jd_set_string(jd_var *v, const char *s);
 jd_var *jd_set_empty_string(jd_var *v, size_t size);
 jd_var *jd_set_array(jd_var *v, size_t size);
 jd_var *jd_set_hash(jd_var *v, size_t size);
+jd_var *jd_set_closure(jd_var *v, jd_closure_func f);
 jd_var *jd_set_int(jd_var *v, jd_int i);
 jd_var *jd_set_real(jd_var *v, double r);
 jd_var *jd_set_bool(jd_var *v, int b);
@@ -93,6 +104,7 @@ jd_var *jd_set_void(jd_var *v);
 jd_string *jd_as_string(jd_var *v);
 jd_array *jd_as_array(jd_var *v);
 jd_hash *jd_as_hash(jd_var *v);
+jd_closure *jd_as_closure(jd_var *v);
 jd_var *jd_insert(jd_var *v, int idx, size_t count);
 size_t jd_remove(jd_var *v, int idx, size_t count, jd_var *slot);
 jd_var *jd_push(jd_var *v, size_t count);
@@ -126,7 +138,7 @@ jd_var *jd_ltrim(jd_var *out, jd_var *v);
 jd_var *jd_rtrim(jd_var *out, jd_var *v);
 jd_var *jd_trim(jd_var *out, jd_var *v);
 
-jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify);
+jd_var *jd_get_context(jd_var *root, jd_var *path, jd_path_context *ctx, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path);
 jd_var *jd_rv(jd_var *root, const char *path);
 
@@ -155,6 +167,9 @@ int jd_string_find(jd_string *jds, jd_var *pat, int from);
 jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out);
 jd_var *jd_string_numify(jd_string *jds, jd_var *out);
 const char *jd_string_bytes(jd_string *jds, size_t *sp);
+jd_var *jd_context(jd_var *v);
+jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg);
+void jd_call(jd_var *cl, jd_var *arg);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
@@ -184,6 +199,14 @@ jd_var *jd_hash_merge(jd_var *out, jd_hash *jdh, int deep);
 jd_var *jd_hash_clone(jd_var *out, jd_hash *jdh, int deep);
 jd_hash *jd_hash_rehash(jd_hash *jdh);
 int jd_hash_maint(jd_hash *jdh);
+
+jd_closure *jd_closure_new(jd_closure_func f);
+void jd_closure_free(jd_closure *jdc);
+jd_closure *jd_closure_retain(jd_closure *jdc);
+jd_closure *jd_closure_release(jd_closure *jdc);
+jd_var *jd_closure_clone(jd_var *out, jd_closure *jdc, int deep);
+jd_var *jd_closure_context(jd_closure *jdc);
+int jd_closure_call(jd_closure *jdc, jd_var *rv, jd_var *arg);
 
 #endif
 

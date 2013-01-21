@@ -58,6 +58,9 @@ void jd_release(jd_var *v) {
   case HASH:
     rc = jd_hash_release(v->v.h);
     break;
+  case CLOSURE:
+    rc = jd_closure_release(v->v.c);
+    break;
   }
   if (!rc) memset(v, 0, sizeof(*v));
 }
@@ -78,6 +81,9 @@ void jd_retain(jd_var *v) {
     break;
   case HASH:
     jd_hash_retain(v->v.h);
+    break;
+  case CLOSURE:
+    jd_closure_retain(v->v.c);
     break;
   }
 }
@@ -115,6 +121,13 @@ jd_var *jd_set_hash(jd_var *v, size_t size) {
   jd_release(v);
   v->type = HASH;
   v->v.h = jd_hash_new(size);
+  return v;
+}
+
+jd_var *jd_set_closure(jd_var *v, jd_closure_func f) {
+  jd_release(v);
+  v->type = CLOSURE;
+  v->v.c = jd_closure_new(f);
   return v;
 }
 
@@ -159,6 +172,11 @@ jd_array *jd_as_array(jd_var *v) {
 jd_hash *jd_as_hash(jd_var *v) {
   if (v->type != HASH) jd_die("Not a hash");
   return v->v.h;
+}
+
+jd_closure *jd_as_closure(jd_var *v) {
+  if (v->type != CLOSURE) jd_die("Not a closure");
+  return v->v.c;
 }
 
 size_t jd_length(jd_var *v) {
@@ -379,6 +397,8 @@ jd_var *jd_clone(jd_var *out, jd_var *v, int deep) {
     return jd_array_clone(out, jd_as_array(v), deep);
   case HASH:
     return jd_hash_clone(out, jd_as_hash(v), deep);
+  case CLOSURE:
+    return jd_closure_clone(out, jd_as_closure(v), deep);
   }
   return NULL;
 }
@@ -406,6 +426,28 @@ jd_var *jd_rtrim(jd_var *out, jd_var *v) {
 
 jd_var *jd_trim(jd_var *out, jd_var *v) {
   return jd_ltrim(out, jd_rtrim(out, v));
+}
+
+jd_var *jd_context(jd_var *v) {
+  return jd_closure_context(jd_as_closure(v));
+}
+
+jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg) {
+  if (!arg) {
+    jd_var targ = JD_INIT;
+    jd_eval(cl, rv, &targ);
+    jd_release(&targ);
+  }
+  else {
+    jd_closure_call(jd_as_closure(cl), rv, arg);
+  }
+  return rv;
+}
+
+void jd_call(jd_var *cl, jd_var *arg) {
+  jd_var rv = JD_INIT;
+  jd_eval(cl, &rv, arg);
+  jd_release(&rv);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

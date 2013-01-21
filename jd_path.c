@@ -20,7 +20,7 @@ static int is_positive_int(jd_var *v) {
   return 1;
 }
 
-jd_var *jd_get_context(jd_var *root, jd_var *path, jd_context *ctx, int vivify) {
+jd_var *jd_get_context(jd_var *root, jd_var *path, jd_path_context *ctx, int vivify) {
   jd_var part = JD_INIT, wrap = JD_INIT, dollar = JD_INIT, elt = JD_INIT;
   jd_var *ptr;
   unsigned depth = 0;
