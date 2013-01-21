@@ -61,6 +61,9 @@ void jd_release(jd_var *v) {
   case CLOSURE:
     rc = jd_closure_release(v->v.c);
     break;
+  case OBJECT:
+    rc = jd_object_release(v->v.o);
+    break;
   }
   if (!rc) memset(v, 0, sizeof(*v));
 }
@@ -84,6 +87,9 @@ void jd_retain(jd_var *v) {
     break;
   case CLOSURE:
     jd_closure_retain(v->v.c);
+    break;
+  case OBJECT:
+    jd_object_retain(v->v.o);
     break;
   }
 }
@@ -128,6 +134,13 @@ jd_var *jd_set_closure(jd_var *v, jd_closure_func f) {
   jd_release(v);
   v->type = CLOSURE;
   v->v.c = jd_closure_new(f);
+  return v;
+}
+
+jd_var *jd_set_object(jd_var *v, void *o, void (*free)(void *)) {
+  jd_release(v);
+  v->type = OBJECT;
+  v->v.o = jd_object_new(o, free);
   return v;
 }
 
@@ -177,6 +190,11 @@ jd_hash *jd_as_hash(jd_var *v) {
 jd_closure *jd_as_closure(jd_var *v) {
   if (v->type != CLOSURE) jd_die("Not a closure");
   return v->v.c;
+}
+
+jd_object *jd_as_object(jd_var *v) {
+  if (v->type != OBJECT) jd_die("Not an object");
+  return v->v.o;
 }
 
 size_t jd_length(jd_var *v) {
@@ -399,6 +417,8 @@ jd_var *jd_clone(jd_var *out, jd_var *v, int deep) {
     return jd_hash_clone(out, jd_as_hash(v), deep);
   case CLOSURE:
     return jd_closure_clone(out, jd_as_closure(v), deep);
+  case OBJECT:
+    return jd_assign(out, v);
   }
   return NULL;
 }
@@ -448,6 +468,10 @@ void jd_call(jd_var *cl, jd_var *arg) {
   jd_var rv = JD_INIT;
   jd_eval(cl, &rv, arg);
   jd_release(&rv);
+}
+
+void *jd_ptr(jd_var *v) {
+  return jd_as_object(v)->o;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

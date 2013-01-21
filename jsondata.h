@@ -16,7 +16,8 @@ typedef enum {
   STRING,
   ARRAY,
   HASH,
-  CLOSURE
+  CLOSURE,
+  OBJECT
 } jd_type;
 
 typedef struct _jd_var jd_var;
@@ -51,6 +52,12 @@ typedef struct {
   jd_hash_bucket **b;
 } jd_hash;
 
+typedef struct {
+  jd_ohdr hdr;
+  void *o;
+  void (*free)(void *);
+} jd_object;
+
 struct _jd_var {
   jd_type type;
   union {
@@ -61,6 +68,7 @@ struct _jd_var {
     jd_array *a;
     jd_hash *h;
     jd_closure *c;
+    jd_object *o;
   } v;
 };
 
@@ -96,6 +104,7 @@ jd_var *jd_set_empty_string(jd_var *v, size_t size);
 jd_var *jd_set_array(jd_var *v, size_t size);
 jd_var *jd_set_hash(jd_var *v, size_t size);
 jd_var *jd_set_closure(jd_var *v, jd_closure_func f);
+jd_var *jd_set_object(jd_var *v, void *o, void (*free)(void *));
 jd_var *jd_set_int(jd_var *v, jd_int i);
 jd_var *jd_set_real(jd_var *v, double r);
 jd_var *jd_set_bool(jd_var *v, int b);
@@ -104,6 +113,7 @@ jd_string *jd_as_string(jd_var *v);
 jd_array *jd_as_array(jd_var *v);
 jd_hash *jd_as_hash(jd_var *v);
 jd_closure *jd_as_closure(jd_var *v);
+jd_object *jd_as_object(jd_var *v);
 jd_var *jd_insert(jd_var *v, int idx, size_t count);
 size_t jd_remove(jd_var *v, int idx, size_t count, jd_var *slot);
 jd_var *jd_push(jd_var *v, size_t count);
@@ -169,6 +179,7 @@ const char *jd_string_bytes(jd_string *jds, size_t *sp);
 jd_var *jd_context(jd_var *v);
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg);
 void jd_call(jd_var *cl, jd_var *arg);
+void *jd_ptr(jd_var *v);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
@@ -206,6 +217,11 @@ jd_closure *jd_closure_release(jd_closure *jdc);
 jd_var *jd_closure_clone(jd_var *out, jd_closure *jdc, int deep);
 jd_var *jd_closure_context(jd_closure *jdc);
 int jd_closure_call(jd_closure *jdc, jd_var *rv, jd_var *arg);
+
+jd_object *jd_object_new(void *o, void (*free)(void *));
+jd_object *jd_object_retain(jd_object *jdo);
+void jd_object_free(jd_object *jdo);
+jd_object *jd_object_release(jd_object *jdo);
 
 #endif
 
