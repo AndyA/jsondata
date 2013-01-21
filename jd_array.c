@@ -81,8 +81,11 @@ size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot) {
   release(jda, ix, count);
   if (idx == 0)
     jda->seek += count * sizeof(jd_var);
-  else
+  else {
     memmove(ELT(jda, ix), ELT(jda, ix + count), (avail - count) * sizeof(jd_var));
+    jda->s.used -= count * sizeof(jd_var);
+  }
+
   return count;
 }
 

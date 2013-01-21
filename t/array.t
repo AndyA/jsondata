@@ -53,6 +53,7 @@ static void test_join(void) {
 static void test_basic(void) {
   jd_var ar = JD_INIT;
   jd_var v1 = JD_INIT, v2 = JD_INIT, v3 = JD_INIT;
+  jd_var slot = JD_INIT;
   size_t got;
 
   jd_set_string(&v1, "foo");
@@ -81,6 +82,8 @@ static void test_basic(void) {
               "[\"foo\",\"baz\",\"baz\",\"bar\"]",
               "push bar");
 
+  is(jd_count(&ar), 4, "count");
+
   got = jd_shift(&ar, 1, NULL);
   is(got, 1, "shift count");
 
@@ -88,11 +91,15 @@ static void test_basic(void) {
               "[\"baz\",\"baz\",\"bar\"]",
               "shift");
 
+  is(jd_count(&ar), 3, "count");
+
   jd_assign(jd_unshift(&ar, 1), &v1);
 
   jdt_is_json(&ar,
               "[\"foo\",\"baz\",\"baz\",\"bar\"]",
               "unshift");
+
+  is(jd_count(&ar), 4, "count");
 
   jd_append(&ar, &ar);
 
@@ -100,10 +107,24 @@ static void test_basic(void) {
               "[\"foo\",\"baz\",\"baz\",\"bar\",\"foo\",\"baz\",\"baz\",\"bar\"]",
               "self append");
 
+  is(jd_count(&ar), 8, "count");
+
+  jd_pop(&ar, 1, &slot);
+  jdt_is_json(&ar,
+              "[\"foo\",\"baz\",\"baz\",\"bar\",\"foo\",\"baz\",\"baz\"]",
+              "pop");
+  jdt_is_json(&slot, "\"bar\"", "popped value");
+
+  jd_remove(&ar, 1, 2, NULL);
+  jdt_is_json(&ar,
+              "[\"foo\",\"bar\",\"foo\",\"baz\",\"baz\"]",
+              "remove");
+
   jd_release(&ar);
   jd_release(&v1);
   jd_release(&v2);
   jd_release(&v3);
+  jd_release(&slot);
 }
 
 void test_main(void) {
