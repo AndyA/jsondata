@@ -397,6 +397,7 @@ const char *jd_bytes(jd_var *v, size_t *sp) {
 }
 
 jd_var *jd_merge(jd_var *out, jd_var *v, int deep) {
+  /* TODO this isn't really a deep hash merge */
   jd_hash_merge(out, jd_as_hash(v), deep);
   return out;
 }
