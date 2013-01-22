@@ -34,7 +34,7 @@ static char *find_sub(char *buf, char *lim, char **ep, char *hist) {
   static const char *ok_char[] = {
     "#0- +",
     "hlLjzt",
-    "diouxXeEfFgGaAcspm%",
+    "diouxXeEfFgGaAcspm%" "VJ",
     NULL
   };
 
@@ -54,16 +54,20 @@ found:
   return pc;
 }
 
+static void fstash_common(jd_var *out, char *bp, char *pc) {
+  if (out->type != ARRAY)
+    jd_set_array(out, 30);
+
+  if (bp != pc)
+    jd_set_bytes(jd_push(out, 1), bp, pc - bp);
+}
+
 static void fstash(jd_var *out, char **bp, char *pc, char *ep, ...) {
   char tmp;
   va_list ap;
   jd_var frag = JD_INIT;
 
-  if (out->type != ARRAY)
-    jd_set_array(out, 30);
-
-  if (*bp != pc)
-    jd_set_bytes(jd_push(out, 1), *bp, pc - *bp);
+  fstash_common(out, *bp, pc);
 
   tmp = *ep;
   *ep = '\0';
@@ -77,6 +81,24 @@ static void fstash(jd_var *out, char **bp, char *pc, char *ep, ...) {
 
   jd_assign(jd_push(out, 1), &frag);
   jd_release(&frag);
+  *bp = ep;
+}
+
+static void fstash_var(jd_var *out, char **bp, char *pc, char *ep, jd_var *v) {
+  fstash_common(out, *bp, pc);
+  jd_stringify(jd_push(out, 1), v);
+  *bp = ep;
+}
+
+static void fstash_json(jd_var *out, char **bp, char *pc, char *ep, jd_var *v) {
+  fstash_common(out, *bp, pc);
+  jd_to_json(jd_push(out, 1), v);
+  *bp = ep;
+}
+
+static void fstash_json_pretty(jd_var *out, char **bp, char *pc, char *ep, jd_var *v) {
+  fstash_common(out, *bp, pc);
+  jd_to_json_pretty(jd_push(out, 1), v);
   *bp = ep;
 }
 
@@ -149,6 +171,19 @@ jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
       break;
     case 'p':
       fstash(&tmp, &fbuf, pc, ep, va_arg(ap, void *));
+      break;
+    case 'V':
+      fstash_var(&tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
+      break;
+    case 'J':
+      switch (hist['l']) {
+      case 0:
+        fstash_json(&tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
+        break;
+      default:
+        fstash_json_pretty(&tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
+        break;
+      }
       break;
     }
   }

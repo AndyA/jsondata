@@ -151,12 +151,34 @@ static void test_trim(void) {
 
 static void test_printf(void) {
   jd_var v = JD_INIT;
+  jd_var p1 = JD_INIT;
+  jd_var json = JD_INIT;
+
   jdt_is_string(jd_printf(&v, "foo"), "foo", "printf");
+
   jdt_is_string(jd_printf(&v, "%d %i %o %u %x %X",
                           1, 2, 100, 200, 300, 399),
-                "1 2 144 200 12c 18F", "printf ints");
+                "1 2 144 200 12c 18F",
+                "printf ints");
+
   jdt_is_string(jd_printf(&v, "%s", "foo"), "foo", "printf char *");
+
+  jd_set_string(&p1, "bar");
+  jdt_is_string(jd_printf(&v, "foo %V", &p1), "foo bar", "printf jd_var *");
+
+  jd_set_string(&json, "{\"name\":\"foo\",\"value\":1.25}");
+  jd_from_json(&p1, &json);
+  jdt_is_string(jd_printf(&v, "rec=%J", &p1),
+                "rec={\"name\":\"foo\",\"value\":1.25}",
+                "printf json jd_var *");
+
+  jdt_is_string(jd_printf(&v, "rec=%lJ", &p1),
+                "rec={\n  \"name\": \"foo\",\n  \"value\": 1.25\n}",
+                "printf pretty json jd_var *");
+
   jd_release(&v);
+  jd_release(&p1);
+  jd_release(&json);
 }
 
 static void test_misc(void) {
