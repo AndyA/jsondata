@@ -403,12 +403,6 @@ jd_var *jd_merge(jd_var *out, jd_var *v, int deep) {
 
 jd_var *jd_clone(jd_var *out, jd_var *v, int deep) {
   switch (v->type) {
-  case VOID:
-  case BOOL:
-  case INTEGER:
-  case REAL:
-    *out = *v;
-    return out;
   case STRING:
     return jd_substr(out, v, 0, jd_length(v));
   case ARRAY:
@@ -417,10 +411,9 @@ jd_var *jd_clone(jd_var *out, jd_var *v, int deep) {
     return jd_hash_clone(out, jd_as_hash(v), deep);
   case CLOSURE:
     return jd_closure_clone(out, jd_as_closure(v), deep);
-  case OBJECT:
+  default:
     return jd_assign(out, v);
   }
-  return NULL;
 }
 
 static jd_var *subref(jd_var *out, jd_var *v, int from, int len) {
