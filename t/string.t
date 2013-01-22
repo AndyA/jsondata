@@ -156,6 +156,8 @@ static void test_printf(void) {
 
   jdt_is_string(jd_printf(&v, "foo"), "foo", "printf");
 
+  jdt_is_string(jd_printf(&v, "%%"), "%", "printf %");
+
   jdt_is_string(jd_printf(&v, "%d %i %o %u %x %X",
                           1, 2, 100, 200, 300, 399),
                 "1 2 144 200 12c 18F",
@@ -179,6 +181,10 @@ static void test_printf(void) {
   jdt_is_string(jd_printf(&v, "rec=%lJ", &p1),
                 "rec={\n  \"name\": \"foo\",\n  \"value\": 1.25\n}",
                 "printf pretty json jd_var *");
+
+  jd_set_string(&p1, "bar");
+  jd_printvf(&v, &p1);
+  ok(jd_bytes(&v, NULL) == jd_bytes(&p1, NULL), "printf format referenced");
 
   jd_release(&v);
   jd_release(&p1);

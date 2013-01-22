@@ -5,6 +5,7 @@
 
 #include "util.h"
 #include "tap.h"
+#include "jd_test.h"
 #include "jsondata.h"
 
 void test_main(void) {
@@ -52,6 +53,9 @@ void test_main(void) {
   for (pp = notfound; *pp; pp++) {
     null(jd_rv(&m, *pp), "%s not found", *pp);
   }
+
+  jdt_is(jd_rv(&m, "$.%s.%d.name", "slot", 1),
+         jd_rv(&m, "$.slot.1.name"), "sprintf path");
 
   for (i = 0; i < sizeof(types) / sizeof(types[0]); i++) {
     jd_var *v = jd_rv(&m, types[i].path);

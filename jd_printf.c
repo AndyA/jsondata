@@ -200,6 +200,7 @@ jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
     jd_release(&sep);
   }
   else {
+    /* simple case: no substitution */
     jd_assign(out, fmt);
   }
 

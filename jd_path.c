@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 #include "jsondata.h"
 
@@ -20,7 +21,8 @@ static int is_positive_int(jd_var *v) {
   return 1;
 }
 
-jd_var *jd_get_context(jd_var *root, jd_var *path, jd_path_context *ctx, int vivify) {
+jd_var *jd_get_context(jd_var *root, jd_var *path,
+                       jd_path_context *ctx, int vivify) {
   jd_var part = JD_INIT, wrap = JD_INIT, dollar = JD_INIT, elt = JD_INIT;
   jd_var *ptr;
   unsigned depth = 0;
@@ -75,7 +77,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path, jd_path_context *ctx, int viv
 
   /* Hack: depth 0 means empty path, depth 1 means root - so don't
    * return a pointer to the innards of wrap. Anything else is inside
-   * the structure and safe to return directly. 
+   * the structure and safe to return directly.
    */
   switch (depth) {
   case 0:
@@ -87,20 +89,30 @@ jd_var *jd_get_context(jd_var *root, jd_var *path, jd_path_context *ctx, int viv
   }
 }
 
-static jd_var *getter(jd_var *root, const char *path, int vivify) {
+static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   jd_var *rv, pv = JD_INIT;
-  jd_set_string(&pv, path);
+  jd_vprintf(&pv, path, ap);
   rv = jd_get_context(root, &pv, NULL, vivify);
   jd_release(&pv);
   return rv;
 }
 
-jd_var *jd_lv(jd_var *root, const char *path) {
-  return getter(root, path, 1);
+jd_var *jd_lv(jd_var *root, const char *path, ...) {
+  jd_var *rv;
+  va_list ap;
+  va_start(ap, path);
+  rv = getter(root, path, ap, 1);
+  va_end(ap);
+  return rv;
 }
 
-jd_var *jd_rv(jd_var *root, const char *path) {
-  return getter(root, path, 0);
+jd_var *jd_rv(jd_var *root, const char *path, ...) {
+  jd_var *rv;
+  va_list ap;
+  va_start(ap, path);
+  rv = getter(root, path, ap, 0);
+  va_end(ap);
+  return rv;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
