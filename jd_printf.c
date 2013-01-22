@@ -33,6 +33,7 @@ static char *find_sub(char *buf, char *lim, char **ep, char *hist) {
 
   static const char *ok_char[] = {
     "#0- +",
+    "0123456789.",
     "hlLjzt",
     "diouxXeEfFgGaAcspm%" "VJ",
     NULL
@@ -191,6 +192,10 @@ jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
   if (tmp.type == ARRAY) {
     jd_var sep = JD_INIT;
     jd_set_empty_string(&sep, 1);
+
+    if (fbuf != flim)
+      jd_set_bytes(jd_push(&tmp, 1), fbuf, flim - fbuf);
+
     jd_join(out, &sep, &tmp);
     jd_release(&sep);
   }

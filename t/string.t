@@ -161,7 +161,11 @@ static void test_printf(void) {
                 "1 2 144 200 12c 18F",
                 "printf ints");
 
-  jdt_is_string(jd_printf(&v, "%s", "foo"), "foo", "printf char *");
+  jdt_is_string(jd_printf(&v, "%s bar", "foo"), "foo bar", "printf char *");
+  jdt_is_string(jd_printf(&v, "%s %s", "foo", "bar"), "foo bar", "printf char *");
+
+  jdt_is_string(jd_printf(&v, "%s %-7s ", "foo", "bar"),
+                "foo bar     ", "printf char * (padded)");
 
   jd_set_string(&p1, "bar");
   jdt_is_string(jd_printf(&v, "foo %V", &p1), "foo bar", "printf jd_var *");
