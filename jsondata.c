@@ -116,6 +116,10 @@ jd_var *jd_set_string(jd_var *v, const char *s) {
   return set_string(v, jd_string_from(s));
 }
 
+jd_var *jd_set_bytes(jd_var *v, const void *s, size_t size) {
+  return set_string(v, jd_string_from_bytes(s, size));
+}
+
 jd_var *jd_set_array(jd_var *v, size_t size) {
   jd_release(v);
   v->type = ARRAY;
@@ -294,14 +298,6 @@ unsigned long jd_hashcalc(jd_var *v) {
 
 jd_var *jd_keys(jd_var *v, jd_var *keys) {
   return jd_hash_keys(jd_as_hash(v), keys);
-}
-
-jd_var *jd_printf(jd_var *v, const char *fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-  jd_string_vprintf(jd_as_string(v), fmt, ap);
-  va_end(ap);
-  return v;
 }
 
 jd_var *jd_stringify(jd_var *out, jd_var *v) {

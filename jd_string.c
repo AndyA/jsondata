@@ -29,12 +29,16 @@ jd_string *jd_string_empty(jd_string *jds) {
   return jds;
 }
 
-jd_string *jd_string_from(const char *s) {
-  size_t len = strlen(s) + 1;
-  jd_string *jds = jd_string_new(len);
-  memcpy(jds->data, s, len);
-  jds->used = len;
+jd_string *jd_string_from_bytes(const char *s, size_t size) {
+  jd_string *jds = jd_string_new(size + 1);
+  memcpy(jds->data, s, size);
+  jds->data[size] = '\0';
+  jds->used = size + 1;
   return jds;
+}
+
+jd_string *jd_string_from(const char *s) {
+  return jd_string_from_bytes(s, strlen(s));
 }
 
 jd_string *jd_string_ensure(jd_string *jds, size_t size) {
@@ -115,30 +119,6 @@ unsigned long jd_string_hashcalc(jd_string *jds) {
     h = 31 * h + jds->data[i];
   }
   return h;
-}
-
-jd_string *jd_string_vprintf(jd_string *jds, const char *fmt, va_list ap) {
-  jd_string_empty(jds);
-  for (;;) {
-    va_list aq;
-    va_copy(aq, ap);
-    size_t sz = vsnprintf(jds->data, jds->size, fmt, aq);
-    va_end(aq);
-    if (sz < jds->size) {
-      jds->used = sz + 1;
-      return jds;
-      break;
-    }
-    jd_string_ensure(jds, sz + 1);
-  }
-}
-
-jd_string *jd_string_printf(jd_string *jds, const char *fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-  jd_string_vprintf(jds, fmt, ap);
-  va_end(ap);
-  return jds;
 }
 
 jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {

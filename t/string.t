@@ -149,6 +149,16 @@ static void test_trim(void) {
   jd_release(&out);
 }
 
+static void test_printf(void) {
+  jd_var v = JD_INIT;
+  jdt_is_string(jd_printf(&v, "foo"), "foo", "printf");
+  jdt_is_string(jd_printf(&v, "%d %i %o %u %x %X",
+                          1, 2, 100, 200, 300, 399),
+                "1 2 144 200 12c 18F", "printf ints");
+  jdt_is_string(jd_printf(&v, "%s", "foo"), "foo", "printf char *");
+  jd_release(&v);
+}
+
 static void test_misc(void) {
   jd_var v1 = JD_INIT, v2 = JD_INIT;
   jd_set_string(&v1, "foo");
@@ -158,11 +168,7 @@ static void test_misc(void) {
   ok(jd_compare(&v1, &v2) > 0 , "foo > bar");
   ok(jd_compare(&v2, &v1) <  0 , "bar < foo");
 
-  jd_printf(&v1, "Hello, %s", "World");
-  jd_set_string(&v2, "Hello, World");
-  ok(jd_compare(&v1, &v2) == 0, "printf");
-
-  /*  jd_set_int(&v1, 12345);*/
+  jd_assign(&v2, &v1);
   jd_stringify(&v1, &v1);
   ok(jd_compare(&v1, &v2) == 0, "stringify string == nop");
 
@@ -185,6 +191,7 @@ void test_main(void) {
   test_find();
   test_split();
   test_bytes();
+  test_printf();
   test_trim();
 }
 
