@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "jd_private.h"
 #include "jsondata.h"
 
 #define BASE(jda) \

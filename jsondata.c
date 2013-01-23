@@ -1,5 +1,6 @@
 /* jsondata.c */
 
+#include "jd_private.h"
 #include "jsondata.h"
 
 #include <ctype.h>

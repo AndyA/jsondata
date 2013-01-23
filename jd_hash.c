@@ -1,5 +1,6 @@
 /* jd_hash.c */
 
+#include "jd_private.h"
 #include "jsondata.h"
 
 jd_hash *jd_hash_new(size_t size) {
