@@ -28,10 +28,6 @@ int jd_string_find(jd_string *jds, jd_var *pat, int from);
 jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out);
 jd_var *jd_string_numify(jd_string *jds, jd_var *out);
 const char *jd_string_bytes(jd_string *jds, size_t *sp);
-jd_var *jd_context(jd_var *v);
-jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg);
-void jd_call(jd_var *cl, jd_var *arg);
-void *jd_ptr(jd_var *v);
 
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);

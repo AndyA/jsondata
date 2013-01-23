@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 
+#include "jd_private.h"
 #include "jsondata.h"
 
 static int is_positive_int(jd_var *v) {

@@ -1,5 +1,6 @@
 /* jd_string.c */
 
+#include "jd_private.h"
 #include "jsondata.h"
 
 #include <stdarg.h>
