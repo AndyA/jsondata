@@ -272,8 +272,25 @@ jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify) {
   return jd_hash_get(jd_as_hash(v), key, vivify);
 }
 
+jd_var *jd_get_ks(jd_var *v, const char *key, int vivify) {
+  jd_var kv = JD_INIT, *rv;
+  jd_set_string(&kv, key);
+  rv = jd_get_key(v, &kv, vivify);
+  jd_release(&kv);
+  return rv;
+}
+
 int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
   return jd_hash_delete(jd_as_hash(v), key, slot);
+}
+
+int jd_delete_ks(jd_var *v, const char *key, jd_var *slot) {
+  jd_var kv = JD_INIT;
+  int rv;
+  jd_set_string(&kv, key);
+  rv = jd_delete_key(v, &kv, slot);
+  jd_release(&kv);
+  return rv;
 }
 
 int jd_compare(jd_var *a, jd_var *b) {
