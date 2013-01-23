@@ -9,6 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TD(x) #x
+static const char *typename[] = {
+#include "jd_type.h"
+  NULL
+};
+#undef TD
+
 void *(*jd_alloc_hook)(size_t) = malloc;
 void (*jd_free_hook)(void *) = free;
 
@@ -65,6 +72,9 @@ void jd_release(jd_var *v) {
   case OBJECT:
     rc = jd_object_release(v->v.o);
     break;
+  default:
+    jd_die("Unhandled type");
+    break;
   }
   if (!rc) memset(v, 0, sizeof(*v));
 }
@@ -91,6 +101,9 @@ void jd_retain(jd_var *v) {
     break;
   case OBJECT:
     jd_object_retain(v->v.o);
+    break;
+  default:
+    jd_die("Unhandled type");
     break;
   }
 }
@@ -319,28 +332,38 @@ jd_var *jd_keys(jd_var *v, jd_var *keys) {
 }
 
 jd_var *jd_stringify(jd_var *out, jd_var *v) {
-  /* TODO move conversion of out into a string into jd_printf */
   jd_var tmp = JD_INIT;
-  jd_set_empty_string(&tmp, 20);
-  switch (v->type) {
-  case VOID:
-    jd_set_string(&tmp, "null");
-    break;
-  case BOOL:
-    jd_set_string(&tmp, v->v.b ? "true" : "false");
-    break;
-  case INTEGER:
-    jd_printf(&tmp, "%lld", v->v.i);
-    break;
-  case REAL:
-    jd_printf(&tmp, "%g", v->v.r);
-    break;
-  case STRING:
-    jd_assign(&tmp, v);
-    break;
-  default:
-    jd_die("Can't stringify");
-    return NULL;
+  if (v) {
+    switch (v->type) {
+    case VOID:
+      jd_set_string(&tmp, "null");
+      break;
+    case BOOL:
+      jd_set_string(&tmp, v->v.b ? "true" : "false");
+      break;
+    case INTEGER:
+      jd_printf(&tmp, "%lld", v->v.i);
+      break;
+    case REAL:
+      jd_printf(&tmp, "%g", v->v.r);
+      break;
+    case STRING:
+      jd_assign(&tmp, v);
+      break;
+    case HASH:
+    case ARRAY:
+      jd_to_json(&tmp, v);
+      break;
+    default:
+      if (v->type >= 0 && v->type < MAXTYPE)
+        jd_printf(&tmp, "<%s:%p>", typename[v->type], v);
+      else
+        jd_printf(&tmp, "<UNKNOWN(%u):%p>", v->type, v);
+      break;
+    }
+  }
+  else {
+    jd_set_string(&tmp, "<NULL>");
   }
   jd_assign(out, &tmp);
   jd_release(&tmp);

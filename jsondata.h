@@ -8,17 +8,12 @@
 
 typedef long long jd_int;
 
+#define TD(x) x
 typedef enum {
-  VOID,
-  BOOL,
-  INTEGER,
-  REAL,
-  STRING,
-  ARRAY,
-  HASH,
-  CLOSURE,
-  OBJECT
+#include "jd_type.h"
+  MAXTYPE
 } jd_type;
+#undef TD
 
 typedef struct _jd_var jd_var;
 typedef struct _jd_hash_bucket jd_hash_bucket;
