@@ -355,7 +355,7 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
       jd_to_json(&tmp, v);
       break;
     default:
-      if (v->type >= 0 && v->type < MAXTYPE)
+      if (v->type < MAXTYPE)
         jd_printf(&tmp, "<%s:%p>", typename[v->type], v);
       else
         jd_printf(&tmp, "<UNKNOWN(%u):%p>", v->type, v);
