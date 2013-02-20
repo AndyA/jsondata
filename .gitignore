@@ -1,3 +1,6 @@
+.*.sw?
+.DS_Store
+.gdb_history
 /*.a
 /*.d
 /*.o
@@ -5,3 +8,4 @@
 /jdtest
 /tags
 /version.h
+Session.vim
