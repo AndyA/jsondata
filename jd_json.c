@@ -207,7 +207,7 @@ static jd_var *from_json_array(jd_var *out, struct parser *p) {
     from_json(jd_push(out, 1), p);
     SKIP(p);
     if (CHAR(p) == ']') break;
-    if (CHAR(p) != ',') jd_die("Expected comma or closing bracket");
+    if (CHAR(p) != ',') jd_throw("Expected comma or closing bracket");
   }
   STEP(p);
   return out;
@@ -221,12 +221,12 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
     if (CHAR(p) == '}') break;
     from_json(&key, p);
     SKIP(p);
-    if (CHAR(p) != ':') jd_die("Missing colon");
+    if (CHAR(p) != ':') jd_throw("Missing colon");
     STEP(p);
     from_json(jd_get_key(out, &key, 1), p);
     SKIP(p);
     if (CHAR(p) == '}') break;
-    if (CHAR(p) != ',') jd_die("Expected comma or closing brace");
+    if (CHAR(p) != ',') jd_throw("Expected comma or closing brace");
   }
   STEP(p);
   jd_release(&key);
@@ -249,7 +249,7 @@ static unsigned parse_escape(struct parser *p) {
   return esc;
 
 bad:
-  jd_die("Bad escape");
+  jd_throw("Bad escape");
   return 0;
 }
 
@@ -311,7 +311,7 @@ static jd_var *from_json_bool(jd_var *out, struct parser *p) {
     JUMP(p, sz);
     return jd_set_bool(out, 0);
   }
-  jd_die("Expected true or false");
+  jd_throw("Expected true or false");
   return NULL;
 }
 
@@ -321,7 +321,7 @@ static jd_var *from_json_null(jd_var *out, struct parser *p) {
     JUMP(p, sz);
     return jd_set_void(out);
   }
-  jd_die("Expected null");
+  jd_throw("Expected null");
   return NULL;
 }
 
@@ -342,7 +342,7 @@ static jd_var *from_json_num(jd_var *out, struct parser *p) {
     return jd_set_real(out, r);
   }
 
-  jd_die("Syntax error");
+  jd_throw("Syntax error");
   return NULL;
 }
 

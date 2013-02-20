@@ -36,7 +36,7 @@ jd_array *jd_array_release(jd_array *jda) {
 static unsigned cook_idx(int idx, size_t count, size_t max) {
   if (idx < 0) idx += count;
   if (idx < 0 || idx >= max)
-    jd_die("Array index %d out of bounds (0..%lu)", idx, (unsigned long) max);
+    jd_throw("Array index %d out of bounds (0..%lu)", idx, (unsigned long) max);
   return (unsigned) idx;
 }
 

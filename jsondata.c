@@ -34,7 +34,7 @@ static void oom(void) {
 }
 
 static void notnull(void *v) {
-  if (!v) jd_die("Null pointer");
+  if (!v) jd_throw("Null pointer");
 }
 
 void *jd_alloc(size_t sz) {
@@ -191,27 +191,27 @@ jd_var *jd_set_void(jd_var *v) {
 
 
 jd_string *jd_as_string(jd_var *v) {
-  if (v->type != STRING) jd_die("Not a string");
+  if (v->type != STRING) jd_throw("Not a string");
   return v->v.s;
 }
 
 jd_array *jd_as_array(jd_var *v) {
-  if (v->type != ARRAY) jd_die("Not an array");
+  if (v->type != ARRAY) jd_throw("Not an array");
   return v->v.a;
 }
 
 jd_hash *jd_as_hash(jd_var *v) {
-  if (v->type != HASH) jd_die("Not a hash");
+  if (v->type != HASH) jd_throw("Not a hash");
   return v->v.h;
 }
 
 jd_closure *jd_as_closure(jd_var *v) {
-  if (v->type != CLOSURE) jd_die("Not a closure");
+  if (v->type != CLOSURE) jd_throw("Not a closure");
   return v->v.c;
 }
 
 jd_object *jd_as_object(jd_var *v) {
-  if (v->type != OBJECT) jd_die("Not an object");
+  if (v->type != OBJECT) jd_throw("Not an object");
   return v->v.o;
 }
 
@@ -228,7 +228,7 @@ jd_var *jd_append(jd_var *v, jd_var *v2) {
     jd_array_append(jd_as_array(v), v2);
     break;
   default:
-    jd_die("Can't append"); /* TODO type name */
+    jd_throw("Can't append"); /* TODO type name */
   }
   return v;
 }
@@ -312,7 +312,7 @@ int jd_compare(jd_var *a, jd_var *b) {
   case STRING:
     return jd_string_compare(jd_as_string(a), b);
   default:
-    jd_die("Can't compare");
+    jd_throw("Can't compare");
     return 0;
   }
 }
@@ -322,7 +322,7 @@ unsigned long jd_hashcalc(jd_var *v) {
   case STRING:
     return jd_string_hashcalc(jd_as_string(v));
   default:
-    jd_die("Can't compute hash");
+    jd_throw("Can't compute hash");
     return 0;
   }
 }
@@ -374,7 +374,7 @@ jd_var *jd_numify(jd_var *out, jd_var *v) {
   switch (v->type) {
   case HASH:
   case ARRAY:
-    jd_die("Can't numify");
+    jd_throw("Can't numify");
     return NULL;
   default:
     return jd_assign(out, v);
@@ -397,28 +397,28 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
 }
 
 #define CAST(vtype, name) \
-  vtype name(jd_var *v) {                   \
-    jd_var tmp = JD_INIT;                   \
-    vtype rv;                               \
-    jd_numify(&tmp, v);                     \
-    switch (tmp.type) {                     \
-    case INTEGER:                           \
-      rv = (vtype) tmp.v.i;                 \
-      break;                                \
-    case REAL:                              \
-      rv = (vtype) tmp.v.r;                 \
-      break;                                \
-    case BOOL:                              \
-      rv = (vtype) tmp.v.b;                 \
-      break;                                \
-    default:                                \
-      jd_die("Oops - expected a numeric");  \
-    case VOID:                              \
-      rv = 0;                               \
-      break;                                \
-    }                                       \
-    jd_release(&tmp);                       \
-    return rv;                              \
+  vtype name(jd_var *v) {                     \
+    jd_var tmp = JD_INIT;                     \
+    vtype rv;                                 \
+    jd_numify(&tmp, v);                       \
+    switch (tmp.type) {                       \
+    case INTEGER:                             \
+      rv = (vtype) tmp.v.i;                   \
+      break;                                  \
+    case REAL:                                \
+      rv = (vtype) tmp.v.r;                   \
+      break;                                  \
+    case BOOL:                                \
+      rv = (vtype) tmp.v.b;                   \
+      break;                                  \
+    default:                                  \
+      jd_throw("Oops - expected a numeric");  \
+    case VOID:                                \
+      rv = 0;                                 \
+      break;                                  \
+    }                                         \
+    jd_release(&tmp);                         \
+    return rv;                                \
   }
 
 CAST(jd_int, jd_get_int)
