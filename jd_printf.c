@@ -65,24 +65,25 @@ static void fstash_common(jd_var *out, char *bp, char *pc) {
 }
 
 static void fstash(jd_var *out, char **bp, char *pc, char *ep, ...) {
-  char tmp;
-  va_list ap;
-  jd_var frag = JD_INIT;
+  JD_TRY {
+    char tmp;
+    va_list ap;
+    JD_VAR(frag);
 
-  fstash_common(out, *bp, pc);
+    fstash_common(out, *bp, pc);
 
-  tmp = *ep;
-  *ep = '\0';
+    tmp = *ep;
+    *ep = '\0';
 
-  va_start(ap, ep);
-  jd_set_empty_string(&frag, 100);
-  safe_vprintf(jd_as_string(&frag), pc, ap);
-  va_end(ap);
+    va_start(ap, ep);
+    jd_set_empty_string(frag, 100);
+    safe_vprintf(jd_as_string(frag), pc, ap);
+    va_end(ap);
 
-  *ep = tmp;
+    *ep = tmp;
 
-  jd_assign(jd_push(out, 1), &frag);
-  jd_release(&frag);
+    jd_assign(jd_push(out, 1), frag);
+  } JD_GUARD
   *bp = ep;
 }
 
@@ -105,115 +106,117 @@ static void fstash_json_pretty(jd_var *out, char **bp, char *pc, char *ep, jd_va
 }
 
 jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
-  jd_var tmp = JD_INIT;
-  size_t len;
-  char *fbuf = (char *) jd_bytes(fmt, &len);
-  char *flim = fbuf + len - 1;
-  char hist[256];
+  JD_TRY {
+    JD_VAR(tmp);
+    size_t len;
+    char *fbuf = (char *) jd_bytes(fmt, &len);
+    char *flim = fbuf + len - 1;
+    char hist[256];
 
-  for (;;) {
-    char *ep;
-    char *pc = find_sub(fbuf, flim, &ep, hist);
-    if (!pc) break;
-    switch (ep[-1]) {
-    case '%':
-    case 'm':
-      fstash(&tmp, &fbuf, pc, ep);
-      break;
-    case 'c':
-    case 'd':
-    case 'i':
-      switch (hist['l']) {
-      case 0:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, int));
+    for (;;) {
+      char *ep;
+      char *pc = find_sub(fbuf, flim, &ep, hist);
+      if (!pc) break;
+      switch (ep[-1]) {
+      case '%':
+      case 'm':
+        fstash(tmp, &fbuf, pc, ep);
         break;
-      case 1:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, long int));
+      case 'c':
+      case 'd':
+      case 'i':
+        switch (hist['l']) {
+        case 0:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, int));
+          break;
+        case 1:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, long int));
+          break;
+        default:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, long long int));
+          break;
+        }
         break;
-      default:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, long long int));
+      case 'o':
+      case 'u':
+      case 'x':
+      case 'X':
+        switch (hist['l']) {
+        case 0:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, unsigned int));
+          break;
+        case 1:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, unsigned long int));
+          break;
+        default:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, unsigned long long int));
+          break;
+        }
+        break;
+      case 'e':
+      case 'E':
+      case 'f':
+      case 'F':
+      case 'g':
+      case 'G':
+      case 'a':
+      case 'A':
+        switch (hist['L']) {
+        case 0:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, double));
+          break;
+        default:
+          fstash(tmp, &fbuf, pc, ep, va_arg(ap, long double));
+          break;
+        }
+        break;
+      case 's':
+        fstash(tmp, &fbuf, pc, ep, va_arg(ap, char *));
+        break;
+      case 'p':
+        fstash(tmp, &fbuf, pc, ep, va_arg(ap, void *));
+        break;
+      case 'V':
+        fstash_var(tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
+        break;
+      case 'J':
+        switch (hist['l']) {
+        case 0:
+          fstash_json(tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
+          break;
+        default:
+          fstash_json_pretty(tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
+          break;
+        }
         break;
       }
-      break;
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
-      switch (hist['l']) {
-      case 0:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, unsigned int));
-        break;
-      case 1:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, unsigned long int));
-        break;
-      default:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, unsigned long long int));
-        break;
-      }
-      break;
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
-    case 'a':
-    case 'A':
-      switch (hist['L']) {
-      case 0:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, double));
-        break;
-      default:
-        fstash(&tmp, &fbuf, pc, ep, va_arg(ap, long double));
-        break;
-      }
-      break;
-    case 's':
-      fstash(&tmp, &fbuf, pc, ep, va_arg(ap, char *));
-      break;
-    case 'p':
-      fstash(&tmp, &fbuf, pc, ep, va_arg(ap, void *));
-      break;
-    case 'V':
-      fstash_var(&tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
-      break;
-    case 'J':
-      switch (hist['l']) {
-      case 0:
-        fstash_json(&tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
-        break;
-      default:
-        fstash_json_pretty(&tmp, &fbuf, pc, ep, va_arg(ap, jd_var *));
-        break;
-      }
-      break;
     }
-  }
 
-  if (tmp.type == ARRAY) {
-    jd_var sep = JD_INIT;
-    jd_set_empty_string(&sep, 1);
+    if (tmp->type == ARRAY) {
+      JD_VAR(sep);
+      jd_set_empty_string(sep, 1);
 
-    if (fbuf != flim)
-      jd_set_bytes(jd_push(&tmp, 1), fbuf, flim - fbuf);
+      if (fbuf != flim)
+        jd_set_bytes(jd_push(tmp, 1), fbuf, flim - fbuf);
 
-    jd_join(out, &sep, &tmp);
-    jd_release(&sep);
-  }
-  else {
-    /* simple case: no substitution */
-    jd_assign(out, fmt);
-  }
+      jd_join(out, sep, tmp);
+    }
+    else {
+      /* simple case: no substitution */
+      jd_assign(out, fmt);
+    }
 
-  jd_release(&tmp);
+  } JD_GUARD
+
   return out;
 }
 
 jd_var *jd_vprintf(jd_var *out, const char *fmt, va_list ap) {
-  jd_var vfmt = JD_INIT;
-  jd_set_string(&vfmt, fmt);
-  jd_vprintvf(out, &vfmt, ap);
-  jd_release(&vfmt);
+  JD_TRY {
+    JD_VAR(vfmt);
+    jd_set_string(vfmt, fmt);
+    jd_vprintvf(out, vfmt, ap);
+  } JD_GUARD
   return out;
 }
 

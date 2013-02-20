@@ -123,23 +123,26 @@ unsigned long jd_string_hashcalc(jd_string *jds) {
 }
 
 jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {
-  jd_var tmp = JD_INIT;
   size_t sl = jd_string_length(jds);
-  jd_string *jo;
 
   if (from < 0) from += sl;
   if (len <= 0 || from < 0 || from >= sl) {
     jd_set_string(out, "");
     return out;
   }
-  if (from + len > sl) len = sl - from;
-  jd_set_empty_string(&tmp, len + 1);
-  jo = jd_as_string(&tmp);
-  memcpy(jo->data, jds->data + from, len);
-  jo->data[len] = '\0';
-  jo->used = len + 1;
-  jd_assign(out, &tmp);
-  jd_release(&tmp);
+
+  JD_TRY {
+    JD_VAR(tmp);
+    jd_string *jo;
+    if (from + len > sl) len = sl - from;
+    jd_set_empty_string(tmp, len + 1);
+    jo = jd_as_string(tmp);
+    memcpy(jo->data, jds->data + from, len);
+    jo->data[len] = '\0';
+    jo->used = len + 1;
+    jd_assign(out, tmp);
+  }
+  JD_GUARD
   return out;
 }
 
