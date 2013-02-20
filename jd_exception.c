@@ -41,11 +41,12 @@ void jd_ar_free(jd_activation *rec) {
   jd_free(rec);
 }
 
-void jd_ar_up(void) {
+void jd_ar_up(jd_activation *rec) {
+  if (jd_head != rec) jd_die("Stack inbalance");
   jd_ar_free(jd_ar_pop());
 }
 
-jd_var *jd_catch(void) {
+jd_var *jd_catch(jd_activation *rec) {
   jd_dvar *ex = jd_head->vars;
   jd_var *e = &ex->v;
   jd_head->vars = ex->next;
@@ -59,7 +60,7 @@ jd_var *jd_catch(void) {
     jd_free(ex);
     e = &jd_root_exception;
   }
-  jd_ar_up();
+  jd_ar_up(rec);
   return e;
 }
 

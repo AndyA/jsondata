@@ -99,19 +99,18 @@ typedef struct jd_activation {
   int line;
 } jd_activation;
 
-#define JD_TRY \
-  jd_ar_push(__LINE__, __FILE__); \
+#define JD_TRY { \
+  jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
   if (!setjmp(jd_head->env)) { if (1) do
 
 #define JD_CATCH(e) \
   while (0); \
-  jd_ar_up(); \
+  jd_ar_up(__jd_ar); \
   } else { \
-    jd_var *e = jd_catch(); \
+    jd_var *e = jd_catch(__jd_ar); \
     if (1)
 
-#define JD_END \
-  }
+#define JD_END }}
 
 #define JD_GUARD \
   JD_CATCH(e) { jd_rethrow(e); } JD_END
@@ -203,10 +202,10 @@ jd_activation *jd_ar_push(int line, const char *file);
 jd_activation *jd_ar_pop(void);
 jd_var *jd_ar_var(jd_activation *rec);
 void jd_ar_free(jd_activation *rec);
-void jd_ar_up(void);
+void jd_ar_up(jd_activation *rec);
+jd_var *jd_catch(jd_activation *rec);
 void jd_rethrow(jd_var *e);
 void jd_throw(const char *msg, ...);
-jd_var *jd_catch(void);
 
 #endif
 
