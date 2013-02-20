@@ -13,7 +13,7 @@ jd_var jd_root_exception = JD_INIT;
 
 jd_activation *jd_ar_push(int line, const char *file) {
   jd_activation *rec = jd_alloc(sizeof(jd_activation));
-  jd_set_array(&rec->vars, 10);
+  rec->vars = NULL;
   rec->line = line;
   rec->file = file;
   rec->up = jd_head;
@@ -27,8 +27,17 @@ jd_activation *jd_ar_pop(void) {
   return rec;
 }
 
+static void free_vars(jd_dvar *dv) {
+  while (dv) {
+    jd_dvar *next = dv->next;
+    jd_release(&dv->v);
+    jd_free(dv);
+    dv = next;
+  }
+}
+
 void jd_ar_free(jd_activation *rec) {
-  jd_release(&rec->vars);
+  free_vars(rec->vars);
   jd_free(rec);
 }
 
@@ -36,10 +45,17 @@ void jd_ar_up(void) {
   jd_ar_free(jd_ar_pop());
 }
 
+jd_var *jd_ar_var(jd_activation *rec) {
+  jd_dvar *dv = jd_alloc(sizeof(jd_dvar));
+  dv->next = rec->vars;
+  rec->vars = dv;
+  return &dv->v;
+}
+
 static void rethrow(jd_var *e, int release) {
   if (jd_head) {
     /*    printf("throw %s at %s:%d\n", jd_bytes(e, NULL), jd_head->file, jd_head->line);*/
-    jd_assign(jd_push(&jd_head->vars, 1), e);
+    jd_assign(jd_ar_var(jd_head), e);
     if (release) jd_release(e);
     longjmp(jd_head->env, 1);
   }

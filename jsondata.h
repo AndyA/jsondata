@@ -86,10 +86,15 @@ typedef struct {
 
 #define JD_INIT { .type = VOID }
 
+typedef struct jd_dvar {
+  struct jd_dvar *next;
+  jd_var v;
+} jd_dvar;
+
 typedef struct jd_activation {
   struct jd_activation *up;
   jmp_buf env;
-  jd_var vars;
+  jd_dvar *vars;
   const char *file;
   int line;
 } jd_activation;
@@ -103,9 +108,9 @@ typedef struct jd_activation {
   jd_ar_up(); \
   } else { \
     jd_var *e = jd_head && jd_head->up \
-                ? jd_push(&jd_head->up->vars, 1) \
+                ? jd_ar_var(jd_head->up) \
                 : &jd_root_exception; \
-    jd_pop(&jd_head->vars, 1, e); \
+    jd_assign(e, &jd_head->vars->v); \
     jd_ar_up(); \
     if (1)
 
@@ -116,7 +121,7 @@ typedef struct jd_activation {
   JD_CATCH(e) { jd_rethrow(e); } JD_END
 
 #define JD_VAR(x) \
-  jd_var *x = jd_push(&jd_head->vars, 1)
+  jd_var *x = jd_ar_var(jd_head)
 
 #define JD_2VARS(a, b) JD_VAR(a); JD_VAR(b)
 #define JD_3VARS(a, b, c) JD_2VARS(a, b); JD_VAR(c)
@@ -200,9 +205,10 @@ void *jd_ptr(jd_var *v);
 
 jd_activation *jd_ar_push(int line, const char *file);
 jd_activation *jd_ar_pop(void);
-void jd_ar_free(jd_activation *rec); 
+jd_var *jd_ar_var(jd_activation *rec);
+void jd_ar_free(jd_activation *rec);
 void jd_ar_up(void);
-void jd_rethrow(jd_var *e); 
+void jd_rethrow(jd_var *e);
 void jd_throw(const char *msg, ...);
 
 #endif
