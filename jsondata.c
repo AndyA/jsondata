@@ -286,10 +286,13 @@ jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify) {
 }
 
 jd_var *jd_get_ks(jd_var *v, const char *key, int vivify) {
-  jd_var kv = JD_INIT, *rv;
-  jd_set_string(&kv, key);
-  rv = jd_get_key(v, &kv, vivify);
-  jd_release(&kv);
+  jd_var *rv;
+  JD_TRY {
+    JD_VAR(kv);
+    jd_set_string(kv, key);
+    rv = jd_get_key(v, kv, vivify);
+  }
+  JD_GUARD
   return rv;
 }
 
@@ -298,11 +301,12 @@ int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
 }
 
 int jd_delete_ks(jd_var *v, const char *key, jd_var *slot) {
-  jd_var kv = JD_INIT;
   int rv;
-  jd_set_string(&kv, key);
-  rv = jd_delete_key(v, &kv, slot);
-  jd_release(&kv);
+  JD_TRY {
+    JD_VAR(kv);
+    jd_set_string(kv, key);
+    rv = jd_delete_key(v, kv, slot);
+  } JD_GUARD
   return rv;
 }
 
@@ -332,41 +336,42 @@ jd_var *jd_keys(jd_var *v, jd_var *keys) {
 }
 
 jd_var *jd_stringify(jd_var *out, jd_var *v) {
-  jd_var tmp = JD_INIT;
-  if (v) {
-    switch (v->type) {
-    case VOID:
-      jd_set_string(&tmp, "null");
-      break;
-    case BOOL:
-      jd_set_string(&tmp, v->v.b ? "true" : "false");
-      break;
-    case INTEGER:
-      jd_printf(&tmp, "%lld", v->v.i);
-      break;
-    case REAL:
-      jd_printf(&tmp, "%g", v->v.r);
-      break;
-    case STRING:
-      jd_assign(&tmp, v);
-      break;
-    case HASH:
-    case ARRAY:
-      jd_to_json(&tmp, v);
-      break;
-    default:
-      if (v->type < MAXTYPE)
-        jd_printf(&tmp, "<%s:%p>", typename[v->type], v);
-      else
-        jd_printf(&tmp, "<UNKNOWN(%u):%p>", v->type, v);
-      break;
+  JD_TRY {
+    JD_VAR(tmp);
+    if (v) {
+      switch (v->type) {
+      case VOID:
+        jd_set_string(tmp, "null");
+        break;
+      case BOOL:
+        jd_set_string(tmp, v->v.b ? "true" : "false");
+        break;
+      case INTEGER:
+        jd_printf(tmp, "%lld", v->v.i);
+        break;
+      case REAL:
+        jd_printf(tmp, "%g", v->v.r);
+        break;
+      case STRING:
+        jd_assign(tmp, v);
+        break;
+      case HASH:
+      case ARRAY:
+        jd_to_json(tmp, v);
+        break;
+      default:
+        if (v->type < MAXTYPE)
+          jd_printf(tmp, "<%s:%p>", typename[v->type], v);
+        else
+          jd_printf(tmp, "<UNKNOWN(%u):%p>", v->type, v);
+        break;
+      }
     }
-  }
-  else {
-    jd_set_string(&tmp, "<NULL>");
-  }
-  jd_assign(out, &tmp);
-  jd_release(&tmp);
+    else {
+      jd_set_string(tmp, "<NULL>");
+    }
+    jd_assign(out, tmp);
+  } JD_GUARD
   return out;
 }
 
@@ -397,28 +402,30 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
 }
 
 #define CAST(vtype, name) \
-  vtype name(jd_var *v) {                     \
-    jd_var tmp = JD_INIT;                     \
-    vtype rv;                                 \
-    jd_numify(&tmp, v);                       \
-    switch (tmp.type) {                       \
-    case INTEGER:                             \
-      rv = (vtype) tmp.v.i;                   \
-      break;                                  \
-    case REAL:                                \
-      rv = (vtype) tmp.v.r;                   \
-      break;                                  \
-    case BOOL:                                \
-      rv = (vtype) tmp.v.b;                   \
-      break;                                  \
-    default:                                  \
-      jd_throw("Oops - expected a numeric");  \
-    case VOID:                                \
-      rv = 0;                                 \
-      break;                                  \
-    }                                         \
-    jd_release(&tmp);                         \
-    return rv;                                \
+  vtype name(jd_var *v) {                       \
+    vtype rv;                                   \
+    JD_TRY {                                    \
+      JD_VAR(tmp);                              \
+      jd_numify(tmp, v);                        \
+      switch (tmp->type) {                      \
+      case INTEGER:                             \
+        rv = (vtype) tmp->v.i;                  \
+        break;                                  \
+      case REAL:                                \
+        rv = (vtype) tmp->v.r;                  \
+        break;                                  \
+      case BOOL:                                \
+        rv = (vtype) tmp->v.b;                  \
+        break;                                  \
+      default:                                  \
+        jd_throw("Oops - expected a numeric");  \
+      case VOID:                                \
+        rv = 0;                                 \
+        break;                                  \
+      }                                         \
+    }                                           \
+    JD_GUARD                                    \
+    return rv;                                  \
   }
 
 CAST(jd_int, jd_get_int)
@@ -485,9 +492,10 @@ jd_var *jd_context(jd_var *v) {
 
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg) {
   if (!arg) {
-    jd_var targ = JD_INIT;
-    jd_eval(cl, rv, &targ);
-    jd_release(&targ);
+    JD_TRY {
+      JD_VAR(targ);
+      jd_eval(cl, rv, targ);
+    } JD_GUARD
   }
   else {
     jd_closure_call(jd_as_closure(cl), rv, arg);
@@ -496,9 +504,10 @@ jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg) {
 }
 
 void jd_call(jd_var *cl, jd_var *arg) {
-  jd_var rv = JD_INIT;
-  jd_eval(cl, &rv, arg);
-  jd_release(&rv);
+  JD_TRY {
+    JD_VAR(rv);
+    jd_eval(cl, rv, arg);
+  } JD_GUARD
 }
 
 void *jd_ptr(jd_var *v) {
