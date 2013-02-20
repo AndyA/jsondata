@@ -123,8 +123,8 @@ typedef struct jd_activation {
 #define JD_3VARS(a, b, c) JD_2VARS(a, b); JD_VAR(c)
 #define JD_4VARS(a, b, c, d) JD_3VARS(a, b, c); JD_VAR(d)
 
-extern jd_activation *jd_head;
-extern jd_var jd_root_exception;
+extern __thread jd_activation *jd_head;
+extern __thread jd_var jd_root_exception;
 
 extern void *(*jd_alloc_hook)(size_t);
 extern void (*jd_free_hook)(void *);
