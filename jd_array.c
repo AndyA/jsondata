@@ -36,7 +36,7 @@ jd_array *jd_array_release(jd_array *jda) {
 static unsigned cook_idx(int idx, size_t count, size_t max) {
   if (idx < 0) idx += count;
   if (idx < 0 || idx >= max)
-    jd_die("Array index %d out of bounds (0..%lu)", idx, (unsigned long) max);
+    jd_throw("Array index %d out of bounds (0..%lu)", idx, (unsigned long) max);
   return (unsigned) idx;
 }
 
@@ -135,10 +135,11 @@ static jd_var *array_join(jd_var *out, jd_var *sep, jd_array *jda) {
 }
 
 jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
-  jd_var ar = JD_INIT;
-  array_stringify(&ar, jda);
-  array_join(out, sep, jd_as_array(&ar));
-  jd_release(&ar);
+  JD_TRY {
+    JD_VAR(ar);
+    array_stringify(ar, jda);
+    array_join(out, sep, jd_as_array(ar));
+  } JD_GUARD
   return out;
 }
 

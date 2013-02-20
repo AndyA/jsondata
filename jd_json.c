@@ -66,14 +66,15 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
 
 static void pad(jd_var *out, struct json_opt *opt, int depth) {
   if (opt->pretty) {
-    jd_var tab = JD_INIT;
-    size_t len = depth * opt->pad;
-    const char *spc = " ";
-    unsigned i;
-    jd_set_string(&tab, "\n");
-    for (i = 0; i < len; i++) jd_append_bytes(&tab, spc, 1);
-    jd_assign(jd_push(out, 1), &tab);
-    jd_release(&tab);
+    JD_TRY {
+      JD_VAR(tab);
+      size_t len = depth * opt->pad;
+      const char *spc = " ";
+      unsigned i;
+      jd_set_string(tab, "\n");
+      for (i = 0; i < len; i++) jd_append_bytes(tab, spc, 1);
+      jd_assign(jd_push(out, 1), tab);
+    } JD_GUARD
   }
 }
 
@@ -84,57 +85,53 @@ static void to_json_string(jd_var *out, jd_var *str, struct json_opt *opt, int d
 }
 
 static void to_json_array(jd_var *out, jd_var *ar, struct json_opt *opt, int depth) {
-  jd_var tmp = JD_INIT, sep = JD_INIT;
-  unsigned i;
-  size_t count = jd_count(ar);
+  JD_TRY {
+    JD_2VARS(tmp, sep);
+    unsigned i;
+    size_t count = jd_count(ar);
 
-  jd_set_string(&sep, "");
-  jd_set_array(&tmp, count);
+    jd_set_string(sep, "");
+    jd_set_array(tmp, count);
 
-  for (i = 0; i < count; i++) {
-    if (i) jd_set_string(jd_push(&tmp, 1), ",");
-    pad(&tmp, opt, depth + 1);
-    to_json_flat(jd_push(&tmp, 1), jd_get_idx(ar, i), opt, depth + 1);
-  }
+    for (i = 0; i < count; i++) {
+      if (i) jd_set_string(jd_push(tmp, 1), ",");
+      pad(tmp, opt, depth + 1);
+      to_json_flat(jd_push(tmp, 1), jd_get_idx(ar, i), opt, depth + 1);
+    }
 
-  jd_set_string(jd_push(out, 1), "[");
-  jd_join(jd_push(out, 1), &sep, &tmp);
-  pad(out, opt, depth);
-  jd_set_string(jd_push(out, 1), "]");
-
-  jd_release(&sep);
-  jd_release(&tmp);
+    jd_set_string(jd_push(out, 1), "[");
+    jd_join(jd_push(out, 1), sep, tmp);
+    pad(out, opt, depth);
+    jd_set_string(jd_push(out, 1), "]");
+  } JD_GUARD
 }
 
 static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int depth) {
-  jd_var tmp = JD_INIT, sep = JD_INIT;
-  jd_var keys = JD_INIT;
-  size_t count;
-  unsigned i;
+  JD_TRY {
+    size_t count;
+    unsigned i;
+    JD_3VARS(tmp, sep, keys);
 
-  jd_keys(ha, &keys);
-  jd_sort(&keys);
-  count = jd_count(&keys);
-  jd_set_string(&sep, "");
-  jd_set_array(&tmp, count * 4);
+    jd_keys(ha, keys);
+    jd_sort(keys);
+    count = jd_count(keys);
+    jd_set_string(sep, "");
+    jd_set_array(tmp, count * 4);
 
-  for (i = 0; i < count; i++) {
-    jd_var *k = jd_get_idx(&keys, i);
-    if (i) jd_set_string(jd_push(&tmp, 1), ",");
-    pad(&tmp, opt, depth + 1);
-    to_json_flat(jd_push(&tmp, 1), k, opt, depth + 1);
-    jd_set_string(jd_push(&tmp, 1), opt->pretty ? ": " : ":");
-    to_json_flat(jd_push(&tmp, 1), jd_get_key(ha, k, 0), opt, depth + 1);
-  }
+    for (i = 0; i < count; i++) {
+      jd_var *k = jd_get_idx(keys, i);
+      if (i) jd_set_string(jd_push(tmp, 1), ",");
+      pad(tmp, opt, depth + 1);
+      to_json_flat(jd_push(tmp, 1), k, opt, depth + 1);
+      jd_set_string(jd_push(tmp, 1), opt->pretty ? ": " : ":");
+      to_json_flat(jd_push(tmp, 1), jd_get_key(ha, k, 0), opt, depth + 1);
+    }
 
-  jd_set_string(jd_push(out, 1), "{");
-  jd_join(jd_push(out, 1), &sep, &tmp);
-  pad(out, opt, depth);
-  jd_set_string(jd_push(out, 1), "}");
-
-  jd_release(&sep);
-  jd_release(&tmp);
-  jd_release(&keys);
+    jd_set_string(jd_push(out, 1), "{");
+    jd_join(jd_push(out, 1), sep, tmp);
+    pad(out, opt, depth);
+    jd_set_string(jd_push(out, 1), "}");
+  } JD_GUARD
 }
 
 static void to_json(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
@@ -155,13 +152,13 @@ static void to_json(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
 }
 
 static void to_json_flat(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
-  jd_var tmp = JD_INIT, sep = JD_INIT;
-  jd_set_array(&tmp, 1);
-  jd_set_string(&sep, "");
-  to_json(&tmp, v, opt, depth);
-  jd_join(out, &sep, &tmp);
-  jd_release(&sep);
-  jd_release(&tmp);
+  JD_TRY {
+    JD_2VARS(tmp, sep);
+    jd_set_array(tmp, 1);
+    jd_set_string(sep, "");
+    to_json(tmp, v, opt, depth);
+    jd_join(out, sep, tmp);
+  } JD_GUARD
 }
 
 jd_var *jd_to_json_pretty(jd_var *out, jd_var *v) {
@@ -207,29 +204,31 @@ static jd_var *from_json_array(jd_var *out, struct parser *p) {
     from_json(jd_push(out, 1), p);
     SKIP(p);
     if (CHAR(p) == ']') break;
-    if (CHAR(p) != ',') jd_die("Expected comma or closing bracket");
+    if (CHAR(p) != ',') jd_throw("Expected comma or closing bracket");
   }
   STEP(p);
   return out;
 }
 
 static jd_var *from_json_hash(jd_var *out, struct parser *p) {
-  jd_var key = JD_INIT;
-  jd_set_hash(out, 10);
-  for (;;) {
+  JD_TRY {
+    JD_VAR(key);
+    jd_set_hash(out, 10);
+    for (;;) {
+      STEP(p);
+      if (CHAR(p) == '}') break;
+      from_json(key, p);
+      SKIP(p);
+      if (CHAR(p) != ':') jd_throw("Missing colon");
+      STEP(p);
+      from_json(jd_get_key(out, key, 1), p);
+      SKIP(p);
+      if (CHAR(p) == '}') break;
+      if (CHAR(p) != ',') jd_throw("Expected comma or closing brace");
+    }
     STEP(p);
-    if (CHAR(p) == '}') break;
-    from_json(&key, p);
-    SKIP(p);
-    if (CHAR(p) != ':') jd_die("Missing colon");
-    STEP(p);
-    from_json(jd_get_key(out, &key, 1), p);
-    SKIP(p);
-    if (CHAR(p) == '}') break;
-    if (CHAR(p) != ',') jd_die("Expected comma or closing brace");
   }
-  STEP(p);
-  jd_release(&key);
+  JD_GUARD
   return out;
 }
 
@@ -249,7 +248,7 @@ static unsigned parse_escape(struct parser *p) {
   return esc;
 
 bad:
-  jd_die("Bad escape");
+  jd_throw("Bad escape");
   return 0;
 }
 
@@ -311,7 +310,7 @@ static jd_var *from_json_bool(jd_var *out, struct parser *p) {
     JUMP(p, sz);
     return jd_set_bool(out, 0);
   }
-  jd_die("Expected true or false");
+  jd_throw("Expected true or false");
   return NULL;
 }
 
@@ -321,7 +320,7 @@ static jd_var *from_json_null(jd_var *out, struct parser *p) {
     JUMP(p, sz);
     return jd_set_void(out);
   }
-  jd_die("Expected null");
+  jd_throw("Expected null");
   return NULL;
 }
 
@@ -342,7 +341,7 @@ static jd_var *from_json_num(jd_var *out, struct parser *p) {
     return jd_set_real(out, r);
   }
 
-  jd_die("Syntax error");
+  jd_throw("Syntax error");
   return NULL;
 }
 
@@ -368,15 +367,16 @@ static jd_var *from_json(jd_var *out, struct parser *p) {
 }
 
 jd_var *jd_from_json(jd_var *out, jd_var *json) {
-  jd_var tmp = JD_INIT;
-  struct parser p;
-  size_t size;
+  JD_TRY {
+    JD_VAR(tmp);
+    struct parser p;
+    size_t size;
 
-  jd_stringify(&tmp, json);
-  p.pp = jd_bytes(&tmp, &size);
-  p.ep = p.pp + size - 1;
-  from_json(out, &p);
-  jd_release(&tmp);
+    jd_stringify(tmp, json);
+    p.pp = jd_bytes(tmp, &size);
+    p.ep = p.pp + size - 1;
+    from_json(out, &p);
+  } JD_GUARD
 
   return out;
 }
