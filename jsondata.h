@@ -107,11 +107,7 @@ typedef struct jd_activation {
   while (0); \
   jd_ar_up(); \
   } else { \
-    jd_var *e = jd_head && jd_head->up \
-                ? jd_ar_var(jd_head->up) \
-                : &jd_root_exception; \
-    jd_assign(e, &jd_head->vars->v); \
-    jd_ar_up(); \
+    jd_var *e = jd_catch(); \
     if (1)
 
 #define JD_END \
@@ -210,6 +206,7 @@ void jd_ar_free(jd_activation *rec);
 void jd_ar_up(void);
 void jd_rethrow(jd_var *e);
 void jd_throw(const char *msg, ...);
+jd_var *jd_catch(void);
 
 #endif
 

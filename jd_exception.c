@@ -45,6 +45,24 @@ void jd_ar_up(void) {
   jd_ar_free(jd_ar_pop());
 }
 
+jd_var *jd_catch(void) {
+  jd_dvar *ex = jd_head->vars;
+  jd_var *e = &ex->v;
+  jd_head->vars = ex->next;
+  if (jd_head->up) {
+    ex->next = jd_head->up->vars;
+    jd_head->up->vars = ex;
+  }
+  else {
+    jd_assign(&jd_root_exception, &ex->v);
+    jd_release(&ex->v);
+    jd_free(ex);
+    e = &jd_root_exception;
+  }
+  jd_ar_up();
+  return e;
+}
+
 jd_var *jd_ar_var(jd_activation *rec) {
   jd_dvar *dv = jd_alloc(sizeof(jd_dvar));
   dv->next = rec->vars;
