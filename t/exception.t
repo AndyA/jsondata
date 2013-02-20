@@ -64,7 +64,6 @@ static void test_deep_nest(void) {
   JD_END
 }
 
-
 void test_main(void) {
   test_simple_throw();
   test_deep_throw();

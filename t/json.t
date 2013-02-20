@@ -72,9 +72,36 @@ static void test_from_json(void) {
     check_from_json(json[i]);
 }
 
+static void throws(const char *json, const char *want) {
+  int thrown = 0;
+  JD_TRY {
+    JD_2VARS(vjson, out);
+    jd_set_string(vjson, json);
+    jd_from_json(out, vjson);
+  } JD_CATCH(e) {
+    jdt_is_string(e, want, "parse \"%s\" throws \"%s\"", json, want);
+    jd_release(e);
+    thrown = 1;
+  }
+  JD_END
+  ok(thrown, "parsing \"%s\" throws exception", json);
+}
+
+static void test_exceptions(void) {
+  throws("", "Syntax error");
+  throws("[1)", "Expected comma or closing bracket");
+  throws("{\"x\":1)", "Expected comma or closing brace");
+  throws("{\"x\")", "Missing colon");
+  throws("\"\\u\"", "Bad escape");
+  throws("triffic", "Expected true or false");
+  throws("nice", "Expected null");
+  throws("!!", "Syntax error");
+}
+
 void test_main(void) {
   test_to_json();
   test_from_json();
+  test_exceptions();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
