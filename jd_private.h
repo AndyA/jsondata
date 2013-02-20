@@ -29,6 +29,12 @@ jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out);
 jd_var *jd_string_numify(jd_string *jds, jd_var *out);
 const char *jd_string_bytes(jd_string *jds, size_t *sp);
 
+jd_string *jd_as_string(jd_var *v);
+jd_array *jd_as_array(jd_var *v);
+jd_hash *jd_as_hash(jd_var *v);
+jd_closure *jd_as_closure(jd_var *v);
+jd_object *jd_as_object(jd_var *v);
+
 jd_array *jd_array_new(size_t size);
 jd_array *jd_array_retain(jd_array *jda);
 jd_array *jd_array_release(jd_array *jds);
