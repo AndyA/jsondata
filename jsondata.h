@@ -5,6 +5,7 @@
 
 #include <stddef.h>
 #include <stdarg.h>
+#include <setjmp.h>
 
 typedef long long jd_int;
 
@@ -85,6 +86,45 @@ typedef struct {
 
 #define JD_INIT { .type = VOID }
 
+typedef struct jd_activation {
+  struct jd_activation *up;
+  jmp_buf env;
+  jd_var vars;
+  const char *file;
+  int line;
+} jd_activation;
+
+#define JD_TRY \
+  jd_ar_push(__LINE__, __FILE__); \
+  if (!setjmp(jd_head->env)) { if (1) do
+
+#define JD_CATCH(e) \
+  while (0); \
+  jd_ar_up(); \
+  } else { \
+    jd_var *e = jd_head && jd_head->up \
+                ? jd_push(&jd_head->up->vars, 1) \
+                : &jd_root_exception; \
+    jd_pop(&jd_head->vars, 1, e); \
+    jd_ar_up(); \
+    if (1)
+
+#define JD_END \
+  }
+
+#define JD_GUARD \
+  JD_CATCH(e) { jd_rethrow(e); } JD_END
+
+#define JD_VAR(x) \
+  jd_var *x = jd_push(&jd_head->vars, 1)
+
+#define JD_2VARS(a, b) JD_VAR(a); JD_VAR(b)
+#define JD_3VARS(a, b, c) JD_2VARS(a, b); JD_VAR(c)
+#define JD_4VARS(a, b, c, d) JD_3VARS(a, b, c); JD_VAR(d)
+
+extern jd_activation *jd_head;
+extern jd_var jd_root_exception;
+
 extern void *(*jd_alloc_hook)(size_t);
 extern void (*jd_free_hook)(void *);
 
@@ -157,6 +197,13 @@ jd_var *jd_context(jd_var *v);
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg);
 void jd_call(jd_var *cl, jd_var *arg);
 void *jd_ptr(jd_var *v);
+
+jd_activation *jd_ar_push(int line, const char *file);
+jd_activation *jd_ar_pop(void);
+void jd_ar_free(jd_activation *rec); 
+void jd_ar_up(void);
+void jd_rethrow(jd_var *e); 
+void jd_throw(const char *msg, ...);
 
 #endif
 
