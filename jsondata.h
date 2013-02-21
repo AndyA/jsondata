@@ -189,6 +189,7 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep);
 jd_var *jd_numify(jd_var *out, jd_var *v);
 jd_int jd_get_int(jd_var *v);
 double jd_get_real(jd_var *v);
+jd_var *jd_sortv(jd_var *v, int (*cmp)(jd_var *, jd_var *));
 jd_var *jd_sort(jd_var *v);
 const char *jd_bytes(jd_var *v, size_t *sp);
 jd_var *jd_merge(jd_var *out, jd_var *v, int deep);

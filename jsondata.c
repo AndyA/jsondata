@@ -460,9 +460,13 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
 CAST(jd_int, jd_get_int)
 CAST(double, jd_get_real)
 
-jd_var *jd_sort(jd_var *v) {
-  jd_array_sort(jd_as_array(v));
+jd_var *jd_sortv(jd_var *v, int (*cmp)(jd_var *, jd_var *)) {
+  jd_array_sort(jd_as_array(v), cmp);
   return v;
+}
+
+jd_var *jd_sort(jd_var *v) {
+  return jd_sortv(v, jd_compare);
 }
 
 const char *jd_bytes(jd_var *v, size_t *sp) {

@@ -49,7 +49,7 @@ jd_var *jd_array_get(jd_array *jda, int idx);
 jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda);
 jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v);
 jd_array *jd_array_append(jd_array *jda, jd_var *v);
-jd_array *jd_array_sort(jd_array *jda);
+jd_array *jd_array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *));
 jd_var *jd_array_clone(jd_var *out, jd_array *jda, int deep);
 
 jd_hash *jd_hash_new(size_t size);

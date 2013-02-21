@@ -158,12 +158,9 @@ jd_array *jd_array_append(jd_array *jda, jd_var *v) {
   return jd_array_splice(jda, jd_array_count(jda), v);
 }
 
-static int cmp(const void *a, const void *b) {
-  return jd_compare((jd_var *) a, (jd_var *) b);
-}
-
-jd_array *jd_array_sort(jd_array *jda) {
-  qsort(jda->s.data, jd_array_count(jda), sizeof(jd_var), cmp);
+jd_array *jd_array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *)) {
+  qsort(jda->s.data, jd_array_count(jda), sizeof(jd_var),
+        (int ( *)(const void *, const void *)) cmp);
   return jda;
 }
 
