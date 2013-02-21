@@ -52,6 +52,11 @@ static void test_hashcode(void) {
     "\"this is a long string.\"",
     "\"\"",
     "\" \"",
+    "1", "100000", "100001", "2.0", "1.24",
+    "\"1\"", "\"100000\"", "\"100001\"", "\"2.0\"", "\"1.24\"",
+    "true", "\"true\"",
+    "false", "\"false\"",
+    "null", "\"null\"",
     NULL
   };
   JD_BEGIN {

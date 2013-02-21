@@ -22,7 +22,7 @@ size_t jd_string_length(jd_string *jds);
 jd_string *jd_string_append(jd_string *jds, jd_var *v);
 jd_string *jd_string_append_bytes(jd_string *jds, const void *b, size_t size);
 int jd_string_compare(jd_string *jds, jd_var *v);
-unsigned long jd_string_hashcalc(jd_string *jds);
+unsigned long jd_string_hashcalc(jd_string *jds, jd_type t);
 jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out);
 int jd_string_find(jd_string *jds, jd_var *pat, int from);
 jd_var *jd_string_split(jd_string *jds, jd_var *pat, jd_var *out);

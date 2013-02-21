@@ -351,13 +351,22 @@ int jd_compare(jd_var *a, jd_var *b) {
 }
 
 unsigned long jd_hashcalc(jd_var *v) {
+  /* Flatten INTEGER and REAL so that 0 == 0.0 */
+  jd_type t = v->type == REAL ? INTEGER : v->type;
+  int rc = 0;
   switch (v->type) {
   case STRING:
-    return jd_string_hashcalc(jd_as_string(v));
-  default:
-    jd_throw("Can't compute hash");
-    return 0;
+    rc = jd_string_hashcalc(jd_as_string(v), t);
+    break;
+  default: {
+    jd_var vv = JD_INIT;
+    jd_stringify(&vv, v);
+    rc = jd_string_hashcalc(jd_as_string(&vv), t);
+    jd_release(&vv);
   }
+  break;
+  }
+  return rc;
 }
 
 jd_var *jd_keys(jd_var *v, jd_var *keys) {
