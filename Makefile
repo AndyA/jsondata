@@ -1,4 +1,4 @@
-.PHONY: all clean tags install version test valgrind
+.PHONY: all clean tags install version test valgrind cover
 
 include common.mk
 
@@ -47,6 +47,9 @@ test: $(LIB)
 
 valgrind: $(LIB)
 	$(MAKE) -C t valgrind
+
+cover:
+	tools/cover.sh
 
 install: $(BINS)
 	touch VERSION
