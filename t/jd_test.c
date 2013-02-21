@@ -94,5 +94,18 @@ int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *ms
   return rc;
 }
 
+void jdt_diag(const char *msg, ...) {
+  JD_BEGIN {
+    JD_VAR(vmsg);
+    va_list ap;
+
+    va_start(ap, msg);
+    jd_vprintf(vmsg, msg, ap);
+    va_end(ap);
+    diag(jd_bytes(vmsg, NULL));
+  }
+  JD_END
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
