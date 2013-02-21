@@ -100,8 +100,8 @@ typedef struct jd_activation {
 } jd_activation;
 
 #define JD_TRY { \
-  jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
-  if (!setjmp(jd_head->env)) { if (1) do
+    jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
+    if (!setjmp(jd_head->env)) { if (1) do
 
 #define JD_CATCH(e) \
   while (0); \
@@ -121,6 +121,15 @@ typedef struct jd_activation {
 #define JD_2VARS(a, b) JD_VAR(a); JD_VAR(b)
 #define JD_3VARS(a, b, c) JD_2VARS(a, b); JD_VAR(c)
 #define JD_4VARS(a, b, c, d) JD_3VARS(a, b, c); JD_VAR(d)
+
+#define JD_SV(n, v) \
+  JD_VAR(n); jd_set_string(n, (v))
+
+#define JD_IV(n, v) \
+  JD_VAR(n); jd_set_int(n, (v))
+
+#define JD_RV(n, v) \
+  JD_VAR(n); jd_set_real(n, (v))
 
 extern __thread jd_activation *jd_head;
 extern __thread jd_var jd_root_exception;

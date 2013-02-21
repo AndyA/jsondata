@@ -67,14 +67,12 @@ static void test_deep_nest(void) {
 static void test_throw_in_catch(void) {
   int catch = 0, first = 0;
   JD_TRY {
-    JD_VAR(a);
-    jd_set_string(a, "first");
+    JD_SV(a, "first");
     jd_throw("Throw from %V block", a);
   }
   JD_CATCH(e) {
     JD_TRY {
-      JD_VAR(a);
-      jd_set_string(a, "catch");
+      JD_SV(a, "catch");
       jd_throw("Throw from %V block", a);
     }
     JD_CATCH(e) {
