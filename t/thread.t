@@ -31,7 +31,7 @@ static void do_stuff(jd_var *v, int depth) {
     NULL
   };
 
-  nsleep(0.0025);
+  nsleep(0.001);
 
   JD_BEGIN {
     switch (depth) {
