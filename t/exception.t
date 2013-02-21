@@ -108,6 +108,28 @@ static void test_return(void) {
   JD_END
 }
 
+static void backtrace(jd_var *out, int depth) {
+  JD_BEGIN {
+    if (depth > 0)
+      backtrace(out, depth - 1);
+    else
+      jd_backtrace(out);
+  }
+  JD_END
+}
+
+static void test_backtrace(void) {
+  JD_BEGIN {
+    JD_VAR(bt);
+    backtrace(bt, 10);
+    /*jdt_diag("bt=%lJ", bt);*/
+    is(bt->type, ARRAY, "backtrace is array");
+    size_t count = jd_count(bt);
+    ok(count > 10 && count < 20, "backtrace has %ld elements", (unsigned long) count);
+  }
+  JD_END
+}
+
 void test_main(void) {
   JD_BEGIN {
     test_simple_throw();
@@ -115,6 +137,7 @@ void test_main(void) {
     test_deep_nest();
     test_throw_in_catch();
     test_return();
+    test_backtrace();
   }
   JD_END
 }

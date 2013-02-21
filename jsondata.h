@@ -218,6 +218,7 @@ void jd_ar_up(jd_activation *rec);
 jd_var *jd_catch(jd_activation *rec);
 void jd_rethrow(jd_var *e);
 void jd_throw(const char *msg, ...);
+jd_var *jd_backtrace(jd_var *out);
 
 #endif
 

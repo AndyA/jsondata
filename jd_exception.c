@@ -98,5 +98,21 @@ void jd_throw(const char *msg, ...) {
   rethrow(&e, 1);
 }
 
+jd_var *jd_backtrace(jd_var *out) {
+  jd_activation *rec;
+  jd_set_array(out, 40);
+
+  for (rec = jd_head; rec; rec = rec->up) {
+    jd_var ar = JD_INIT;
+    jd_set_hash(&ar, 5);
+    jd_set_int(jd_lv(&ar, "$.line"), rec->line);
+    jd_set_string(jd_lv(&ar, "$.file"), rec->file);
+    jd_assign(jd_push(out, 1), &ar);
+    jd_release(&ar);
+  }
+
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
