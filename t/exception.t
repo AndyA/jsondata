@@ -79,12 +79,10 @@ static void test_throw_in_catch(void) {
     }
     JD_CATCH(e) {
       jdt_is_string(e, "Throw from catch block", "got throw catch");
-      jd_release(e);
       catch++;
     }
     JD_ENDCATCH
     jdt_is_string(e, "Throw from first block", "got first catch");
-    jd_release(e);
     first++;
   }
   JD_ENDCATCH
