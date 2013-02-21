@@ -71,20 +71,20 @@ static void test_throw_in_catch(void) {
     jd_set_string(a, "first");
     jd_throw("Throw from %V block", a);
   }
-  JD_CATCH(e1) {
+  JD_CATCH(e) {
     JD_TRY {
       JD_VAR(a);
       jd_set_string(a, "catch");
       jd_throw("Throw from %V block", a);
     }
-    JD_CATCH(e2) {
-      jdt_is_string(e2, "Throw from catch block", "got throw catch");
-      jd_release(e2);
+    JD_CATCH(e) {
+      jdt_is_string(e, "Throw from catch block", "got throw catch");
+      jd_release(e);
       catch++;
     }
     JD_END
-    jdt_is_string(e1, "Throw from first block", "got first catch");
-    jd_release(e1);
+    jdt_is_string(e, "Throw from first block", "got first catch");
+    jd_release(e);
     first++;
   }
   JD_END
