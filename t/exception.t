@@ -64,10 +64,42 @@ static void test_deep_nest(void) {
   JD_END
 }
 
+static void test_throw_in_catch(void) {
+  int catch = 0, first = 0;
+  JD_TRY {
+    JD_VAR(a);
+    jd_set_string(a, "first");
+    jd_throw("Throw from %V block", a);
+  }
+  JD_CATCH(e1) {
+    JD_TRY {
+      JD_VAR(a);
+      jd_set_string(a, "catch");
+      jd_throw("Throw from %V block", a);
+    }
+    JD_CATCH(e2) {
+      jdt_is_string(e2, "Throw from catch block", "got throw catch");
+      jd_release(e2);
+      catch++;
+    }
+    JD_END
+    jdt_is_string(e1, "Throw from first block", "got first catch");
+    jd_release(e1);
+    first++;
+  }
+  JD_END
+  is(catch, 1, "catch block exception seen");
+  is(first, 1, "first block exception seen");
+}
+
 void test_main(void) {
-  test_simple_throw();
-  test_deep_throw();
-  test_deep_nest();
+  JD_TRY {
+    test_simple_throw();
+    test_deep_throw();
+    test_deep_nest();
+    test_throw_in_catch();
+  }
+  JD_GUARD
 }
 
 
