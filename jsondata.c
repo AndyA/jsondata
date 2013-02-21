@@ -308,15 +308,46 @@ int jd_delete_ks(jd_var *v, const char *key, jd_var *slot) {
   return rv;
 }
 
-int jd_compare(jd_var *a, jd_var *b) {
+
+static int compare(jd_var *a, jd_var *b) {
+
+  /* a->type <= b->type so we can compare integers with
+   * other integers or reals here.
+   */
+
+  if (a->type == INTEGER) {
+    switch (b->type) {
+    case INTEGER:
+      return a->v.i < b->v.i ? -1 : a->v.i > b->v.i ? 1 : 0;
+    case REAL:
+      return a->v.i < b->v.r ? -1 : a->v.i > b->v.r ? 1 : 0;
+    default:
+      break;
+    }
+  }
+
+  /* If types differ default to type based comparison */
+
   if (b->type != a->type) return a->type - b->type;
+
+  /* Once we get here a->type == b->type */
+
   switch (a->type) {
+  case BOOL:
+    return a->v.b < b->v.b ? -1 : a->v.b > b->v.b ? 1 : 0;
+  case REAL:
+    return a->v.r < b->v.r ? -1 : a->v.r > b->v.r ? 1 : 0;
   case STRING:
     return jd_string_compare(jd_as_string(a), b);
   default:
     jd_throw("Can't compare");
     return 0;
   }
+}
+
+int jd_compare(jd_var *a, jd_var *b) {
+  if (a->type > b->type) return -compare(b, a);
+  return compare(a, b);
 }
 
 unsigned long jd_hashcalc(jd_var *v) {
