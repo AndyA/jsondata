@@ -7,4 +7,5 @@ ifneq ($(PROFILE),)
 CFLAGS+=-fprofile-arcs -ftest-coverage
 LDFLAGS+=-lgcov
 endif
-
+CFLAGS+=-pthread
+LDFLAGS+=-pthread

@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 #include "util.h"
 #include "tap.h"
@@ -16,7 +17,8 @@ struct memhdr {
   unsigned sig;
 };
 
-struct memhdr *memlist = NULL;
+static struct memhdr *memlist = NULL;
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 #define HDR(m) ((struct memhdr *) (m) - 1)
 #define MEM(h) ((struct memhdr *) (h) + 1)
@@ -25,9 +27,11 @@ static void *t_alloc(size_t size) {
   struct memhdr *h = malloc(size + sizeof(struct memhdr));
   if (!h)return NULL;
   h->size = size;
-  h->next = memlist;
   h->sig = SIG;
+  pthread_mutex_lock(&mutex);
+  h->next = memlist;
   memlist = h;
+  pthread_mutex_unlock(&mutex);
   return MEM(h);
 }
 
@@ -41,7 +45,9 @@ static struct memhdr *unhook(struct memhdr *list, struct memhdr *h) {
 static void t_free(void *m) {
   if (m) {
     struct memhdr *h = HDR(m);
+    pthread_mutex_lock(&mutex);
     memlist = unhook(memlist, h);
+    pthread_mutex_unlock(&mutex);
     free(h);
   }
 }

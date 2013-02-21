@@ -11,6 +11,7 @@ OBJ=$(TESTOBJ) $(MISCOBJ)
 DEPS=$(OBJ:.o=.d) 
 
 CFLAGS+=-I..
+LDFLAGS+=-lpthread
 
 %: %.o $(MISCOBJ) $(LIB)
 	$(CC) -o $@ $^ $(LDFLAGS)
