@@ -34,8 +34,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
       jd_assign(part, path);
     }
     else {
-      JD_VAR(dot);
-      jd_set_string(dot, ".");
+      JD_SV(dot, ".");
       jd_split(part, path, dot);
     }
 

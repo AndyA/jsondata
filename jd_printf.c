@@ -213,8 +213,7 @@ jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
 
 jd_var *jd_vprintf(jd_var *out, const char *fmt, va_list ap) {
   JD_BEGIN {
-    JD_VAR(vfmt);
-    jd_set_string(vfmt, fmt);
+    JD_SV(vfmt, fmt);
     jd_vprintvf(out, vfmt, ap);
   } JD_END
   return out;

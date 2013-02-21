@@ -67,11 +67,10 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
 static void pad(jd_var *out, struct json_opt *opt, int depth) {
   if (opt->pretty) {
     JD_BEGIN {
-      JD_VAR(tab);
+      JD_SV(tab, "\n");
       size_t len = depth * opt->pad;
       const char *spc = " ";
       unsigned i;
-      jd_set_string(tab, "\n");
       for (i = 0; i < len; i++) jd_append_bytes(tab, spc, 1);
       jd_assign(jd_push(out, 1), tab);
     } JD_END

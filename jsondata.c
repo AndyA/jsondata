@@ -288,8 +288,7 @@ jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify) {
 jd_var *jd_get_ks(jd_var *v, const char *key, int vivify) {
   jd_var *rv;
   JD_BEGIN {
-    JD_VAR(kv);
-    jd_set_string(kv, key);
+    JD_SV(kv, key);
     rv = jd_get_key(v, kv, vivify);
   }
   JD_END
@@ -303,8 +302,7 @@ int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
 int jd_delete_ks(jd_var *v, const char *key, jd_var *slot) {
   int rv;
   JD_BEGIN {
-    JD_VAR(kv);
-    jd_set_string(kv, key);
+    JD_SV(kv, key);
     rv = jd_delete_key(v, kv, slot);
   } JD_END
   return rv;
