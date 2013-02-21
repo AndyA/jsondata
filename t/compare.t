@@ -45,6 +45,10 @@ static void test_sort(void) {
 
 static void test_hashcode(void) {
   int i;
+  /* All of these are expected to have distinct hash codes. Single
+   * collisions are tolerated but three or more values yielding the
+   * same hash will be considered a fail.
+   */
   static const char *obj[] = {
     "\"this is a long string\"",
     "\"This is a long string\"",
