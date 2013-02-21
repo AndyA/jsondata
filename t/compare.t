@@ -25,7 +25,7 @@ static void check_sort(const char *in, const char *want) {
   JD_ENDCATCH
 }
 
-void test_main(void) {
+static void test_compare(void) {
   JD_BEGIN {
     check_sort("[\"c\",\"b\",\"a\"]", "[\"a\",\"b\",\"c\"]");
     check_sort("[3,2,1]", "[1,2,3]");
@@ -35,6 +35,47 @@ void test_main(void) {
     check_sort("[true,false,\"pi\",4,3.25,2,1.25]",
     "[false,true,1.25,2,3.25,4,\"pi\"]");
   } JD_END
+}
+
+static void test_hashcode(void) {
+  int i;
+  static const char *obj[] = {
+    "\"this is a long string\"",
+    "\"This is a long string\"",
+    "\"This is a long string.\"",
+    "\"this is a long string.\"",
+    "\"\"",
+    "\" \"",
+    NULL
+  };
+  JD_BEGIN {
+    JD_HV(stats, 10);
+    JD_3VARS(json, v, key);
+
+    for (i = 0; obj[i]; i++) {
+      jd_var *slot;
+
+      jd_set_string(json, obj[i]);
+      jd_from_json(v, json);
+      jd_printf(key, "%lx", jd_hashcalc(v));
+
+      slot = jd_get_key(stats, key, 1);
+      jd_set_int(slot, jd_get_int(slot) + 1);
+    }
+
+/*    jdt_diag("Hash stats: %lJ", stats);*/
+    jd_keys(stats, key);
+    for (i = 0; i < jd_count(key); i++) {
+      jd_int count = jd_get_int(jd_get_key(stats, jd_get_idx(key, i), 0));
+      ok(count < 3, "count for %d < 3", i);
+    }
+
+  } JD_END
+}
+
+void test_main(void) {
+  test_compare();
+  test_hashcode();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
