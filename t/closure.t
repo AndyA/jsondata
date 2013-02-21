@@ -14,19 +14,20 @@ static int tc1(jd_var *rv, jd_var *ctx, jd_var *arg) {
 }
 
 static void test_closure(void) {
-  jd_var cl = JD_INIT;
-  jd_var args = JD_INIT;
-  jd_set_closure(&cl, tc1);
-  jd_set_string(jd_context(&cl), "foo");
-  jdt_is_json(jd_context(&cl), "\"foo\"", "initial context");
-  jd_call(&cl, &args);
-  jdt_is_json(jd_context(&cl), "1", "one call");
-  jd_call(&cl, NULL);
-  jdt_is_json(jd_context(&cl), "2", "two calls");
-  jd_call(&cl, &args);
-  jdt_is_json(jd_context(&cl), "3", "three calls");
-  jd_release(&cl);
-  jd_release(&args);
+  JD_BEGIN {
+    JD_3VARS(cl1, cl2, args);
+    jd_set_closure(cl1, tc1);
+    jd_assign(cl2, cl1);
+    jd_set_string(jd_context(cl1), "foo");
+    jdt_is_json(jd_context(cl1), "\"foo\"", "initial context");
+    jd_call(cl1, args);
+    jdt_is_json(jd_context(cl1), "1", "one call");
+    jd_call(cl2, NULL);
+    jdt_is_json(jd_context(cl2), "2", "two calls");
+    jd_call(cl1, args);
+    jdt_is_json(jd_context(cl1), "3", "three calls");
+  }
+  JD_END
 }
 
 static int closure(jd_var *rv, jd_var *ctx, jd_var *arg) {
