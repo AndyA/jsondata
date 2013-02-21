@@ -26,8 +26,6 @@ static void do_stuff(jd_var *v, int depth) {
     "one",
     "two",
     "three",
-    "four",
-    "five",
     NULL
   };
 
@@ -36,12 +34,13 @@ static void do_stuff(jd_var *v, int depth) {
   JD_BEGIN {
     switch (depth) {
     case 0:
-    case 1:
+    case 2:
       jd_set_array(v, 10);
-      for (i = 0; i < 5; i++)
+      for (i = 0; i < 3; i++)
         do_stuff(jd_push(v, 1), depth + 1);
       break;
-    case 2:
+    case 1:
+    case 3:
       jd_set_hash(v, 10);
       for (i = 0; kn[i]; i++) {
         do_stuff(jd_lv(v, "$.%s", kn[i]), depth + 1);
