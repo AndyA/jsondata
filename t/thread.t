@@ -42,9 +42,8 @@ static void do_stuff(jd_var *v, int depth) {
     case 1:
     case 3:
       jd_set_hash(v, 10);
-      for (i = 0; kn[i]; i++) {
+      for (i = 0; kn[i]; i++)
         do_stuff(jd_lv(v, "$.%s", kn[i]), depth + 1);
-      }
       break;
     default:
       jd_printf(v, "At depth %d", depth);
