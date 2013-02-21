@@ -5,6 +5,7 @@
 /*.d
 /*.o
 /core
+/cover/
 /jdtest
 /tags
 /version.h
