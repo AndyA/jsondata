@@ -23,6 +23,7 @@ lcov -o "all.info" $infos
 genhtml -o "cover/all" "all.info"
 find . \( -name '*.gcno' -o -name '*.gcda' -o -name '*.gcov' \
   -o -name '*.info' \) -print0 | xargs -0 rm
+make clean
 
 # vim:ts=2:sw=2:sts=2:et:ft=sh
 
