@@ -30,7 +30,7 @@ static int backwards(jd_var *a, jd_var *b) {
   return jd_compare(b, a);
 }
 
-static void test_compare(void) {
+static void test_sort(void) {
   JD_BEGIN {
     check_sort("[\"c\",\"b\",\"a\"]", "[\"a\",\"b\",\"c\"]", jd_compare);
     check_sort("[3,2,1]", "[1,2,3]", jd_compare);
@@ -84,7 +84,18 @@ static void test_hashcode(void) {
   } JD_END
 }
 
+static void test_compare(void) {
+  JD_BEGIN {
+    JD_IV(a, 1);
+    JD_RV(b, 1);
+    ok(0 == jd_compare(a, b), "(INTEGER) 1 == (REAL) 1");
+    is(jd_hashcalc(a), jd_hashcalc(b), "hash((INTEGER) 1) == hash((REAL) 1)");
+  }
+  JD_END
+}
+
 void test_main(void) {
+  test_sort();
   test_compare();
   test_hashcode();
 }
