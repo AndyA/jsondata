@@ -69,7 +69,7 @@ static void test_hashcode(void) {
       jd_set_int(slot, jd_get_int(slot) + 1);
     }
 
-/*    jdt_diag("Hash stats: %lJ", stats);*/
+    /*    jdt_diag("Hash stats: %lJ", stats);*/
     jd_keys(stats, key);
     for (i = 0; i < jd_count(key); i++) {
       jd_int count = jd_get_int(jd_get_key(stats, jd_get_idx(key, i), 0));
