@@ -96,6 +96,7 @@ static void test_exceptions(void) {
   throws("triffic", "Expected true or false");
   throws("nice", "Expected null");
   throws("!!", "Syntax error");
+  throws("\"\\u0100\"", "Can't handle unicode");
 }
 
 void test_main(void) {

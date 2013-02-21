@@ -231,7 +231,8 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
   return out;
 }
 
-static void append_byte(jd_var *out, char c) {
+static void append_byte(jd_var *out, unsigned c) {
+  if (c >= 0x100) jd_throw("Can't handle unicode");
   jd_append_bytes(out, &c, 1);
 }
 
