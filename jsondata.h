@@ -115,6 +115,9 @@ typedef struct jd_activation {
 #define JD_END \
   JD_CATCH(e) { jd_rethrow(e); } JD_ENDCATCH
 
+#define JD_RETURN(x) \
+  do { jd_ar_up(__jd_ar); return (x); } while (0)
+
 #define JD_VAR(x) \
   jd_var *x = jd_ar_var(jd_head)
 

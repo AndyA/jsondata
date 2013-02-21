@@ -90,12 +90,31 @@ static void test_throw_in_catch(void) {
   is(first, 1, "first block exception seen");
 }
 
+static int fib(int x) {
+  JD_BEGIN {
+    JD_VAR(msg);
+    jd_printf(msg, "fib(%d)", x);
+    if (x < 2) JD_RETURN(1);
+    JD_RETURN(fib(x - 1) + fib(x - 2));
+  }
+  JD_END
+  return 0;
+}
+
+static void test_return(void) {
+  JD_BEGIN {
+    is(fib(5), 8, "fib 5");
+  }
+  JD_END
+}
+
 void test_main(void) {
   JD_BEGIN {
     test_simple_throw();
     test_deep_throw();
     test_deep_nest();
     test_throw_in_catch();
+    test_return();
   }
   JD_END
 }
