@@ -70,5 +70,29 @@ int jdt_is_string(jd_var *got, const char *want, const char *msg, ...) {
   return rc;
 }
 
+int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *msg, ...) {
+  va_list ap;
+  int rc;
+
+  JD_BEGIN {
+    JD_SV(caught, "");
+    JD_SV(vwant, want);
+
+    JD_BEGIN {
+      func(ctx);
+    }
+    JD_CATCH(e) {
+      jd_assign(caught, e);
+    }
+    JD_ENDCATCH
+
+    va_start(ap, msg);
+    rc = _is(caught, vwant, msg, ap);
+    va_end(ap);
+  }
+  JD_END
+  return rc;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
