@@ -89,7 +89,7 @@ jd_string *jd_string_append(jd_string *jds, jd_var *v) {
   jd_string *vs = jd_as_string(v);
   size_t len = jd_string_length(vs);
   jd_string_space(jds, len);
-  memcpy(jds->data + jds->used - 1, vs->data, len + 1);
+  memmove(jds->data + jds->used - 1, vs->data, len + 1);
   jds->used += len;
   return jds;
 }
