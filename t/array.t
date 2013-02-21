@@ -127,10 +127,29 @@ static void test_basic(void) {
   jd_release(&slot);
 }
 
+static void throw_oob(void *ctx) {
+  JD_BEGIN {
+    JD_VAR(ar);
+
+    jd_set_array(ar, 3);
+    jd_set_string(jd_push(ar, 1), "ZERO");
+    jd_set_string(jd_push(ar, 1), "ONE");
+    jd_get_idx(ar, 5);
+  }
+  JD_END
+}
+
+static void test_exceptions(void) {
+  jdt_throws(throw_oob, NULL,
+             "Array index 5 out of bounds (0..2)",
+             "array index exception");
+}
+
 void test_main(void) {
   test_basic();
   test_join();
   test_sort();
+  test_exceptions();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
