@@ -5,7 +5,7 @@
 #include "jsondata.h"
 
 int main(void) {
-  JD_TRY {
+  JD_BEGIN {
     JD_2VARS(a, b);
     jd_set_string(a, "This is A");
     jd_throw("Oops: a=%J", a);
@@ -13,7 +13,7 @@ int main(void) {
   } JD_CATCH(e) {
     jd_rethrow(e);
   }
-  JD_END
+  JD_ENDCATCH
   return 0;
 }
 

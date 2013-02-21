@@ -287,12 +287,12 @@ jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify) {
 
 jd_var *jd_get_ks(jd_var *v, const char *key, int vivify) {
   jd_var *rv;
-  JD_TRY {
+  JD_BEGIN {
     JD_VAR(kv);
     jd_set_string(kv, key);
     rv = jd_get_key(v, kv, vivify);
   }
-  JD_GUARD
+  JD_END
   return rv;
 }
 
@@ -302,11 +302,11 @@ int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
 
 int jd_delete_ks(jd_var *v, const char *key, jd_var *slot) {
   int rv;
-  JD_TRY {
+  JD_BEGIN {
     JD_VAR(kv);
     jd_set_string(kv, key);
     rv = jd_delete_key(v, kv, slot);
-  } JD_GUARD
+  } JD_END
   return rv;
 }
 
@@ -336,7 +336,7 @@ jd_var *jd_keys(jd_var *v, jd_var *keys) {
 }
 
 jd_var *jd_stringify(jd_var *out, jd_var *v) {
-  JD_TRY {
+  JD_BEGIN {
     JD_VAR(tmp);
     if (v) {
       switch (v->type) {
@@ -371,7 +371,7 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
       jd_set_string(tmp, "<NULL>");
     }
     jd_assign(out, tmp);
-  } JD_GUARD
+  } JD_END
   return out;
 }
 
@@ -404,7 +404,7 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
 #define CAST(vtype, name) \
   vtype name(jd_var *v) {                       \
     vtype rv;                                   \
-    JD_TRY {                                    \
+    JD_BEGIN {                                  \
       JD_VAR(tmp);                              \
       jd_numify(tmp, v);                        \
       switch (tmp->type) {                      \
@@ -424,7 +424,7 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
         break;                                  \
       }                                         \
     }                                           \
-    JD_GUARD                                    \
+    JD_END                                      \
     return rv;                                  \
   }
 
@@ -492,10 +492,10 @@ jd_var *jd_context(jd_var *v) {
 
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg) {
   if (!arg) {
-    JD_TRY {
+    JD_BEGIN {
       JD_VAR(targ);
       jd_eval(cl, rv, targ);
-    } JD_GUARD
+    } JD_END
   }
   else {
     jd_closure_call(jd_as_closure(cl), rv, arg);
@@ -504,10 +504,10 @@ jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg) {
 }
 
 void jd_call(jd_var *cl, jd_var *arg) {
-  JD_TRY {
+  JD_BEGIN {
     JD_VAR(rv);
     jd_eval(cl, rv, arg);
-  } JD_GUARD
+  } JD_END
 }
 
 void *jd_ptr(jd_var *v) {

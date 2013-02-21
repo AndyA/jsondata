@@ -74,7 +74,7 @@ static void test_from_json(void) {
 
 static void throws(const char *json, const char *want) {
   int thrown = 0;
-  JD_TRY {
+  JD_BEGIN {
     JD_2VARS(vjson, out);
     jd_set_string(vjson, json);
     jd_from_json(out, vjson);
@@ -83,7 +83,7 @@ static void throws(const char *json, const char *want) {
     jd_release(e);
     thrown = 1;
   }
-  JD_END
+  JD_ENDCATCH
   ok(thrown, "parsing \"%s\" throws exception", json);
 }
 

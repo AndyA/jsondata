@@ -135,11 +135,11 @@ static jd_var *array_join(jd_var *out, jd_var *sep, jd_array *jda) {
 }
 
 jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
-  JD_TRY {
+  JD_BEGIN {
     JD_VAR(ar);
     array_stringify(ar, jda);
     array_join(out, sep, jd_as_array(ar));
-  } JD_GUARD
+  } JD_END
   return out;
 }
 

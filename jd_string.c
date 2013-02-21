@@ -131,7 +131,7 @@ jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {
     return out;
   }
 
-  JD_TRY {
+  JD_BEGIN {
     JD_VAR(tmp);
     jd_string *jo;
     if (from + len > sl) len = sl - from;
@@ -142,7 +142,7 @@ jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {
     jo->used = len + 1;
     jd_assign(out, tmp);
   }
-  JD_GUARD
+  JD_END
   return out;
 }
 

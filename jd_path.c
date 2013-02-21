@@ -27,7 +27,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
   unsigned depth = 0;
   jd_var *ptr;
 
-  JD_TRY {
+  JD_BEGIN {
     JD_4VARS(part, wrap, dollar, elt);
 
     if (path->type == ARRAY) {
@@ -71,7 +71,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
       }
       depth++;
     }
-  } JD_GUARD
+  } JD_END
 
   /* Hack: depth 0 means empty path, depth 1 means root - so don't
    * return a pointer to the innards of wrap. Anything else is inside
@@ -89,11 +89,11 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
 
 static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   jd_var *rv;
-  JD_TRY {
+  JD_BEGIN {
     JD_VAR(pv);
     jd_vprintf(pv, path, ap);
     rv = jd_get_context(root, pv, NULL, vivify);
-  } JD_GUARD
+  } JD_END
   return rv;
 }
 
