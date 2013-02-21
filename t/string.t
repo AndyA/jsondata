@@ -151,7 +151,7 @@ static void test_trim(void) {
 
 static void test_printf(void) {
   JD_BEGIN {
-    JD_3VARS(v, p1, json);
+    JD_4VARS(v, p1, json, junk);
 
     jdt_is_string(jd_printf(v, "foo"), "foo", "printf");
 
@@ -184,6 +184,14 @@ static void test_printf(void) {
     jd_set_string(p1, "bar");
     jd_printvf(v, p1);
     ok(jd_bytes(v, NULL) == jd_bytes(p1, NULL), "printf format referenced");
+
+    jd_set_string(junk, "JUNK ");
+    while (jd_length(junk) < 20000) {
+      jd_append(junk, junk);
+    }
+    jd_printf(v, "%s", jd_bytes(junk, NULL));
+    jdt_is(v, junk, "printf long string");
+
   }
   JD_END
 }
