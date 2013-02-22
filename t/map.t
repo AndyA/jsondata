@@ -128,11 +128,26 @@ static void test_dgrep(void) {
 
 }
 
+static void test_inplace(void) {
+  JD_BEGIN {
+    JD_VAR(x);
+    JD_CV(dbl, double_it);
+    JD_CV(odd, is_odd);
+    jd_from_jsonc(x, "{\"foo\":[1,2,3]}");
+    jd_dmap(x, dbl, x);
+    jdt_is_json(x, "{\"foo\":[2,4,6]}", "inplace map");
+    jd_dgrep(x, odd, x);
+    jdt_is_json(x, "{\"foo\":[]}", "inplace grep");
+  }
+  JD_END
+}
+
 void test_main(void) {
   test_map();
   test_grep();
   test_dmap();
   test_dgrep();
+  test_inplace();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

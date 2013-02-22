@@ -100,20 +100,31 @@ static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff,
   }
 }
 
+static jd_var *safe_filter(jd_var *out, jd_var *cl, filter_function ff,
+                           int flat, jd_var *in) {
+  JD_BEGIN {
+    JD_VAR(tmp);
+    filter(tmp, cl, ff, flat, in);
+    jd_assign(out, tmp);
+  }
+  JD_END
+  return out;
+}
+
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in) {
-  return filter(out, func, map_filter, 1, in);
+  return safe_filter(out, func, map_filter, 1, in);
 }
 
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in) {
-  return filter(out, func, grep_filter, 1, in);
+  return safe_filter(out, func, grep_filter, 1, in);
 }
 
 jd_var *jd_dmap(jd_var *out, jd_var *func, jd_var *in) {
-  return filter(out, func, map_filter, 0, in);
+  return safe_filter(out, func, map_filter, 0, in);
 }
 
 jd_var *jd_dgrep(jd_var *out, jd_var *func, jd_var *in) {
-  return filter(out, func, grep_filter, 0, in);
+  return safe_filter(out, func, grep_filter, 0, in);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
