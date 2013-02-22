@@ -14,6 +14,9 @@ for test in t/*.t; do
   result="cover/$target"
   make -C t $target PROFILE=yes
   find . -name '*.gcda' -print0 | xargs -0 rm
+  cd t
+  ./$target 
+  cd ..
   ./$bin
   lcov -t "$bin" -o "$info" -c -d .
   infos="$infos -a $info"
