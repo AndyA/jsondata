@@ -18,6 +18,11 @@ static int is_odd(jd_var *rv, jd_var *ctx, jd_var *args) {
   return 0;
 }
 
+static int is_true(jd_var *rv, jd_var *ctx, jd_var *args) {
+  jd_set_bool(rv, jd_test(args));
+  return 0;
+}
+
 static void check_map(const char *json, const char *want, jd_closure_func f) {
   JD_BEGIN {
     JD_2VARS(in, out);
@@ -66,6 +71,9 @@ static void test_grep(void) {
              "{\"one\":1}", is_odd);
   check_grep("[1,2,{\"one\":1,\"two\":2},3,4]",
              "[1,{\"one\":1},3]", is_odd);
+  check_grep("[0,1,null,\"Hello\",[false,true,false,true,\"\"]]",
+             "[1,\"Hello\",[true,true]]", is_true);
+
 }
 
 void test_main(void) {

@@ -38,8 +38,7 @@ static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff, jd_var 
     for (i = 0; i < count; i++) {
       jd_var *v = jd_get_idx(in, i);
       if (IS_FILTERED(v->type)) {
-        if (ff(rv, cl, v)) jd_assign(jd_push(out, 1), rv);
-        jd_release(rv);
+        if (jd_set_void(rv), ff(rv, cl, v)) jd_assign(jd_push(out, 1), rv);
       }
       else {
         filter(jd_push(out, 1), cl, ff, v);
@@ -63,8 +62,7 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff, jd_var *
       jd_var *k = jd_get_idx(keys, i);
       jd_var *v = jd_get_key(in, k, 0);
       if (IS_FILTERED(v->type)) {
-        if (ff(rv, cl, v)) jd_assign(jd_get_key(out, k, 1), rv);
-        jd_release(rv);
+        if (jd_set_void(rv), ff(rv, cl, v)) jd_assign(jd_get_key(out, k, 1), rv);
       }
       else {
         filter(jd_get_key(out, k, 1), cl, ff, v);
