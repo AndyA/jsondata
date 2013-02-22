@@ -227,6 +227,8 @@ jd_var *jd_backtrace(jd_var *out);
 
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in);
+jd_var *jd_dmap(jd_var *out, jd_var *func, jd_var *in);
+jd_var *jd_dgrep(jd_var *out, jd_var *func, jd_var *in);
 
 #endif
 

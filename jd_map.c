@@ -39,7 +39,7 @@ static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff,
     jd_set_array(out, count);
     for (i = 0; i < count; i++) {
       jd_var *v = jd_get_idx(in, i);
-      if (IS_FILTERED(v->type)) {
+      if (flat || IS_FILTERED(v->type)) {
         if (jd_set_void(rv), ff(rv, cl, v)) jd_assign(jd_push(out, 1), rv);
       }
       else {
@@ -64,7 +64,7 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff,
     for (i = 0; i < count; i++) {
       jd_var *k = jd_get_idx(keys, i);
       jd_var *v = jd_get_key(in, k, 0);
-      if (IS_FILTERED(v->type)) {
+      if (flat || IS_FILTERED(v->type)) {
         if (jd_set_void(rv), ff(rv, cl, v)) jd_assign(jd_get_key(out, k, 1), rv);
       }
       else {
@@ -101,10 +101,18 @@ static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff,
 }
 
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in) {
-  return filter(out, func, map_filter, 0, in);
+  return filter(out, func, map_filter, 1, in);
 }
 
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in) {
+  return filter(out, func, grep_filter, 1, in);
+}
+
+jd_var *jd_dmap(jd_var *out, jd_var *func, jd_var *in) {
+  return filter(out, func, map_filter, 0, in);
+}
+
+jd_var *jd_dgrep(jd_var *out, jd_var *func, jd_var *in) {
   return filter(out, func, grep_filter, 0, in);
 }
 
