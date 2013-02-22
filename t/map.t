@@ -49,6 +49,8 @@ static void test_map(void) {
             "[2,4,[6,8,10]]", double_it);
   check_map("{\"one\":1,\"two\":2}",
             "{\"one\":2,\"two\":4}", double_it);
+  check_map("[1,{\"one\":1,\"two\":2},3]",
+            "[2,{\"one\":2,\"two\":4},6]", double_it);
 }
 
 static void test_grep(void) {
@@ -62,6 +64,8 @@ static void test_grep(void) {
              "[1,[3,5]]", is_odd);
   check_grep("{\"one\":1,\"two\":2}",
              "{\"one\":1}", is_odd);
+  check_grep("[1,2,{\"one\":1,\"two\":2},3,4]",
+             "[1,{\"one\":1},3]", is_odd);
 }
 
 void test_main(void) {
