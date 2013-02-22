@@ -3,9 +3,6 @@ LDFLAGS=-lc -lm
 
 ifneq ($(shell $(CC) -v 2>&1 | grep -i clang),)
 CFLAGS+=-Qunused-arguments
-else
-CFLAGS+=-pthread
-LDFLAGS+=-pthread
 endif
 
 ifneq ($(COVER),)
