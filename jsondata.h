@@ -16,6 +16,9 @@ typedef enum {
 } jd_type;
 #undef TD
 
+#define JD_IS_COMPLEX(t) ((t) >= ARRAY)
+#define JD_IS_SIMPLE(t)  (!JD_IS_COMPLEX(t))
+
 typedef struct _jd_var jd_var;
 typedef struct _jd_hash_bucket jd_hash_bucket;
 typedef struct _jd_closure jd_closure;

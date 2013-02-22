@@ -1,11 +1,13 @@
 /* jd_type.h */
 
 #ifdef TD
+  /* simple */
   TD(VOID),
   TD(BOOL),
   TD(INTEGER),
   TD(REAL),
   TD(STRING),
+  /* complex */
   TD(ARRAY),
   TD(HASH),
   TD(CLOSURE),
