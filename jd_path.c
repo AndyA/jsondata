@@ -87,7 +87,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
 }
 
 static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
-  jd_var *rv;
+  jd_var *rv = NULL;
   JD_BEGIN {
     JD_VAR(pv);
     jd_vprintf(pv, path, ap);

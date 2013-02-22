@@ -286,7 +286,7 @@ jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify) {
 }
 
 jd_var *jd_get_ks(jd_var *v, const char *key, int vivify) {
-  jd_var *rv;
+  jd_var *rv = NULL;
   JD_BEGIN {
     JD_SV(kv, key);
     rv = jd_get_key(v, kv, vivify);
@@ -300,7 +300,7 @@ int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
 }
 
 int jd_delete_ks(jd_var *v, const char *key, jd_var *slot) {
-  int rv;
+  int rv = 0;
   JD_BEGIN {
     JD_SV(kv, key);
     rv = jd_delete_key(v, kv, slot);
@@ -457,7 +457,7 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
 
 #define CAST(vtype, name) \
   vtype name(jd_var *v) {                       \
-    vtype rv;                                   \
+    vtype rv = 0;                               \
     JD_BEGIN {                                  \
       JD_VAR(tmp);                              \
       jd_numify(tmp, v);                        \

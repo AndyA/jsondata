@@ -72,7 +72,7 @@ int jdt_is_string(jd_var *got, const char *want, const char *msg, ...) {
 
 int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *msg, ...) {
   va_list ap;
-  int rc;
+  int rc = 0;
 
   JD_BEGIN {
     JD_SV(caught, "");

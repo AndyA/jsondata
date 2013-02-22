@@ -16,7 +16,7 @@ static int map_filter(jd_var *out, jd_var *cl, jd_var *in) {
 }
 
 static int grep_filter(jd_var *out, jd_var *cl, jd_var *in) {
-  int ok;
+  int ok = 0;
 
   JD_BEGIN {
     JD_VAR(rv);
