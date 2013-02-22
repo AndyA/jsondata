@@ -202,7 +202,7 @@ jd_var *jd_string_numify(jd_string *jds, jd_var *out) {
     return jd_set_void(out);
 
   sl = jd_string_length(jds);
-  iv = (jd_int) strtoll(jds->data, &end, 10);
+  iv = (jd_int) JD_STRTOINT(jds->data, &end, 10);
   if (end - jds->data == sl)
     return jd_set_int(out, iv);
 

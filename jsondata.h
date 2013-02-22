@@ -7,7 +7,9 @@
 #include <stdarg.h>
 #include <setjmp.h>
 
-typedef long long jd_int;
+typedef long jd_int;
+#define JD_INT_FMT "%ld"
+#define JD_STRTOINT strtol
 
 #define TD(x) x
 typedef enum {

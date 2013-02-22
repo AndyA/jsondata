@@ -329,7 +329,7 @@ static jd_var *from_json_num(jd_var *out, struct parser *p) {
   jd_int i;
   double r;
 
-  i = strtoll(p->pp, &endp, 10);
+  i = JD_STRTOINT(p->pp, &endp, 10);
   if (endp != p->pp && !isalnum(*endp) && *endp != '.') {
     p->pp = endp;
     return jd_set_int(out, i);
