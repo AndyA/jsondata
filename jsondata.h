@@ -125,13 +125,13 @@ typedef struct jd_activation {
 #define JD_3VARS(a, b, c) JD_2VARS(a, b); JD_VAR(c)
 #define JD_4VARS(a, b, c, d) JD_3VARS(a, b, c); JD_VAR(d)
 
-#define JD_SV(n, v) JD_VAR(n); jd_set_string(n, (v))
-#define JD_IV(n, v) JD_VAR(n); jd_set_int(n, (v))
-#define JD_RV(n, v) JD_VAR(n); jd_set_real(n, (v))
 #define JD_AV(n, v) JD_VAR(n); jd_set_array(n, (v))
-#define JD_HV(n, v) JD_VAR(n); jd_set_hash(n, (v))
 #define JD_BV(n, v) JD_VAR(n); jd_set_bool(n, (v))
 #define JD_CV(n, v) JD_VAR(n); jd_set_closure(n, (v))
+#define JD_HV(n, v) JD_VAR(n); jd_set_hash(n, (v))
+#define JD_IV(n, v) JD_VAR(n); jd_set_int(n, (v))
+#define JD_RV(n, v) JD_VAR(n); jd_set_real(n, (v))
+#define JD_SV(n, v) JD_VAR(n); jd_set_string(n, (v))
 
 extern __thread jd_activation *jd_head;
 extern __thread jd_var jd_root_exception;
