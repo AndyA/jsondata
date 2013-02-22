@@ -13,6 +13,8 @@ DEPS=$(OBJ:.o=.d)
 CFLAGS+=-I..
 LDFLAGS+=-lpthread
 
+all: $(TESTBIN)
+
 %: %.o $(MISCOBJ) $(LIB)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
@@ -34,7 +36,7 @@ include $(DEPS)
 clean:
 	rm -f $(OBJ) $(DEPS) $(TESTBIN)
 
-test: $(TESTBIN)
+test: all
 	prove -e '' $(addprefix ./,$(TESTBIN))
 
 valgrind: $(TESTBIN)
