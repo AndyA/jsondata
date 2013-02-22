@@ -43,9 +43,7 @@ static void test_sort(void) {
 
 static void test_hashcode(void) {
   int i;
-  /* All of these are expected to have distinct hash codes. Single
-   * collisions are tolerated but three or more values yielding the
-   * same hash will be considered a fail.
+  /* All of these are expected to have distinct hash codes.
    */
   static const char *obj[] = {
     "\"this is a long string\"",
@@ -79,7 +77,7 @@ static void test_hashcode(void) {
     jd_keys(stats, key);
     for (i = 0; i < jd_count(key); i++) {
       jd_int count = jd_get_int(jd_get_key(stats, jd_get_idx(key, i), 0));
-      ok(count < 3, "count for %d, %ld < 3", i, (long) count);
+      ok(count < 2, "count for %d, %ld < 2", i, (long) count);
     }
 
   } JD_END
