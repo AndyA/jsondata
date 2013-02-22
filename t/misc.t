@@ -54,12 +54,11 @@ static void test_numify_misc(void) {
 
 static void check_bool(const char *expr[], int expect) {
   JD_BEGIN {
-    JD_2VARS(json, v);
+    JD_VAR(v);
     int i;
 
     for (i = 0; expr[i]; i++) {
-      jd_set_string(json, expr[i]);
-      jd_from_json(v, json);
+      jd_from_jsonc(v, expr[i]);
       is(jd_test(v), expect, "%s is %s", expr[i], expect ? "true" : "false");
     }
   }
