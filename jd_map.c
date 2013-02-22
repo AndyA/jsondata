@@ -49,10 +49,37 @@ static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff, jd_var 
   return out;
 }
 
+static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
+  JD_BEGIN {
+    size_t count = jd_count(in);
+    JD_2VARS(rv, keys);
+    unsigned i;
+
+    jd_keys(in, keys);
+    jd_set_hash(out, count);
+    for (i = 0; i < count; i++) {
+      jd_var *k = jd_get_idx(keys, i);
+      jd_var *v = jd_get_key(in, k, 0);
+      if (JD_IS_SIMPLE(v->type)) {
+        if (ff(rv, cl, v)) jd_assign(jd_get_key(out, k, 1), rv);
+        jd_release(rv);
+      }
+      else {
+        filter(jd_get_key(out, k, 1), cl, ff, v);
+      }
+    }
+  }
+  JD_END
+
+  return out;
+}
+
 static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
   switch (in->type) {
   case ARRAY:
     return filter_array(out, cl, ff, in);
+  case HASH:
+    return filter_hash(out, cl, ff, in);
   default:
     jd_throw("Can't handle type");
   }
