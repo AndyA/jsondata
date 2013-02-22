@@ -54,6 +54,7 @@ static void test_basic(void) {
   jd_var ar = JD_INIT;
   jd_var v1 = JD_INIT, v2 = JD_INIT, v3 = JD_INIT;
   jd_var slot = JD_INIT;
+  jd_var *tmp;
   size_t got;
 
   jd_set_string(&v1, "foo");
@@ -119,6 +120,14 @@ static void test_basic(void) {
   jdt_is_json(&ar,
               "[\"foo\",\"bar\",\"foo\",\"baz\",\"baz\"]",
               "remove");
+
+  tmp = jd_insert(&ar, 1, 2);
+  jd_set_bool(tmp++, 0);
+  jd_set_int(tmp++, 123);
+
+  jdt_is_json(&ar,
+              "[\"foo\",false,123,\"bar\",\"foo\",\"baz\",\"baz\"]",
+              "insert");
 
   jd_release(&ar);
   jd_release(&v1);
