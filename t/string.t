@@ -200,6 +200,7 @@ static void test_printf(void) {
 
 static void test_misc(void) {
   jd_var v1 = JD_INIT, v2 = JD_INIT;
+  char tmp[200];
   jd_set_string(&v1, "foo");
   jd_set_string(&v2, "bar");
 
@@ -219,6 +220,21 @@ static void test_misc(void) {
   is_str(&v1, "1.25", "stringify real");
   jd_set_void(&v1);
   is_str(&v1, "null", "stringify void");
+  jd_set_array(&v1, 0);
+  is_str(&v1, "[]", "stringify array");
+  jd_set_hash(&v1, 0);
+  is_str(&v1, "{}", "stringify hash");
+  is_str(NULL, "<NULL>", "stringify null");
+
+  jd_set_void(&v1);
+  v1.type = 100;
+  snprintf(tmp, sizeof(tmp), "<UNKNOWN(100):%p>", &v1);
+  is_str(&v1, tmp, "stringify bad type");
+  v1.type = VOID;
+
+  jd_set_object(&v1, &v1, NULL);
+  snprintf(tmp, sizeof(tmp), "<OBJECT:%p>", &v1);
+  is_str(&v1, tmp, "stringify bad type");
 
   jd_release(&v1);
   jd_release(&v2);
