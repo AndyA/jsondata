@@ -415,14 +415,19 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
 
 jd_var *jd_numify(jd_var *out, jd_var *v) {
   switch (v->type) {
-  case HASH:
-  case ARRAY:
-    jd_throw("Can't numify");
-    return NULL;
-  default:
+  case VOID:
+  case BOOL:
+  case INTEGER:
+  case REAL:
     return jd_assign(out, v);
   case STRING:
     return jd_string_numify(jd_as_string(v), out);
+  case ARRAY:
+  case HASH:
+    return jd_set_int(out, jd_count(v));
+  default:
+    jd_throw("Can't numify");
+    return NULL;
   }
 }
 
