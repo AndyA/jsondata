@@ -23,6 +23,14 @@ static int is_true(jd_var *rv, jd_var *ctx, jd_var *args) {
   return 0;
 }
 
+static int blow_up(jd_var *rv, jd_var *ctx, jd_var *args) {
+  int n = jd_get_int(ctx);
+  if (n == 0) jd_throw("Blow up!");
+  jd_set_int(ctx, n - 1);
+  jd_assign(rv, args);
+  return 0;
+}
+
 static void check_map(const char *json, const char *want, jd_closure_func f) {
   JD_BEGIN {
     JD_2VARS(in, out);
@@ -65,6 +73,30 @@ static void check_dgrep(const char *json, const char *want, jd_closure_func f) {
     jdt_is_json(out, want, "dgrep %s -> %s", json, want);
   }
   JD_END
+}
+
+static void check_throws(const char *json, int hits) {
+  int pos, caught, running;
+  for (pos = 0, caught = 0, running = 1; running; pos++) {
+    JD_BEGIN {
+      JD_2VARS(in, out);
+      JD_CV(cl, blow_up);
+      jd_set_int(jd_context(cl), pos);
+      jd_from_jsonc(in, json);
+      jd_dmap(out, cl, in);
+      running = 0;
+    }
+    JD_CATCH(e) {
+      jd_release(e);
+      caught++;
+    }
+    JD_ENDCATCH
+  }
+  is(caught, hits, "caught %d exceptions processing %s", hits, json);
+}
+
+static void test_exceptions(void) {
+  check_throws("[1,{\"one\":1,\"two\":2},3]", 4);
 }
 
 static void test_map(void) {
@@ -148,6 +180,7 @@ void test_main(void) {
   test_dmap();
   test_dgrep();
   test_inplace();
+  test_exceptions();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
