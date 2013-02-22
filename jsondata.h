@@ -30,7 +30,7 @@ typedef struct {
 } jd_ohdr;
 
 /* jd_string is used both directly as a string and internally as a
- * growable buffer. jd_array and jd_hash start with a jd_string and can,
+ * growable buffer. jd_array contains a jd_string and can,
  * for operations that affect only the string part, be cast to
  * jd_string.
  */
