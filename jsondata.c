@@ -431,6 +431,17 @@ jd_var *jd_numify(jd_var *out, jd_var *v) {
   }
 }
 
+int jd_test(jd_var *v) {
+  switch (v->type) {
+  case STRING:
+    return jd_length(v) ? 1 : 0;
+  case REAL:
+    return jd_get_real(v) ? 1 : 0;
+  default:
+    return jd_get_int(v) ? 1 : 0;
+  }
+}
+
 jd_var *jd_substr(jd_var *out, jd_var *v, int from, int len) {
   jd_string_sub(jd_as_string(v), from, len, out);
   return out;

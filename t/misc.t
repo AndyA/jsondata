@@ -52,9 +52,51 @@ static void test_numify_misc(void) {
   JD_END
 }
 
+static void check_bool(const char *expr[], int expect) {
+  JD_BEGIN {
+    JD_2VARS(json, v);
+    int i;
+
+    for (i = 0; expr[i]; i++) {
+      jd_set_string(json, expr[i]);
+      jd_from_json(v, json);
+      is(jd_test(v), expect, "%s is %s", expr[i], expect ? "true" : "false");
+    }
+  }
+  JD_END
+}
+
+static void test_test(void) {
+  static const char *truths[] = {
+    "true",
+    "0.1",
+    "1",
+    "\"0\"",
+    "\"false\"",
+    "[1]",
+    "{\"0\":0}",
+    NULL
+  };
+
+  static const char *lies[] = {
+    "false",
+    "null",
+    "0.0",
+    "0",
+    "\"\"",
+    "[]",
+    "{}",
+    NULL
+  };
+
+  check_bool(truths, 1);
+  check_bool(lies, 0);
+}
+
 void test_main(void) {
   test_numify();
   test_numify_misc();
+  test_test();
 }
 
 
