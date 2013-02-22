@@ -7,6 +7,8 @@ typedef int (*filter_function)(jd_var *out, jd_var *cl, jd_var *in);
 
 static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff, jd_var *in);
 
+#define IS_FILTERED(t) (JD_IS_SIMPLE(t) || (t) == CLOSURE || (t) == OBJECT)
+
 static int map_filter(jd_var *out, jd_var *cl, jd_var *in) {
   jd_eval(cl, out, in);
   return 1;
@@ -35,7 +37,7 @@ static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff, jd_var 
     jd_set_array(out, count);
     for (i = 0; i < count; i++) {
       jd_var *v = jd_get_idx(in, i);
-      if (JD_IS_SIMPLE(v->type)) {
+      if (IS_FILTERED(v->type)) {
         if (ff(rv, cl, v)) jd_assign(jd_push(out, 1), rv);
         jd_release(rv);
       }
@@ -60,7 +62,7 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff, jd_var *
     for (i = 0; i < count; i++) {
       jd_var *k = jd_get_idx(keys, i);
       jd_var *v = jd_get_key(in, k, 0);
-      if (JD_IS_SIMPLE(v->type)) {
+      if (IS_FILTERED(v->type)) {
         if (ff(rv, cl, v)) jd_assign(jd_get_key(out, k, 1), rv);
         jd_release(rv);
       }
@@ -74,6 +76,16 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff, jd_var *
   return out;
 }
 
+static jd_var *filter_scalar(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
+  JD_BEGIN {
+    JD_VAR(rv);
+    if (ff(rv, cl, in)) jd_assign(out, rv);
+    else jd_set_void(out);
+  }
+  JD_END
+  return out;
+}
+
 static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
   switch (in->type) {
   case ARRAY:
@@ -81,9 +93,8 @@ static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
   case HASH:
     return filter_hash(out, cl, ff, in);
   default:
-    jd_throw("Can't handle type");
+    return filter_scalar(out, cl, ff, in);
   }
-  return NULL;
 }
 
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in) {

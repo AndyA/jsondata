@@ -41,6 +41,8 @@ static void check_grep(const char *json, const char *want, jd_closure_func f) {
 }
 
 static void test_map(void) {
+  check_map("1",
+            "2", double_it);
   check_map("[1,2,3]",
             "[2,4,6]", double_it);
   check_map("[1,2,[3,4,5]]",
@@ -50,6 +52,10 @@ static void test_map(void) {
 }
 
 static void test_grep(void) {
+  check_grep("1",
+             "1", is_odd);
+  check_grep("2",
+             "null", is_odd);
   check_grep("[1,2,3]",
              "[1,3]", is_odd);
   check_grep("[1,2,[3,4,5]]",
