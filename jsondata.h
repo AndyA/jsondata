@@ -140,6 +140,12 @@ typedef struct jd_activation {
 #define JD_HV(n, v) \
   JD_VAR(n); jd_set_hash(n, (v))
 
+#define JD_BV(n, v) \
+  JD_VAR(n); jd_set_bool(n, (v))
+
+#define JD_CV(n, v) \
+  JD_VAR(n); jd_set_closure(n, (v))
+
 extern __thread jd_activation *jd_head;
 extern __thread jd_var jd_root_exception;
 
