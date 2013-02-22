@@ -90,9 +90,12 @@ void test_done(void) {
   done_testing();
 }
 
-int main(void) {
-  test_init();
-  test_main();
+int main(int argc, char *argv[]) {
+  int i, count = 1;
+  if (argc > 1) count = atoi(argv[1]);
+  else test_init();
+  for (i = 0; i < count; i++)
+    test_main();
   test_done();
   return 0;
 }
