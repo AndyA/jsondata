@@ -35,7 +35,7 @@ static void test_to_json(void) {
 
 static void check_from_json(const char *json) {
   jd_var vout = JD_INIT;
-  jd_from_jsonc(&vout, json);
+  jd_from_jsons(&vout, json);
   jdt_is_json(&vout, json, "parse %s", json);
   jd_release(&vout);
 }
@@ -71,7 +71,7 @@ static void throws(const char *json, const char *want) {
   int thrown = 0;
   JD_BEGIN {
     JD_VAR(out);
-    jd_from_jsonc(out, json);
+    jd_from_jsons(out, json);
   } JD_CATCH(e) {
     jdt_is_string(e, want, "parse \"%s\" throws \"%s\"", json, want);
     jd_release(e);

@@ -73,7 +73,7 @@ static void check_bool(const char *expr[], int expect) {
     int i;
 
     for (i = 0; expr[i]; i++) {
-      jd_from_jsonc(v, expr[i]);
+      jd_from_jsons(v, expr[i]);
       is(jd_test(v), expect, "%s is %s", expr[i], expect ? "true" : "false");
     }
   }

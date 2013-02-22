@@ -37,8 +37,8 @@ static void test_clone(void) {
 static void test_merge(void) {
   jd_var dst = JD_INIT, src = JD_INIT, ref = JD_INIT;
 
-  jd_from_jsonc(&dst, "{\"a\":[1,2,3],\"b\":3.14,\"c\":\"foo\"}");
-  jd_from_jsonc(&src, "{\"c\":[4,5,6],\"d\":3.14,\"e\":\"foo\"}");
+  jd_from_jsons(&dst, "{\"a\":[1,2,3],\"b\":3.14,\"c\":\"foo\"}");
+  jd_from_jsons(&src, "{\"c\":[4,5,6],\"d\":3.14,\"e\":\"foo\"}");
 
   jd_merge(&dst, &src, 1);
   jdt_is_json(&dst,

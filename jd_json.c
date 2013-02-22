@@ -381,7 +381,7 @@ jd_var *jd_from_json(jd_var *out, jd_var *json) {
   return out;
 }
 
-jd_var *jd_from_jsonc(jd_var *out, const char *json) {
+jd_var *jd_from_jsons(jd_var *out, const char *json) {
   JD_BEGIN {
     JD_SV(jv, json);
     jd_from_json(out, jv);

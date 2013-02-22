@@ -35,7 +35,7 @@ static void check_map(const char *json, const char *want, jd_closure_func f) {
   JD_BEGIN {
     JD_2VARS(in, out);
     JD_CV(cl, f);
-    jd_from_jsonc(in, json);
+    jd_from_jsons(in, json);
     jd_map(out, cl, in);
     jdt_is_json(out, want, "map %s -> %s", json, want);
   }
@@ -46,7 +46,7 @@ static void check_grep(const char *json, const char *want, jd_closure_func f) {
   JD_BEGIN {
     JD_2VARS(in, out);
     JD_CV(cl, f);
-    jd_from_jsonc(in, json);
+    jd_from_jsons(in, json);
     jd_grep(out, cl, in);
     jdt_is_json(out, want, "grep %s -> %s", json, want);
   }
@@ -57,7 +57,7 @@ static void check_dmap(const char *json, const char *want, jd_closure_func f) {
   JD_BEGIN {
     JD_2VARS(in, out);
     JD_CV(cl, f);
-    jd_from_jsonc(in, json);
+    jd_from_jsons(in, json);
     jd_dmap(out, cl, in);
     jdt_is_json(out, want, "dmap %s -> %s", json, want);
   }
@@ -68,7 +68,7 @@ static void check_dgrep(const char *json, const char *want, jd_closure_func f) {
   JD_BEGIN {
     JD_2VARS(in, out);
     JD_CV(cl, f);
-    jd_from_jsonc(in, json);
+    jd_from_jsons(in, json);
     jd_dgrep(out, cl, in);
     jdt_is_json(out, want, "dgrep %s -> %s", json, want);
   }
@@ -82,7 +82,7 @@ static void check_throws(const char *json, int hits) {
       JD_2VARS(in, out);
       JD_CV(cl, blow_up);
       jd_set_int(jd_context(cl), pos);
-      jd_from_jsonc(in, json);
+      jd_from_jsons(in, json);
       jd_dmap(out, cl, in);
       running = 0;
     }
@@ -165,7 +165,7 @@ static void test_inplace(void) {
     JD_VAR(x);
     JD_CV(dbl, double_it);
     JD_CV(odd, is_odd);
-    jd_from_jsonc(x, "{\"foo\":[1,2,3]}");
+    jd_from_jsons(x, "{\"foo\":[1,2,3]}");
     jd_dmap(x, dbl, x);
     jdt_is_json(x, "{\"foo\":[2,4,6]}", "inplace map");
     jd_dgrep(x, odd, x);

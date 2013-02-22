@@ -171,7 +171,7 @@ static void test_printf(void) {
     jd_set_string(p1, "bar");
     jdt_is_string(jd_printf(v, "foo %V", p1), "foo bar", "printf jd_var *");
 
-    jd_from_jsonc(p1, "{\"name\":\"foo\",\"value\":1.25}");
+    jd_from_jsons(p1, "{\"name\":\"foo\",\"value\":1.25}");
     jdt_is_string(jd_printf(v, "rec=%J", p1),
     "rec={\"name\":\"foo\",\"value\":1.25}",
     "printf json jd_var *");
