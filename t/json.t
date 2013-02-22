@@ -34,14 +34,9 @@ static void test_to_json(void) {
 }
 
 static void check_from_json(const char *json) {
-  jd_var vin = JD_INIT, vout = JD_INIT;
-
-  jd_set_string(&vin, json);
-  jd_from_json(&vout, &vin);
-
+  jd_var vout = JD_INIT;
+  jd_from_jsonc(&vout, json);
   jdt_is_json(&vout, json, "parse %s", json);
-
-  jd_release(&vin);
   jd_release(&vout);
 }
 

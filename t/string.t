@@ -151,7 +151,7 @@ static void test_trim(void) {
 
 static void test_printf(void) {
   JD_BEGIN {
-    JD_3VARS(v, json, p1);
+    JD_2VARS(v, p1);
 
     jdt_is_string(jd_printf(v, "foo"), "foo", "printf");
 
@@ -171,8 +171,7 @@ static void test_printf(void) {
     jd_set_string(p1, "bar");
     jdt_is_string(jd_printf(v, "foo %V", p1), "foo bar", "printf jd_var *");
 
-    jd_set_string(json, "{\"name\":\"foo\",\"value\":1.25}");
-    jd_from_json(p1, json);
+    jd_from_jsonc(p1, "{\"name\":\"foo\",\"value\":1.25}");
     jdt_is_string(jd_printf(v, "rec=%J", p1),
     "rec={\"name\":\"foo\",\"value\":1.25}",
     "printf json jd_var *");

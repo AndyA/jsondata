@@ -11,11 +11,9 @@
 static void check_sort(const char *in, const char *want,
                        int (*cmp)(jd_var *, jd_var *)) {
   JD_BEGIN {
-    JD_SV(vin, in);
-    JD_SV(vwant, want);
     JD_2VARS(jin, jwant);
-    jd_from_json(jin, vin);
-    jd_from_json(jwant, vwant);
+    jd_from_jsonc(jin, in);
+    jd_from_jsonc(jwant, want);
     jd_sortv(jin, cmp);
     jdt_is(jin, jwant, "%s sorts as %s", in, want);
   }
@@ -65,13 +63,12 @@ static void test_hashcode(void) {
   };
   JD_BEGIN {
     JD_HV(stats, 10);
-    JD_3VARS(json, v, key);
+    JD_2VARS(v, key);
 
     for (i = 0; obj[i]; i++) {
       jd_var *slot;
 
-      jd_set_string(json, obj[i]);
-      jd_from_json(v, json);
+      jd_from_jsonc(v, obj[i]);
       jd_printf(key, "%lx", jd_hashcalc(v));
 
       slot = jd_get_key(stats, key, 1);
