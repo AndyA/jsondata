@@ -75,9 +75,8 @@ static void test_from_json(void) {
 static void throws(const char *json, const char *want) {
   int thrown = 0;
   JD_BEGIN {
-    JD_2VARS(vjson, out);
-    jd_set_string(vjson, json);
-    jd_from_json(out, vjson);
+    JD_VAR(out);
+    jd_from_jsonc(out, json);
   } JD_CATCH(e) {
     jdt_is_string(e, want, "parse \"%s\" throws \"%s\"", json, want);
     jd_release(e);

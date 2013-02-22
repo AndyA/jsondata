@@ -381,5 +381,14 @@ jd_var *jd_from_json(jd_var *out, jd_var *json) {
   return out;
 }
 
+jd_var *jd_from_jsonc(jd_var *out, const char *json) {
+  JD_BEGIN {
+    JD_SV(jv, json);
+    jd_from_json(out, jv);
+  }
+  JD_END
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

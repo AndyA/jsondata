@@ -207,6 +207,7 @@ jd_var *jd_rv(jd_var *root, const char *path, ...);
 jd_var *jd_to_json(jd_var *out, jd_var *v);
 jd_var *jd_to_json_pretty(jd_var *out, jd_var *v);
 jd_var *jd_from_json(jd_var *out, jd_var *json);
+jd_var *jd_from_jsonc(jd_var *out, const char *json);
 
 jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap);
 jd_var *jd_vprintf(jd_var *out, const char *fmt, va_list ap);
