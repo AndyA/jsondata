@@ -111,9 +111,19 @@ static void test_exceptions(void) {
              "can't convert to a number exception");
 }
 
+static void test_object(void) {
+  JD_BEGIN {
+    JD_VAR(o);
+    jd_set_object(o, o, NULL);
+    ok(jd_ptr(o) == o, "object stores pointer");
+  }
+  JD_END
+}
+
 void test_main(void) {
   test_misc();
   test_exceptions();
+  test_object();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
