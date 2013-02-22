@@ -157,9 +157,9 @@ static void test_printf(void) {
 
     jdt_is_string(jd_printf(v, "%%"), "%", "printf %");
 
-    jdt_is_string(jd_printf(v, "%d %i %o %u %x %X",
-    1, 2, 100, 200, 300, 399),
-    "1 2 144 200 12c 18F",
+    jdt_is_string(jd_printf(v, "%d %i %o %u %x %X %ld %llx %Lg %p",
+    1, 2, 100, 200, 300, 399, 1l, 10ll, (long double) 1.25, (void *) 0xff),
+    "1 2 144 200 12c 18F 1 a 1.25 0xff",
     "printf ints");
 
     jdt_is_string(jd_printf(v, "%s bar", "foo"), "foo bar", "printf char *");
@@ -190,6 +190,9 @@ static void test_printf(void) {
     }
     jd_printf(v, "%s", jd_bytes(p1, NULL));
     jdt_is(v, p1, "printf long string");
+
+    jd_printf(v, "%^foo");
+    jdt_is_string(v, "%^foo", "unknown escape");
 
   }
   JD_END
