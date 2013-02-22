@@ -93,10 +93,26 @@ static void test_compare(void) {
   JD_END
 }
 
+static void throw_cant_compare(void *ctx) {
+  JD_BEGIN {
+    JD_AV(a1, 0);
+    JD_AV(a2, 0);
+    jd_compare(a1, a2);
+  }
+  JD_END
+}
+
+static void test_exceptions(void) {
+  jdt_throws(throw_cant_compare, NULL,
+             "Can't compare",
+             "can't compare exception");
+}
+
 void test_main(void) {
   test_sort();
   test_compare();
   test_hashcode();
+  test_exceptions();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
