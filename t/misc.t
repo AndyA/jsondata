@@ -27,6 +27,21 @@ static void test_numify(void) {
   check_numify("1.25", "1.25", REAL);
 }
 
+static void throw_cant_numify(void *ctx) {
+  JD_BEGIN {
+    JD_VAR(o);
+    jd_set_object(o, o, NULL);
+    jd_numify(o, o);
+  }
+  JD_END
+}
+
+static void test_exceptions(void) {
+  jdt_throws(throw_cant_numify, NULL,
+             "Can't numify",
+             "can't numify exception");
+}
+
 static void test_numify_misc(void) {
   JD_BEGIN {
     JD_HV(a, 1);
@@ -98,6 +113,7 @@ void test_main(void) {
   test_numify();
   test_numify_misc();
   test_test();
+  test_exceptions();
 }
 
 
