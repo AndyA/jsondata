@@ -10,6 +10,7 @@
   /* complex */
   TD(ARRAY),
   TD(HASH),
+  /* magic */
   TD(CLOSURE),
   TD(OBJECT),
 #endif

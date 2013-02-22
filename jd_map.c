@@ -8,7 +8,7 @@ typedef int (*filter_function)(jd_var *out, jd_var *cl, jd_var *in);
 static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff,
                       int flat, jd_var *in);
 
-#define IS_FILTERED(t) (JD_IS_SIMPLE(t) || (t) == CLOSURE || (t) == OBJECT)
+#define IS_FILTERED(t) (!JD_IS_COMPLEX(t))
 
 static int map_filter(jd_var *out, jd_var *cl, jd_var *in) {
   jd_eval(cl, out, in);
