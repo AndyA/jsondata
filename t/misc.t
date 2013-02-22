@@ -71,10 +71,12 @@ static void test_test(void) {
     "true",
     "0.1",
     "1",
+    "-1",
     "\"0\"",
     "\"false\"",
     "[1]",
     "{\"0\":0}",
+    "[null]",
     NULL
   };
 
