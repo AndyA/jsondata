@@ -225,6 +225,9 @@ void jd_rethrow(jd_var *e);
 void jd_throw(const char *msg, ...);
 jd_var *jd_backtrace(jd_var *out);
 
+jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in);
+jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in);
+
 #endif
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
