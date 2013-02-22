@@ -45,7 +45,7 @@ static void throw_not_a_hash(void *ctx) {
   JD_BEGIN {
     JD_2VARS(ar, tmp);
     jd_set_array(ar, 1);
-    jd_keys(tmp, ar);
+    jd_keys(ar, tmp);
   }
   JD_END
 }

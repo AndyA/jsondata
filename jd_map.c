@@ -59,7 +59,7 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff,
     JD_2VARS(rv, keys);
     unsigned i;
 
-    jd_keys(in, keys);
+    jd_keys(keys, in);
     jd_set_hash(out, count);
     for (i = 0; i < count; i++) {
       jd_var *k = jd_get_idx(keys, i);

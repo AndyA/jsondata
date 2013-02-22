@@ -34,7 +34,7 @@ static void test_hash(size_t sz) {
 
   jd_assign(jd_get_key(&ha, &k3, 1), &v3);
 
-  jd_keys(&ha, &keys);
+  jd_keys(&keys, &ha);
   /* TODO actually check the keys... */
 
   ok(jd_compare(jd_get_key(&ha, &k1, 0), &v1) == 0, "found foo again");

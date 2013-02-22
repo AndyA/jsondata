@@ -177,7 +177,7 @@ jd_var *jd_append_bytes(jd_var *v, const void *b, size_t size);
 jd_var *jd_join(jd_var *out, jd_var *sep, jd_var *ar);
 int jd_compare(jd_var *a, jd_var *b);
 unsigned long jd_hashcalc(jd_var *v);
-jd_var *jd_keys(jd_var *v, jd_var *keys);
+jd_var *jd_keys(jd_var *out, jd_var *v);
 jd_var *jd_stringify(jd_var *out, jd_var *v);
 jd_var *jd_substr(jd_var *out, jd_var *v, int from, int len);
 int jd_find(jd_var *haystack, jd_var *needle, int pos);

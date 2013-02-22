@@ -111,7 +111,7 @@ static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int dept
     unsigned i;
     JD_3VARS(tmp, sep, keys);
 
-    jd_keys(ha, keys);
+    jd_keys(keys, ha);
     jd_sort(keys);
     count = jd_count(keys);
     jd_set_string(sep, "");

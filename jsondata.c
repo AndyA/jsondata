@@ -369,7 +369,7 @@ unsigned long jd_hashcalc(jd_var *v) {
   return rc;
 }
 
-jd_var *jd_keys(jd_var *v, jd_var *keys) {
+jd_var *jd_keys(jd_var *keys, jd_var *v) {
   return jd_hash_keys(jd_as_hash(v), keys);
 }
 
