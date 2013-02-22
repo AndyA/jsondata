@@ -162,10 +162,9 @@ static void test_dgrep(void) {
 
 static void test_inplace(void) {
   JD_BEGIN {
-    JD_VAR(x);
     JD_CV(dbl, double_it);
     JD_CV(odd, is_odd);
-    jd_from_jsons(x, "{\"foo\":[1,2,3]}");
+    JD_JV(x, "{\"foo\":[1,2,3]}");
     jd_dmap(x, dbl, x);
     jdt_is_json(x, "{\"foo\":[2,4,6]}", "inplace map");
     jd_dgrep(x, odd, x);

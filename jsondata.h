@@ -136,6 +136,7 @@ typedef struct jd_activation {
 #define JD_CV(n, v) JD_VAR(n); jd_set_closure(n, (v))
 #define JD_HV(n, v) JD_VAR(n); jd_set_hash(n, (v))
 #define JD_IV(n, v) JD_VAR(n); jd_set_int(n, (v))
+#define JD_JV(n, v) JD_VAR(n); jd_from_jsons(n, (v))
 #define JD_RV(n, v) JD_VAR(n); jd_set_real(n, (v))
 #define JD_SV(n, v) JD_VAR(n); jd_set_string(n, (v))
 
