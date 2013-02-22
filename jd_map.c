@@ -5,7 +5,8 @@
 
 typedef int (*filter_function)(jd_var *out, jd_var *cl, jd_var *in);
 
-static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff, jd_var *in);
+static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff,
+                      int flat, jd_var *in);
 
 #define IS_FILTERED(t) (JD_IS_SIMPLE(t) || (t) == CLOSURE || (t) == OBJECT)
 
@@ -28,7 +29,8 @@ static int grep_filter(jd_var *out, jd_var *cl, jd_var *in) {
   return ok;
 }
 
-static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
+static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff,
+                            int flat, jd_var *in) {
   JD_BEGIN {
     size_t count = jd_count(in);
     JD_VAR(rv);
@@ -41,7 +43,7 @@ static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff, jd_var 
         if (jd_set_void(rv), ff(rv, cl, v)) jd_assign(jd_push(out, 1), rv);
       }
       else {
-        filter(jd_push(out, 1), cl, ff, v);
+        filter(jd_push(out, 1), cl, ff, flat, v);
       }
     }
   }
@@ -50,7 +52,8 @@ static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff, jd_var 
   return out;
 }
 
-static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
+static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff,
+                           int flat, jd_var *in) {
   JD_BEGIN {
     size_t count = jd_count(in);
     JD_2VARS(rv, keys);
@@ -65,7 +68,7 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff, jd_var *
         if (jd_set_void(rv), ff(rv, cl, v)) jd_assign(jd_get_key(out, k, 1), rv);
       }
       else {
-        filter(jd_get_key(out, k, 1), cl, ff, v);
+        filter(jd_get_key(out, k, 1), cl, ff, flat, v);
       }
     }
   }
@@ -74,7 +77,8 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff, jd_var *
   return out;
 }
 
-static jd_var *filter_scalar(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
+static jd_var *filter_scalar(jd_var *out, jd_var *cl, filter_function ff,
+                             int flat, jd_var *in) {
   JD_BEGIN {
     JD_VAR(rv);
     if (ff(rv, cl, in)) jd_assign(out, rv);
@@ -84,23 +88,24 @@ static jd_var *filter_scalar(jd_var *out, jd_var *cl, filter_function ff, jd_var
   return out;
 }
 
-static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff, jd_var *in) {
+static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff,
+                      int flat, jd_var *in) {
   switch (in->type) {
   case ARRAY:
-    return filter_array(out, cl, ff, in);
+    return filter_array(out, cl, ff, flat, in);
   case HASH:
-    return filter_hash(out, cl, ff, in);
+    return filter_hash(out, cl, ff, flat, in);
   default:
-    return filter_scalar(out, cl, ff, in);
+    return filter_scalar(out, cl, ff, flat, in);
   }
 }
 
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in) {
-  return filter(out, func, map_filter, in);
+  return filter(out, func, map_filter, 0, in);
 }
 
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in) {
-  return filter(out, func, grep_filter, in);
+  return filter(out, func, grep_filter, 0, in);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
