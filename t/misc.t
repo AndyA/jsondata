@@ -8,6 +8,19 @@
 #include "jd_test.h"
 #include "jsondata.h"
 
+static void test_retain_release(void) {
+  int i;
+  jd_var h = JD_INIT, s = JD_INIT;
+  jd_set_string(&s, "Hello, World");
+  jd_assign(jd_lv(&h, "$.hello"), &s);
+  jd_release(&s);
+  is(s.type, VOID, "release -> type == void");
+  for (i = 0; i < 10; i++)
+    jd_release(&s); /* make sure it's a nop */
+  jdt_is_json(&h, "{\"hello\":\"Hello, World\"}", "data matches");
+  jd_release(&h);
+}
+
 static void check_numify(const char *in, const char *want, jd_type type) {
   JD_BEGIN {
     JD_2VARS(vin, vout);
@@ -241,12 +254,13 @@ static void test_constructors(void) {
 }
 
 void test_main(void) {
+  test_version();
+  test_retain_release();
   test_numify();
   test_numify_misc();
   test_test();
   test_exceptions();
   test_object();
-  test_version();
   test_constructors();
 }
 

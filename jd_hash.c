@@ -5,6 +5,7 @@
 
 jd_hash *jd_hash_new(size_t size) {
   jd_hash *jdh = jd_alloc(sizeof(jd_hash));
+  if (size < 20) size = 20;
   jdh->b = jd_alloc(sizeof(jd_hash_bucket *) * size);
   jdh->size = size;
   jdh->used = 0;

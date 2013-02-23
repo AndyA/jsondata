@@ -44,28 +44,34 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
 
     ptr = wrap;
     while (ptr && jd_shift(part, 1, elt)) {
-      if (ptr->type == VOID) {
+      /* TODO nasty special case to make sure we target the
+       * variable we're building into rather than our own
+       * copy as we step out of the synthetic root hash and
+       * into the real thing.
+       */
+      jd_var *targ = depth == 1 ? root : ptr;
+      if (targ->type == VOID) {
         /* empty slot: type depends on key format */
         if (is_positive_int(elt))
-          jd_set_array(ptr, 1);
+          jd_set_array(targ, 1);
         else
-          jd_set_hash(ptr, 1);
+          jd_set_hash(targ, 1);
       }
 
-      if (ptr->type == ARRAY) {
-        size_t ac = jd_count(ptr);
+      if (targ->type == ARRAY) {
+        size_t ac = jd_count(targ);
         jd_int ix = jd_get_int(elt);
         if (ix == ac && vivify)
-          ptr = jd_push(ptr, 1);
+          ptr = jd_push(targ, 1);
         else if (ix < ac)
-          ptr = jd_get_idx(ptr, ix);
+          ptr = jd_get_idx(targ, ix);
         else {
           ptr = NULL;
           break;
         }
       }
-      else if (ptr->type == HASH) {
-        ptr = jd_get_key(ptr, elt, vivify);
+      else if (targ->type == HASH) {
+        ptr = jd_get_key(targ, elt, vivify);
       }
       depth++;
     }
