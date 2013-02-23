@@ -85,11 +85,10 @@ static void to_json_string(jd_var *out, jd_var *str, struct json_opt *opt, int d
 
 static void to_json_array(jd_var *out, jd_var *ar, struct json_opt *opt, int depth) {
   JD_BEGIN {
-    JD_2VARS(tmp, sep);
+    JD_VAR(tmp);
     unsigned i;
     size_t count = jd_count(ar);
 
-    jd_set_string(sep, "");
     jd_set_array(tmp, count);
 
     for (i = 0; i < count; i++) {
@@ -99,7 +98,7 @@ static void to_json_array(jd_var *out, jd_var *ar, struct json_opt *opt, int dep
     }
 
     jd_set_string(jd_push(out, 1), "[");
-    jd_join(jd_push(out, 1), sep, tmp);
+    jd_join(jd_push(out, 1), NULL, tmp);
     pad(out, opt, depth);
     jd_set_string(jd_push(out, 1), "]");
   } JD_END
@@ -109,12 +108,11 @@ static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int dept
   JD_BEGIN {
     size_t count;
     unsigned i;
-    JD_3VARS(tmp, sep, keys);
+    JD_2VARS(tmp, keys);
 
     jd_keys(keys, ha);
     jd_sort(keys);
     count = jd_count(keys);
-    jd_set_string(sep, "");
     jd_set_array(tmp, count * 4);
 
     for (i = 0; i < count; i++) {
@@ -127,7 +125,7 @@ static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int dept
     }
 
     jd_set_string(jd_push(out, 1), "{");
-    jd_join(jd_push(out, 1), sep, tmp);
+    jd_join(jd_push(out, 1), NULL, tmp);
     pad(out, opt, depth);
     jd_set_string(jd_push(out, 1), "}");
   } JD_END
@@ -152,11 +150,10 @@ static void to_json(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
 
 static void to_json_flat(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
   JD_BEGIN {
-    JD_2VARS(tmp, sep);
+    JD_VAR(tmp);
     jd_set_array(tmp, 1);
-    jd_set_string(sep, "");
     to_json(tmp, v, opt, depth);
-    jd_join(out, sep, tmp);
+    jd_join(out, NULL, tmp);
   } JD_END
 }
 

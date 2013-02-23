@@ -193,13 +193,9 @@ jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
     }
 
     if (tmp->type == ARRAY) {
-      JD_VAR(sep);
-      jd_set_empty_string(sep, 1);
-
       if (fbuf != flim)
         jd_set_bytes(jd_push(tmp, 1), fbuf, flim - fbuf);
-
-      jd_join(out, sep, tmp);
+      jd_join(out, NULL, tmp);
     }
     else {
       /* simple case: no substitution */

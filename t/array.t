@@ -44,6 +44,10 @@ static void test_join(void) {
   jd_set_string(&want, "null, false, true, 12345, 1.25, foo");
   ok(jd_compare(&all, &want) == 0, "join on multiple types");
 
+  jd_join(&all, NULL, &ar);
+  jd_set_string(&want, "nullfalsetrue123451.25foo");
+  ok(jd_compare(&all, &want) == 0, "join on multiple types, NULL sep");
+
   jd_release(&ar);
   jd_release(&sep);
   jd_release(&all);

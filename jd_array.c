@@ -116,7 +116,7 @@ static jd_var *array_stringify(jd_var *out, jd_array *jda) {
 static jd_var *array_join(jd_var *out, jd_var *sep, jd_array *jda) {
   size_t len = 0;
   size_t count = jd_array_count(jda);
-  size_t slen = jd_length(sep);
+  size_t slen = sep ? jd_length(sep) : 0;
   unsigned i;
 
   for (i = 0; i < count; i++) {
@@ -127,7 +127,7 @@ static jd_var *array_join(jd_var *out, jd_var *sep, jd_array *jda) {
   jd_set_empty_string(out, len);
 
   for (i = 0; i < count; i++) {
-    if (i) jd_append(out, sep);
+    if (sep && i) jd_append(out, sep);
     jd_append(out, ELT(jda, i));
   }
 
