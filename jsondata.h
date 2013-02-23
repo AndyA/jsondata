@@ -229,6 +229,7 @@ void jd_ar_free(jd_activation *rec);
 void jd_ar_up(jd_activation *rec);
 jd_var *jd_catch(jd_activation *rec);
 void jd_rethrow(jd_var *e) JD_NORETURN;
+void jd_throw_info(jd_var *info, const char *msg, ...) JD_NORETURN;
 void jd_throw(const char *msg, ...) JD_NORETURN;
 jd_var *jd_backtrace(jd_var *out);
 

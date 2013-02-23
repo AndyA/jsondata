@@ -103,14 +103,28 @@ void jd_rethrow(jd_var *e) {
   rethrow(e, 0);
 }
 
-void jd_throw(const char *msg, ...) {
+static void throw(jd_var *info, const char *msg, va_list ap) JD_NORETURN;
+
+static void throw(jd_var *info, const char *msg, va_list ap) {
   jd_var e = JD_INIT;
   jd_backtrace(jd_lv(&e, "$.backtrace"));
+  jd_vprintf(jd_lv(&e, "$.message"), msg, ap);
+  if (info) jd_assign(jd_lv(&e, "$.info"), info);
+  rethrow(&e, 1);
+}
+
+void jd_throw_info(jd_var *info, const char *msg, ...) {
   va_list ap;
   va_start(ap, msg);
-  jd_vprintf(jd_lv(&e, "$.message"), msg, ap);
+  throw(info, msg, ap);
   va_end(ap);
-  rethrow(&e, 1);
+}
+
+void jd_throw(const char *msg, ...) {
+  va_list ap;
+  va_start(ap, msg);
+  throw(NULL, msg, ap);
+  va_end(ap);
 }
 
 jd_var *jd_backtrace(jd_var *out) {

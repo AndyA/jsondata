@@ -23,6 +23,21 @@ static void test_simple_throw(void) {
   JD_ENDCATCH
 }
 
+static void test_throw_info(void) {
+  JD_BEGIN {
+    JD_JV(info, "{\"name\":\"flake\"}");
+    jd_throw_info(info, "Have some info");
+  } JD_CATCH(e) {
+    jd_delete_ks(e, "backtrace", NULL);
+    jdt_is_json(e,
+                "{\"info\":{\"name\":\"flake\"},"
+                "\"message\":\"Have some info\"}",
+                "info intact");
+    jd_release(e);
+  }
+  JD_ENDCATCH
+}
+
 static void go_deep(int depth) {
   JD_VAR(a);
   jd_printf(a, "depth=%d", depth);
@@ -141,6 +156,7 @@ static void test_backtrace(void) {
 void test_main(void) {
   JD_BEGIN {
     test_simple_throw();
+    test_throw_info();
     test_deep_throw();
     test_deep_nest();
     test_throw_in_catch();
