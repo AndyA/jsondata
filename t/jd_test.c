@@ -4,19 +4,12 @@
 #include "jd_test.h"
 #include "tap.h"
 
-void jdt_dump(const char *label, jd_var *v) {
-  jd_var json = JD_INIT;
-  jd_to_json_pretty(&json, v);
-  diag("%s: %s", label, jd_bytes(&json, NULL));
-  jd_release(&json);
-}
-
 static int _is(jd_var *got, jd_var *want, const char *msg, va_list ap) {
   int rc;
   rc = test(jd_compare(got, want) == 0, msg, ap);
   if (!rc) {
-    jdt_dump("wanted", want);
-    jdt_dump("got", got);
+    jdt_diag("wanted %lJ", want);
+    jdt_diag("got %lJ", got);
   }
   return rc;
 }
