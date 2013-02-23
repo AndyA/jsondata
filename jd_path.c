@@ -24,57 +24,42 @@ static int is_positive_int(jd_var *v) {
 
 jd_var *jd_get_context(jd_var *root, jd_var *path,
                        jd_path_context *ctx, int vivify) {
-  unsigned depth;
   jd_var *ptr;
 
   JD_BEGIN {
-    JD_3VARS(part, wrap, elt);
+    JD_2VARS(part, elt);
 
-    if (path->type == ARRAY) {
-      jd_assign(part, path);
-    }
-    else {
-      JD_SV(dot, ".");
-      jd_split(part, path, dot);
-    }
+    if (path->type == ARRAY)
+      jd_clone(part, path, 0);
+    else
+      jd_split(part, path, jd_nsv("."));
 
-    /* move root inside a hash: { "$": root } */
-    jd_set_hash(wrap, 1);
-    jd_assign(jd_get_ks(wrap, "$", 1), root);
+    if (!jd_shift(part, 1, elt) || jd_compare(elt, jd_nsv("$")))
+      jd_throw("Bad path");
 
-    for (ptr = wrap, depth = 0; ptr && jd_shift(part, 1, elt); depth++) {
-      /* TODO nasty special case to make sure we target the
-       * variable we're building into rather than our own
-       * copy as we step out of the synthetic root hash and
-       * into the real thing.
-       */
-      jd_var *targ = depth == 1 ? root : ptr;
-      if (targ->type == VOID) {
+    for (ptr = root; ptr && jd_shift(part, 1, elt);) {
+      if (ptr->type == VOID) {
         /* empty slot: type depends on key format */
         if (is_positive_int(elt))
-          jd_set_array(targ, 1);
+          jd_set_array(ptr, 1);
         else
-          jd_set_hash(targ, 1);
+          jd_set_hash(ptr, 1);
       }
 
-      if (targ->type == ARRAY) {
-        size_t ac = jd_count(targ);
+      if (ptr->type == ARRAY) {
+        size_t ac = jd_count(ptr);
         jd_int ix = jd_get_int(elt);
         if (ix == ac && vivify)
-          ptr = jd_push(targ, 1);
+          ptr = jd_push(ptr, 1);
         else if (ix < ac)
-          ptr = jd_get_idx(targ, ix);
+          ptr = jd_get_idx(ptr, ix);
         else {
           ptr = NULL;
           break;
         }
       }
-      else if (targ->type == HASH) {
-        ptr = jd_get_key(targ, elt, vivify && depth > 0);
-        if (!ptr) {
-          if (!vivify) JD_RETURN(NULL);
-          jd_throw("Bad path");
-        }
+      else if (ptr->type == HASH) {
+        ptr = jd_get_key(ptr, elt, vivify);
       }
       else {
         jd_throw("Unexpected element in structure");
@@ -82,18 +67,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
     }
   } JD_END
 
-  /* Hack: depth 0 means empty path, depth 1 means root - so don't
-   * return a pointer to the innards of wrap. Anything else is inside
-   * the structure and safe to return directly.
-   */
-  switch (depth) {
-  case 0:
-    return NULL;
-  case 1:
-    return root;
-  default:
-    return ptr;
-  }
+  return ptr;
 }
 
 static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
