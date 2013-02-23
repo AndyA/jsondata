@@ -72,8 +72,10 @@ static void throws(const char *json, const char *want) {
   JD_BEGIN {
     JD_VAR(out);
     jd_from_jsons(out, json);
-  } JD_CATCH(e) {
-    jdt_is_string(e, want, "parse \"%s\" throws \"%s\"", json, want);
+  }
+  JD_CATCH(e) {
+    jdt_is_string(jd_rv(e, "$.message"),
+                  want, "parse \"%s\" throws \"%s\"", json, want);
     jd_release(e);
     thrown = 1;
   }

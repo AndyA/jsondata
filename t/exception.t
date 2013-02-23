@@ -15,7 +15,9 @@ static void test_simple_throw(void) {
     jd_throw("Oops: a=%J", a);
     jd_set_bool(b, 1);
   } JD_CATCH(e) {
-    jdt_is_string(e, "Oops: a=\"This is A\"", "exception message matches");
+    jdt_is_string(jd_rv(e, "$.message"),
+                  "Oops: a=\"This is A\"",
+                  "exception message matches");
     jd_release(e);
   }
   JD_ENDCATCH
@@ -34,7 +36,9 @@ static void test_deep_throw(void) {
   JD_BEGIN {
     go_deep(10);
   } JD_CATCH(e) {
-    jdt_is_string(e, "Reached the bottom", "deep exception message matches");
+    jdt_is_string(jd_rv(e, "$.message"),
+                  "Reached the bottom",
+                  "deep exception message matches");
     jd_release(e);
   }
   JD_ENDCATCH
@@ -60,7 +64,9 @@ static void test_deep_nest(void) {
     nest_deep(10);
   }
   JD_CATCH(e) {
-    jdt_is_string(e, "Reached the bottom", "nested scope exception message matches");
+    jdt_is_string(jd_rv(e, "$.message"),
+                  "Reached the bottom",
+                  "nested scope exception message matches");
     jd_release(e);
   }
   JD_ENDCATCH
@@ -78,11 +84,13 @@ static void test_throw_in_catch(void) {
       jd_throw("Throw from %V block", a);
     }
     JD_CATCH(e) {
-      jdt_is_string(e, "Throw from catch block", "got throw catch");
+      jdt_is_string(jd_rv(e, "$.message"),
+                    "Throw from catch block", "got throw catch");
       catch++;
     }
     JD_ENDCATCH
-    jdt_is_string(e, "Throw from first block", "got first catch");
+    jdt_is_string(jd_rv(e, "$.message"),
+                  "Throw from first block", "got first catch");
     first++;
   }
   JD_ENDCATCH

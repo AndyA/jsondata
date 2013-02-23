@@ -81,7 +81,8 @@ static void rethrow(jd_var *e, int release) {
     longjmp(jd_head->env, 1);
   }
   else {
-    fprintf(stderr, "Uncaught exception: %s\n", jd_bytes(e, NULL));
+    fprintf(stderr, "Uncaught exception: %s\n",
+            jd_bytes(jd_rv(e, "$.message"), NULL));
     if (release) jd_release(e);
     exit(1);
   }
@@ -93,9 +94,11 @@ void jd_rethrow(jd_var *e) {
 
 void jd_throw(const char *msg, ...) {
   jd_var e = JD_INIT;
+  jd_set_hash(&e, 2);
+  jd_backtrace(jd_get_ks(&e, "backtrace", 1));
   va_list ap;
   va_start(ap, msg);
-  jd_vprintf(&e, msg, ap);
+  jd_vprintf(jd_get_ks(&e, "message", 1), msg, ap);
   va_end(ap);
   rethrow(&e, 1);
 }

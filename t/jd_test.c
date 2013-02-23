@@ -68,7 +68,7 @@ int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *ms
   int rc = 0;
 
   JD_BEGIN {
-    JD_SV(caught, "");
+    JD_VAR(caught);
     JD_SV(vwant, want);
 
     JD_BEGIN {
@@ -80,7 +80,7 @@ int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *ms
     JD_ENDCATCH
 
     va_start(ap, msg);
-    rc = _is(caught, vwant, msg, ap);
+    rc = _is(jd_get_ks(caught, "message", 0), vwant, msg, ap);
     va_end(ap);
   }
   JD_END
