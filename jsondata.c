@@ -50,7 +50,6 @@ void jd_free(void *m) {
 }
 
 void jd_release(jd_var *v) {
-  void *rc = NULL;
   notnull(v);
   switch (v->type) {
   case VOID:
@@ -59,25 +58,25 @@ void jd_release(jd_var *v) {
   case REAL:
     break;
   case STRING:
-    rc = jd_string_release(v->v.s);
+     jd_string_release(v->v.s);
     break;
   case ARRAY:
-    rc = jd_array_release(v->v.a);
+     jd_array_release(v->v.a);
     break;
   case HASH:
-    rc = jd_hash_release(v->v.h);
+     jd_hash_release(v->v.h);
     break;
   case CLOSURE:
-    rc = jd_closure_release(v->v.c);
+     jd_closure_release(v->v.c);
     break;
   case OBJECT:
-    rc = jd_object_release(v->v.o);
+     jd_object_release(v->v.o);
     break;
   default:
     jd_die("Unhandled type");
     break;
   }
-  if (!rc) memset(v, 0, sizeof(*v));
+  memset(v, 0, sizeof(*v));
 }
 
 void jd_retain(jd_var *v) {
@@ -110,6 +109,7 @@ void jd_retain(jd_var *v) {
 }
 
 jd_var *jd_assign(jd_var *dst, jd_var *src) {
+  if (dst == src) return dst;
   jd_retain(src);
   jd_release(dst);
   *dst = *src;

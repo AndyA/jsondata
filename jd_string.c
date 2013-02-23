@@ -67,18 +67,13 @@ void jd_string_free(jd_string *jds) {
   jd_free(jds);
 }
 
-jd_string *jd_string_retain(jd_string *jds) {
+void jd_string_retain(jd_string *jds) {
   jds->hdr.refs++;
-  return jds;
 }
 
-jd_string *jd_string_release(jd_string *jds) {
-  if (jds->hdr.refs <= 1) {
+void jd_string_release(jd_string *jds) {
+  if (jds->hdr.refs-- <= 1)
     jd_string_free(jds);
-    return NULL;
-  }
-  jds->hdr.refs--;
-  return jds;
 }
 
 size_t jd_string_length(jd_string *jds) {

@@ -12,9 +12,8 @@ jd_hash *jd_hash_new(size_t size) {
   return jdh;
 }
 
-jd_hash *jd_hash_retain(jd_hash *jdh) {
+void jd_hash_retain(jd_hash *jdh) {
   jdh->hdr.refs++;
-  return jdh;
 }
 
 static void free_contents(jd_hash *jdh) {
@@ -37,13 +36,9 @@ void jd_hash_free(jd_hash *jdh) {
   jd_free(jdh);
 }
 
-jd_hash *jd_hash_release(jd_hash *jdh) {
-  if (jdh->hdr.refs <= 1) {
+void jd_hash_release(jd_hash *jdh) {
+  if (jdh->hdr.refs-- <= 1)
     jd_hash_free(jdh);
-    return NULL;
-  }
-  jdh->hdr.refs--;
-  return jdh;
 }
 
 size_t jd_hash_count(jd_hash *jdh) {

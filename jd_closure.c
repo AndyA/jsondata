@@ -11,9 +11,8 @@ jd_closure *jd_closure_new(jd_closure_func f) {
   return jdc;
 }
 
-jd_closure *jd_closure_retain(jd_closure *jdc) {
+void jd_closure_retain(jd_closure *jdc) {
   jdc->hdr.refs++;
-  return jdc;
 }
 
 void jd_closure_free(jd_closure *jdc) {
@@ -21,13 +20,9 @@ void jd_closure_free(jd_closure *jdc) {
   jd_free(jdc);
 }
 
-jd_closure *jd_closure_release(jd_closure *jdc) {
-  if (jdc->hdr.refs <= 1) {
+void jd_closure_release(jd_closure *jdc) {
+  if (jdc->hdr.refs-- <= 1)
     jd_closure_free(jdc);
-    return NULL;
-  }
-  jdc->hdr.refs--;
-  return jdc;
 }
 
 jd_var *jd_closure_context(jd_closure *jdc) {

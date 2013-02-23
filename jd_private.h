@@ -16,8 +16,8 @@ jd_string *jd_string_from(const char *s);
 jd_string *jd_string_ensure(jd_string *jds, size_t size);
 jd_string *jd_string_space(jd_string *jds, size_t minspace);
 void jd_string_free(jd_string *jds);
-jd_string *jd_string_retain(jd_string *jds);
-jd_string *jd_string_release(jd_string *jds);
+void jd_string_retain(jd_string *jds);
+void jd_string_release(jd_string *jds);
 size_t jd_string_length(jd_string *jds);
 jd_string *jd_string_append(jd_string *jds, jd_var *v);
 jd_string *jd_string_append_bytes(jd_string *jds, const void *b, size_t size);
@@ -36,8 +36,8 @@ jd_closure *jd_as_closure(jd_var *v);
 jd_object *jd_as_object(jd_var *v);
 
 jd_array *jd_array_new(size_t size);
-jd_array *jd_array_retain(jd_array *jda);
-jd_array *jd_array_release(jd_array *jds);
+void jd_array_retain(jd_array *jda);
+void jd_array_release(jd_array *jds);
 jd_var *jd_array_insert(jd_array *jda, int idx, size_t count);
 size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot);
 jd_var *jd_array_push(jd_array *jda, size_t count);
@@ -53,8 +53,8 @@ jd_array *jd_array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *));
 jd_var *jd_array_clone(jd_var *out, jd_array *jda, int deep);
 
 jd_hash *jd_hash_new(size_t size);
-jd_hash *jd_hash_retain(jd_hash *jdh);
-jd_hash *jd_hash_release(jd_hash *jdh);
+void jd_hash_retain(jd_hash *jdh);
+void jd_hash_release(jd_hash *jdh);
 size_t jd_hash_count(jd_hash *jdh);
 jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify);
 int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot);
@@ -66,16 +66,16 @@ int jd_hash_maint(jd_hash *jdh);
 
 jd_closure *jd_closure_new(jd_closure_func f);
 void jd_closure_free(jd_closure *jdc);
-jd_closure *jd_closure_retain(jd_closure *jdc);
-jd_closure *jd_closure_release(jd_closure *jdc);
+void jd_closure_retain(jd_closure *jdc);
+void jd_closure_release(jd_closure *jdc);
 jd_var *jd_closure_clone(jd_var *out, jd_closure *jdc, int deep);
 jd_var *jd_closure_context(jd_closure *jdc);
 int jd_closure_call(jd_closure *jdc, jd_var *rv, jd_var *arg);
 
 jd_object *jd_object_new(void *o, void (*free)(void *));
-jd_object *jd_object_retain(jd_object *jdo);
 void jd_object_free(jd_object *jdo);
-jd_object *jd_object_release(jd_object *jdo);
+void jd_object_retain(jd_object *jdo);
+void jd_object_release(jd_object *jdo);
 
 #endif
 
