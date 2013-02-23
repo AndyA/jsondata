@@ -119,12 +119,9 @@ jd_var *jd_backtrace(jd_var *out) {
   jd_set_array(out, 40);
 
   for (rec = jd_head; rec; rec = rec->up) {
-    jd_var ar = JD_INIT;
-    jd_set_hash(&ar, 5);
-    jd_set_int(jd_lv(&ar, "$.line"), rec->line);
-    jd_set_string(jd_lv(&ar, "$.file"), rec->file);
-    jd_assign(jd_push(out, 1), &ar);
-    jd_release(&ar);
+    jd_var *ar = jd_push(out, 1);
+    jd_set_int(jd_lv(ar, "$.line"), rec->line);
+    jd_set_string(jd_lv(ar, "$.file"), rec->file);
   }
 
   return out;
