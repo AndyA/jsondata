@@ -8,7 +8,7 @@
 #include "jd_test.h"
 #include "jsondata.h"
 
-void test_main(void) {
+static void test_path(void) {
   jd_var m = JD_INIT;
   const char **pp;
   unsigned i;
@@ -67,6 +67,26 @@ void test_main(void) {
   }
 
   jd_release(&m);
+}
+
+static void throw_unexpected(void *ctx) {
+  JD_BEGIN {
+    JD_VAR(x);
+    jd_set_string(jd_lv(x, "$.hello"), "Hello, World");
+    jd_set_int(jd_lv(x, "$.hello.index"), 123);
+  }
+  JD_END
+}
+
+static void test_exceptions(void) {
+  jdt_throws(throw_unexpected, NULL,
+             "Unexpected element in structure",
+             "unexpected element in structure exception");
+}
+
+void test_main(void) {
+  test_exceptions();
+  test_path();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

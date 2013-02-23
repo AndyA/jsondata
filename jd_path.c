@@ -73,6 +73,10 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
       else if (targ->type == HASH) {
         ptr = jd_get_key(targ, elt, vivify);
       }
+      else {
+        jd_throw("Unexpected element in structure");
+      }
+
       depth++;
     }
   } JD_END
