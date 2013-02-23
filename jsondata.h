@@ -127,20 +127,20 @@ typedef struct jd_activation {
   do { jd_ar_up(__jd_ar); return (x); } while (0)
 
 #define JD_VAR(x) \
-  jd_var *x = jd_ar_var(jd_head)
+  jd_var *x = jd_nv()
 
 #define JD_2VARS(a, b) JD_VAR(a); JD_VAR(b)
 #define JD_3VARS(a, b, c) JD_2VARS(a, b); JD_VAR(c)
 #define JD_4VARS(a, b, c, d) JD_3VARS(a, b, c); JD_VAR(d)
 
-#define JD_AV(n, v) JD_VAR(n); jd_set_array(n, (v))
-#define JD_BV(n, v) JD_VAR(n); jd_set_bool(n, (v))
-#define JD_CV(n, v) JD_VAR(n); jd_set_closure(n, (v))
-#define JD_HV(n, v) JD_VAR(n); jd_set_hash(n, (v))
-#define JD_IV(n, v) JD_VAR(n); jd_set_int(n, (v))
-#define JD_JV(n, v) JD_VAR(n); jd_from_jsons(n, (v))
-#define JD_RV(n, v) JD_VAR(n); jd_set_real(n, (v))
-#define JD_SV(n, v) JD_VAR(n); jd_set_string(n, (v))
+#define JD_AV(n, v) jd_var *n = jd_nav(v)
+#define JD_BV(n, v) jd_var *n = jd_nbv(v)
+#define JD_CV(n, v) jd_var *n = jd_ncv(v)
+#define JD_HV(n, v) jd_var *n = jd_nhv(v)
+#define JD_IV(n, v) jd_var *n = jd_niv(v)
+#define JD_JV(n, v) jd_var *n = jd_njv(v)
+#define JD_RV(n, v) jd_var *n = jd_nrv(v)
+#define JD_SV(n, v) jd_var *n = jd_nsv(v)
 
 extern __thread jd_activation *jd_head;
 extern __thread jd_var jd_root_exception;
@@ -230,7 +230,18 @@ void jd_ar_up(jd_activation *rec);
 jd_var *jd_catch(jd_activation *rec);
 void jd_rethrow(jd_var *e) JD_NORETURN;
 void jd_throw(const char *msg, ...) JD_NORETURN;
-jd_var *jd_backtrace(jd_var *out); 
+jd_var *jd_backtrace(jd_var *out);
+
+jd_var *jd_nv(void);
+jd_var *jd_nav(size_t v);
+jd_var *jd_nbv(int v);
+jd_var *jd_ncv(jd_closure_func v);
+jd_var *jd_nhv(int v);
+jd_var *jd_niv(jd_int v);
+jd_var *jd_njv(const char *v);
+jd_var *jd_nrv(double v);
+jd_var *jd_nsv(const char *v);
+
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_dmap(jd_var *out, jd_var *func, jd_var *in);

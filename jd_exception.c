@@ -116,5 +116,25 @@ jd_var *jd_backtrace(jd_var *out) {
   return out;
 }
 
+jd_var *jd_nv(void) {
+  return jd_ar_var(jd_head);
+}
+
+#define MAKE_MAKER(n, t, f) \
+  jd_var *jd_n ## n (t v) {  \
+    jd_var *nv = jd_nv();   \
+    f(nv, v);               \
+    return nv;              \
+  }
+
+MAKE_MAKER(av, size_t, jd_set_array)
+MAKE_MAKER(bv, int, jd_set_bool)
+MAKE_MAKER(cv, jd_closure_func, jd_set_closure)
+MAKE_MAKER(hv, int, jd_set_hash)
+MAKE_MAKER(iv, jd_int, jd_set_int)
+MAKE_MAKER(jv, const char *, jd_from_jsons)
+MAKE_MAKER(rv, double, jd_set_real)
+MAKE_MAKER(sv, const char *, jd_set_string)
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
