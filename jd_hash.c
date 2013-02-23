@@ -76,7 +76,7 @@ jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify) {
 
 jd_hash *jd_hash_rehash(jd_hash *jdh) {
   size_t count = jd_hash_count(jdh);
-  jd_hash *tmp = jd_hash_new(count * 2);
+  jd_hash *tmp = jd_hash_new(count * 4);
   unsigned i;
 
   for (i = 0; i < jdh->size; i++) {
