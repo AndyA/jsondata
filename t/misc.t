@@ -211,7 +211,7 @@ static void test_version(void) {
   JD_BEGIN {
     JD_VAR(v);
     jd_version(v);
-    jdt_diag("jsondata %V (%V)", jd_rv(v, "$.version"), jd_rv(v, "$.date"));
+    jdt_diag("Testing libjsondata %V (%V)", jd_rv(v, "$.version"), jd_rv(v, "$.date"));
   }
   JD_END
 }
