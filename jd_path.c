@@ -55,7 +55,6 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
           ptr = jd_get_idx(ptr, ix);
         else {
           ptr = NULL;
-          break;
         }
       }
       else if (ptr->type == HASH) {
