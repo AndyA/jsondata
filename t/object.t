@@ -18,6 +18,7 @@ void test_main(void) {
   jd_var obj1 = JD_INIT, obj2 = JD_INIT, obj3 = JD_INIT;
 
   jd_set_object(&obj1, jd_alloc(10), my_free);
+  freed = 0;
 
   jd_clone(&obj2, &obj1, 1);
   jd_assign(&obj3, &obj2);
