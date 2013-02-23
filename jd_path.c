@@ -28,7 +28,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
   jd_var *ptr;
 
   JD_BEGIN {
-    JD_4VARS(part, wrap, dollar, elt);
+    JD_3VARS(part, wrap, elt);
 
     if (path->type == ARRAY) {
       jd_assign(part, path);
@@ -40,8 +40,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
 
     /* move root inside a hash: { "$": root } */
     jd_set_hash(wrap, 1);
-    jd_set_string(dollar, "$");
-    jd_assign(jd_get_key(wrap, dollar, 1), root);
+    jd_assign(jd_get_ks(wrap, "$", 1), root);
 
     ptr = wrap;
     while (ptr && jd_shift(part, 1, elt)) {
