@@ -216,6 +216,30 @@ static void test_version(void) {
   JD_END
 }
 
+static void make_a_hash(jd_var *out) {
+  jd_assign(jd_lv(out, "$.array"), jd_nav(0));
+  jd_assign(jd_lv(out, "$.bool"), jd_nbv(1));
+  jd_assign(jd_lv(out, "$.hash"), jd_nhv(0));
+  jd_assign(jd_lv(out, "$.integer"), jd_niv(12345));
+  jd_assign(jd_lv(out, "$.json"), jd_njv("{\"foo\":[1,2,3]}"));
+  jd_assign(jd_lv(out, "$.real"), jd_nrv(0.25));
+  jd_assign(jd_lv(out, "$.string"), jd_nsv("Hello, World"));
+}
+
+static void test_constructors(void) {
+  JD_BEGIN {
+    jd_var *hash = jd_nhv(MAXTYPE);
+    make_a_hash(hash);
+    /*    jdt_diag("hash: %J", hash);*/
+    jdt_is_json(hash,
+    "{\"array\":[],\"bool\":true,\"hash\":{},\"integer\":"
+    "12345,\"json\":{\"foo\":[1,2,3]},\"real\":0.25,"
+    "\"string\":\"Hello, World\"}",
+    "constructed hash");
+  }
+  JD_END
+}
+
 void test_main(void) {
   test_numify();
   test_numify_misc();
@@ -223,6 +247,7 @@ void test_main(void) {
   test_exceptions();
   test_object();
   test_version();
+  test_constructors();
 }
 
 
