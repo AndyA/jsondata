@@ -27,6 +27,62 @@ static void test_numify(void) {
   check_numify("1.25", "1.25", REAL);
 }
 
+static void throw_null(void *ctx) {
+  jd_release(NULL);
+}
+
+static void throw_not_a_string(void *ctx) {
+  JD_BEGIN {
+    JD_2VARS(ar, tmp);
+    jd_set_array(ar, 1);
+    jd_substr(tmp, ar, 0, 20);
+  }
+  JD_END
+}
+
+static void throw_not_an_array(void *ctx) {
+  JD_BEGIN {
+    JD_VAR(ha);
+    jd_set_hash(ha, 1);
+    jd_get_idx(ha, 0);
+  }
+  JD_END
+}
+
+static void throw_not_a_hash(void *ctx) {
+  JD_BEGIN {
+    JD_2VARS(ar, tmp);
+    jd_set_array(ar, 1);
+    jd_keys(ar, tmp);
+  }
+  JD_END
+}
+
+static void throw_not_a_closure(void *ctx) {
+  JD_BEGIN {
+    JD_SV(s, "");
+    jd_context(s);
+  }
+  JD_END
+}
+
+static void throw_not_an_object(void *ctx) {
+  JD_BEGIN {
+    JD_SV(s, "");
+    jd_ptr(s);
+  }
+  JD_END
+}
+
+static void throw_cant_append(void *ctx) {
+  JD_BEGIN {
+    JD_IV(i, 0);
+    JD_SV(s, "");
+    jd_append(i, s);
+  }
+  JD_END
+}
+
 static void throw_cant_numify(void *ctx) {
   JD_BEGIN {
     JD_VAR(o);
@@ -36,10 +92,43 @@ static void throw_cant_numify(void *ctx) {
   JD_END
 }
 
+static void throw_cant_numify2(void *ctx) {
+  JD_BEGIN {
+    JD_VAR(tmp);
+    JD_SV(s, "123abc");
+    jd_numify(tmp, s);
+  }
+  JD_END
+}
+
 static void test_exceptions(void) {
+  jdt_throws(throw_null, NULL,
+             "Null pointer",
+             "null pointer exception");
+  jdt_throws(throw_not_a_string, NULL,
+             "Not a string",
+             "not a string exception");
+  jdt_throws(throw_not_an_array, NULL,
+             "Not an array",
+             "not an array exception");
+  jdt_throws(throw_not_a_hash, NULL,
+             "Not a hash",
+             "not a hash exception");
+  jdt_throws(throw_not_a_closure, NULL,
+             "Not a closure",
+             "not a closure exception");
+  jdt_throws(throw_not_an_object, NULL,
+             "Not an object",
+             "not an object exception");
+  jdt_throws(throw_cant_append, NULL,
+             "Can't append",
+             "can't append exception");
   jdt_throws(throw_cant_numify, NULL,
              "Can't numify",
              "can't numify exception");
+  jdt_throws(throw_cant_numify2, NULL,
+             "Can't convert to a number",
+             "can't convert to a number exception");
 }
 
 static void test_numify_misc(void) {
@@ -109,11 +198,21 @@ static void test_test(void) {
   check_bool(lies, 0);
 }
 
+static void test_object(void) {
+  JD_BEGIN {
+    JD_VAR(o);
+    jd_set_object(o, o, NULL);
+    ok(jd_ptr(o) == o, "object stores pointer");
+  }
+  JD_END
+}
+
 void test_main(void) {
   test_numify();
   test_numify_misc();
   test_test();
   test_exceptions();
+  test_object();
 }
 
 
