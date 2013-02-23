@@ -89,7 +89,8 @@ static void rethrow(jd_var *e, int release) {
       int i;
       for (i = 0; i < count; i++) {
         jd_var *slot = jd_get_idx(bt, i);
-        fprintf(stderr, "  from context at %s:" JD_INT_FMT "\n",
+        fprintf(stderr, "  %sat %s:" JD_INT_FMT "\n",
+                i ? "via context " : "",
                 jd_bytes(jd_get_ks(slot, "file", 0), NULL),
                 jd_get_int(jd_get_ks(slot, "line", 0)));
       }
@@ -103,41 +104,49 @@ void jd_rethrow(jd_var *e) {
   rethrow(e, 0);
 }
 
-static void throw(jd_var *info, const char *msg, va_list ap) JD_NORETURN;
-
-static void throw(jd_var *info, const char *msg, va_list ap) {
-  jd_var e = JD_INIT;
-  jd_backtrace(jd_lv(&e, "$.backtrace"));
-  jd_vprintf(jd_lv(&e, "$.message"), msg, ap);
-  if (info) jd_assign(jd_lv(&e, "$.info"), info);
-  rethrow(&e, 1);
-}
-
-void jd_throw_info(jd_var *info, const char *msg, ...) {
-  va_list ap;
-  va_start(ap, msg);
-  throw(info, msg, ap);
-  va_end(ap);
-}
-
-void jd_throw(const char *msg, ...) {
-  va_list ap;
-  va_start(ap, msg);
-  throw(NULL, msg, ap);
-  va_end(ap);
+static void bt_slot(jd_var *slot, const char *file, int line) {
+  jd_set_string(jd_lv(slot, "$.file"), file);
+  jd_set_int(jd_lv(slot, "$.line"), line);
 }
 
 jd_var *jd_backtrace(jd_var *out) {
   jd_activation *rec;
   jd_set_array(out, 40);
 
-  for (rec = jd_head; rec; rec = rec->up) {
-    jd_var *ar = jd_push(out, 1);
-    jd_set_int(jd_lv(ar, "$.line"), rec->line);
-    jd_set_string(jd_lv(ar, "$.file"), rec->file);
-  }
+  for (rec = jd_head; rec; rec = rec->up)
+    bt_slot(jd_push(out, 1), rec->file, rec->line);
 
   return out;
+}
+
+static void throw(const char *file, int line,
+                  jd_var *info, const char *msg, va_list ap) JD_NORETURN;
+
+static void throw(const char *file, int line,
+                  jd_var *info, const char *msg, va_list ap) {
+  jd_var e = JD_INIT;
+  jd_var *bt = jd_lv(&e, "$.backtrace");
+  jd_backtrace(bt);
+  bt_slot(jd_unshift(bt, 1), file, line);
+  jd_vprintf(jd_lv(&e, "$.message"), msg, ap);
+  if (info) jd_assign(jd_lv(&e, "$.info"), info);
+  rethrow(&e, 1);
+}
+
+void jd_ar_throw_info(const char *file, int line,
+                      jd_var *info, const char *msg, ...) {
+  va_list ap;
+  va_start(ap, msg);
+  throw(file, line, info, msg, ap);
+  va_end(ap);
+}
+
+void jd_ar_throw(const char *file, int line,
+                 const char *msg, ...) {
+  va_list ap;
+  va_start(ap, msg);
+  throw(file, line, NULL, msg, ap);
+  va_end(ap);
 }
 
 jd_var *jd_nv(void) {

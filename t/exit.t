@@ -56,15 +56,26 @@ static int run_forked(void (*f)(void *), void *ctx, jd_var *out) {
   return status;
 }
 
+static jd_var *split_lines(jd_var *out, jd_var *s) {
+  jd_var sep = JD_INIT;
+  jd_set_string(&sep, "\n");
+  jd_set_array(out, 10);
+  jd_split(out, s, &sep);
+  jd_release(&sep);
+  return out;
+}
+
 static void check_exit(void (*f)(void *), void *ctx, const char *want, int want_status) {
-  jd_var out = JD_INIT;
+  jd_var out = JD_INIT, lines = JD_INIT;
   int status;
 
   status = run_forked(f, ctx, &out);
-  jdt_is_string(&out, want, "got exception");
+  split_lines(&lines, &out);
+  jdt_is_string(jd_get_idx(&lines, 0), want, "got exception");
   is(status, want_status, "exit status = %d", want_status);
 
   jd_release(&out);
+  jd_release(&lines);
 }
 
 static void uncaught(void *ctx) {
@@ -83,11 +94,11 @@ static void oom(void *ctx) {
 }
 
 static void test_uncaught(void) {
-  check_exit(uncaught, NULL, "Uncaught exception: Oops\n", 256);
+  check_exit(uncaught, NULL, "Uncaught exception: Oops", 256);
 }
 
 static void test_oom(void) {
-  check_exit(oom, NULL, "Fatal: Out of memory\n", 256);
+  check_exit(oom, NULL, "Fatal: Out of memory", 256);
 }
 
 void test_main(void) {
