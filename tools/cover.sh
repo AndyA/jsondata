@@ -4,7 +4,7 @@ set -x
 find . \( -name '*.gcno' -o -name '*.gcda' -o -name '*.gcov' \
   -o -name '*.info' \) -print0 | xargs -0 rm
 rm -rf cover
-make clean && make COVER=yes
+make clean && make COVER=yes DEBUG=yes
 
 infos=""
 for test in t/*.t; do
@@ -12,7 +12,7 @@ for test in t/*.t; do
   target=$( basename $bin )
   info="$target.info"
   result="cover/$target"
-  make -C t $target COVER=yes
+  make -C t $target COVER=yes DEBUG=yes
   find . -name '*.gcda' -print0 | xargs -0 rm
   pushd t >/dev/null 2>&1
   ./$target 
