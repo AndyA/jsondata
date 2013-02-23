@@ -11,6 +11,8 @@ typedef long jd_int;
 #define JD_INT_FMT "%ld"
 #define JD_STRTOINT strtol
 
+#define JD_NORETURN __attribute__((noreturn))
+
 #define TD(x) x
 typedef enum {
 #include "jd_type.h"
@@ -146,7 +148,7 @@ extern __thread jd_var jd_root_exception;
 extern void *(*jd_alloc_hook)(size_t);
 extern void (*jd_free_hook)(void *);
 
-void jd_die(const char *msg, ...) __attribute__((noreturn));
+void jd_die(const char *msg, ...) JD_NORETURN;
 void *jd_alloc(size_t sz);
 void jd_free(void *m);
 void jd_release(jd_var *v);
@@ -225,10 +227,9 @@ jd_var *jd_ar_var(jd_activation *rec);
 void jd_ar_free(jd_activation *rec);
 void jd_ar_up(jd_activation *rec);
 jd_var *jd_catch(jd_activation *rec);
-void jd_rethrow(jd_var *e) __attribute__((noreturn));
-void jd_throw(const char *msg, ...) __attribute__((noreturn));
-jd_var *jd_backtrace(jd_var *out);
-
+void jd_rethrow(jd_var *e) JD_NORETURN;
+void jd_throw(const char *msg, ...) JD_NORETURN;
+jd_var *jd_backtrace(jd_var *out); 
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_dmap(jd_var *out, jd_var *func, jd_var *in);

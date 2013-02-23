@@ -71,7 +71,7 @@ jd_var *jd_ar_var(jd_activation *rec) {
   return &dv->v;
 }
 
-static void rethrow(jd_var *e, int release) __attribute__((noreturn));
+static void rethrow(jd_var *e, int release) JD_NORETURN;
 
 static void rethrow(jd_var *e, int release) {
   if (jd_head) {
