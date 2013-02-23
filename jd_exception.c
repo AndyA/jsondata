@@ -81,8 +81,19 @@ static void rethrow(jd_var *e, int release) {
     longjmp(jd_head->env, 1);
   }
   else {
+    jd_var *bt;
     fprintf(stderr, "Uncaught exception: %s\n",
             jd_bytes(jd_get_ks(e, "message", 0), NULL));
+    if (bt = jd_get_ks(e, "backtrace", 0), bt) {
+      size_t count = jd_count(bt);
+      int i;
+      for (i = 0; i < count; i++) {
+        jd_var *slot = jd_get_idx(bt, i);
+        fprintf(stderr, "  from context at %s:" JD_INT_FMT "\n",
+                jd_bytes(jd_get_ks(slot, "file", 0), NULL),
+                jd_get_int(jd_get_ks(slot, "line", 0)));
+      }
+    }
     if (release) jd_release(e);
     exit(1);
   }
