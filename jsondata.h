@@ -146,7 +146,7 @@ extern __thread jd_var jd_root_exception;
 extern void *(*jd_alloc_hook)(size_t);
 extern void (*jd_free_hook)(void *);
 
-void jd_die(const char *msg, ...);
+void jd_die(const char *msg, ...) __attribute__((noreturn));
 void *jd_alloc(size_t sz);
 void jd_free(void *m);
 void jd_release(jd_var *v);
@@ -225,8 +225,8 @@ jd_var *jd_ar_var(jd_activation *rec);
 void jd_ar_free(jd_activation *rec);
 void jd_ar_up(jd_activation *rec);
 jd_var *jd_catch(jd_activation *rec);
-void jd_rethrow(jd_var *e);
-void jd_throw(const char *msg, ...);
+void jd_rethrow(jd_var *e) __attribute__((noreturn));
+void jd_throw(const char *msg, ...) __attribute__((noreturn));
 jd_var *jd_backtrace(jd_var *out);
 
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in);

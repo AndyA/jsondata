@@ -71,6 +71,8 @@ jd_var *jd_ar_var(jd_activation *rec) {
   return &dv->v;
 }
 
+static void rethrow(jd_var *e, int release) __attribute__((noreturn));
+
 static void rethrow(jd_var *e, int release) {
   if (jd_head) {
     /*    printf("throw %s at %s:%d\n", jd_bytes(e, NULL), jd_head->file, jd_head->line);*/
