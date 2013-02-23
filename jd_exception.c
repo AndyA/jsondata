@@ -82,7 +82,7 @@ static void rethrow(jd_var *e, int release) {
   }
   else {
     fprintf(stderr, "Uncaught exception: %s\n",
-            jd_bytes(jd_rv(e, "$.message"), NULL));
+            jd_bytes(jd_get_ks(e, "message", 0), NULL));
     if (release) jd_release(e);
     exit(1);
   }
