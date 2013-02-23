@@ -81,22 +81,22 @@ static void check_leaks(void) {
   }
 }
 
-void test_init(void) {
-  hook_alloc();
-}
-
-void test_done(void) {
-  check_leaks();
-  done_testing();
-}
-
 int main(int argc, char *argv[]) {
   int i, count = 1;
-  if (argc > 1) count = atoi(argv[1]);
-  else test_init();
+  const char *tc_env = NULL;
+
+  if (argc > 1)
+    count = atoi(argv[1]);
+  else if (tc_env = getenv("JD_TEST_COUNT"), tc_env)
+    count = atoi(tc_env);
+  else
+    hook_alloc();
+
   for (i = 0; i < count; i++)
     test_main();
-  test_done();
+
+  check_leaks();
+  done_testing();
   return 0;
 }
 
