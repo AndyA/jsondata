@@ -89,6 +89,16 @@ static void throw_bad_path(void *ctx) {
   JD_END
 }
 
+static void throw_bad_path2(void *ctx) {
+  JD_BEGIN {
+    JD_VAR(x);
+    JD_AV(path, 1); /* empty */
+    jd_get_context(x, path, NULL, 1);
+    jdt_diag("Exception not thrown, x=%lJ", x);
+  }
+  JD_END
+}
+
 static void test_exceptions(void) {
   jdt_throws(throw_unexpected, NULL,
              "Unexpected element in structure",
@@ -96,11 +106,42 @@ static void test_exceptions(void) {
   jdt_throws(throw_bad_path, NULL,
              "Bad path",
              "bad path exception");
+  jdt_throws(throw_bad_path2, NULL,
+             "Bad path",
+             "bad path exception");
+}
+
+static int nneq(void *a, void *b) {
+  return a && a == b;
+}
+
+static void test_context(void) {
+  JD_BEGIN {
+    JD_JV(obj, "{\"one\":[1],\"two\":[2,4]}");
+    JD_SV(ps, "$.one.0");
+    JD_JV(pa, "[\"$\",\"one\",\"0\"]");
+    JD_JV(pn, "[\"$\",\"one\",0]");
+
+    ok(nneq(jd_get_context(obj, ps, NULL, 0), jd_get_context(obj, pa, NULL, 0)),
+    "array path");
+    ok(nneq(jd_get_context(obj, ps, NULL, 0), jd_get_context(obj, pn, NULL, 0)),
+    "array path (numeric)");
+  }
+  JD_END
+
+  JD_BEGIN {
+    JD_VAR(obj);
+    JD_JV(path, "[\"$\",0]");
+    ok(!!jd_get_context(obj, path, NULL, 1), "vivify path");
+    jdt_is_json(obj, "[null]", "created array");
+  }
+  JD_END
 }
 
 void test_main(void) {
   test_exceptions();
   test_path();
+  test_context();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
