@@ -148,6 +148,7 @@ extern __thread jd_var jd_root_exception;
 extern void *(*jd_alloc_hook)(size_t);
 extern void (*jd_free_hook)(void *);
 
+jd_var *jd_version(jd_var *out);
 void jd_die(const char *msg, ...) JD_NORETURN;
 void *jd_alloc(size_t sz);
 void jd_free(void *m);

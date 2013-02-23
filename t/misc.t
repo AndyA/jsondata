@@ -207,12 +207,22 @@ static void test_object(void) {
   JD_END
 }
 
+static void test_version(void) {
+  JD_BEGIN {
+    JD_VAR(v);
+    jd_version(v);
+    jdt_diag("jsondata %V (%V)", jd_rv(v, "$.version"), jd_rv(v, "$.date"));
+  }
+  JD_END
+}
+
 void test_main(void) {
   test_numify();
   test_numify_misc();
   test_test();
   test_exceptions();
   test_object();
+  test_version();
 }
 
 
