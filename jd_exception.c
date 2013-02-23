@@ -105,11 +105,10 @@ void jd_rethrow(jd_var *e) {
 
 void jd_throw(const char *msg, ...) {
   jd_var e = JD_INIT;
-  jd_set_hash(&e, 2);
-  jd_backtrace(jd_get_ks(&e, "backtrace", 1));
+  jd_backtrace(jd_lv(&e, "$.backtrace"));
   va_list ap;
   va_start(ap, msg);
-  jd_vprintf(jd_get_ks(&e, "message", 1), msg, ap);
+  jd_vprintf(jd_lv(&e, "$.message"), msg, ap);
   va_end(ap);
   rethrow(&e, 1);
 }
