@@ -24,7 +24,7 @@ static int is_positive_int(jd_var *v) {
 
 jd_var *jd_get_context(jd_var *root, jd_var *path,
                        jd_path_context *ctx, int vivify) {
-  unsigned depth = 0;
+  unsigned depth;
   jd_var *ptr;
 
   JD_BEGIN {
@@ -42,8 +42,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
     jd_set_hash(wrap, 1);
     jd_assign(jd_get_ks(wrap, "$", 1), root);
 
-    ptr = wrap;
-    while (ptr && jd_shift(part, 1, elt)) {
+    for (ptr = wrap, depth = 0; ptr && jd_shift(part, 1, elt); depth++) {
       /* TODO nasty special case to make sure we target the
        * variable we're building into rather than our own
        * copy as we step out of the synthetic root hash and
@@ -71,13 +70,15 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
         }
       }
       else if (targ->type == HASH) {
-        ptr = jd_get_key(targ, elt, vivify);
+        ptr = jd_get_key(targ, elt, vivify && depth > 0);
+        if (!ptr) {
+          if (!vivify) JD_RETURN(NULL);
+          jd_throw("Bad path");
+        }
       }
       else {
         jd_throw("Unexpected element in structure");
       }
-
-      depth++;
     }
   } JD_END
 

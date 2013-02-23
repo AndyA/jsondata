@@ -51,7 +51,9 @@ static void test_path(void) {
   }
 
   for (pp = notfound; *pp; pp++) {
-    null(jd_rv(&m, *pp), "%s not found", *pp);
+    jd_var *vp = jd_rv(&m, *pp);
+    if (!null(vp, "%s not found", *pp))
+      jdt_diag("Expected NULL, got %lJ", vp);
   }
 
   jdt_is(jd_rv(&m, "$.%s.%d.name", "slot", 1),
@@ -78,10 +80,22 @@ static void throw_unexpected(void *ctx) {
   JD_END
 }
 
+static void throw_bad_path(void *ctx) {
+  JD_BEGIN {
+    JD_VAR(x);
+    jd_set_string(jd_lv(x, "@.hello"), "Hello, World");
+    jdt_diag("No exception thrown, x=%J", x);
+  }
+  JD_END
+}
+
 static void test_exceptions(void) {
   jdt_throws(throw_unexpected, NULL,
              "Unexpected element in structure",
              "unexpected element in structure exception");
+  jdt_throws(throw_bad_path, NULL,
+             "Bad path",
+             "bad path exception");
 }
 
 void test_main(void) {
