@@ -10,7 +10,7 @@
 
 static void check_sort(const char *in, const char *want,
                        int (*cmp)(jd_var *, jd_var *)) {
-  JD_BEGIN {
+  JD_TRY {
     JD_2VARS(jin, jwant);
     jd_from_jsons(jin, in);
     jd_from_jsons(jwant, want);
@@ -21,7 +21,6 @@ static void check_sort(const char *in, const char *want,
     jdt_diag("Exception: %V", e);
     fail("Exception: %s", jd_bytes(e, NULL));
   }
-  JD_ENDCATCH
 }
 
 static int backwards(jd_var *a, jd_var *b) {

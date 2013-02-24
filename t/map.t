@@ -74,7 +74,7 @@ static void check_dgrep(const char *json, const char *want, jd_closure_func f) {
 static void check_throws(const char *json, int hits) {
   int pos, caught, running;
   for (pos = 0, caught = 0, running = 1; running; pos++) {
-    JD_BEGIN {
+    JD_TRY {
       JD_2VARS(in, out);
       JD_CV(cl, blow_up);
       jd_set_int(jd_context(cl), pos);
@@ -86,7 +86,6 @@ static void check_throws(const char *json, int hits) {
       jd_release(e);
       caught++;
     }
-    JD_ENDCATCH
   }
   is(caught, hits, "caught %d exceptions processing %s", hits, json);
 }

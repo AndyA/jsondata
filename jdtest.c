@@ -13,7 +13,7 @@ int main(void) {
   printf("Dunscopin'\n");
 
 #if 0
-  JD_BEGIN {
+  JD_TRY {
     JD_2VARS(a, b);
     jd_set_string(a, "This is A");
     jd_throw("Oops: a=%J", a);
@@ -21,7 +21,6 @@ int main(void) {
   } JD_CATCH(e) {
     jd_rethrow(e);
   }
-  JD_ENDCATCH
 #endif
 
   return 0;

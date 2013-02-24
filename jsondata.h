@@ -113,7 +113,7 @@ typedef struct jd_activation {
         __jd_ar && !(setjmp(__jd_ar->env) && jd_rethrow(jd_catch(__jd_ar))); \
         jd_ar_up(__jd_ar), __jd_ar = NULL)
 
-#define JD_BEGIN \
+#define JD_TRY \
   for ( jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
         __jd_ar && !(setjmp(__jd_ar->env) && jd_catch(__jd_ar)); \
         jd_ar_up(__jd_ar), __jd_ar = NULL)
@@ -124,10 +124,6 @@ typedef struct jd_activation {
   for (jd_var *e = JD_CURREX; \
        e && e->type != VOID; \
        jd_release(e), e = NULL)
-
-#define JD_ENDCATCH
-#define JD_END
-
 
 #define JD_RETURN(x) \
   do { jd_ar_up(__jd_ar); return (x); } while (0)

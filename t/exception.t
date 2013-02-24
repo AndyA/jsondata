@@ -9,7 +9,7 @@
 #include "jsondata.h"
 
 static void test_simple_throw(void) {
-  JD_BEGIN {
+  JD_TRY {
     JD_2VARS(a, b);
     jd_set_string(a, "This is A");
     jd_throw("Oops: a=%J", a);
@@ -20,11 +20,10 @@ static void test_simple_throw(void) {
                   "exception message matches");
     jd_release(e);
   }
-  JD_ENDCATCH
 }
 
 static void test_throw_info(void) {
-  JD_BEGIN {
+  JD_TRY {
     JD_JV(info, "{\"name\":\"flake\"}");
     jd_throw_info(info, "Have some info");
   } JD_CATCH(e) {
@@ -35,7 +34,6 @@ static void test_throw_info(void) {
                 "info intact");
     jd_release(e);
   }
-  JD_ENDCATCH
 }
 
 static void go_deep(int depth) {
@@ -48,7 +46,7 @@ static void go_deep(int depth) {
 }
 
 static void test_deep_throw(void) {
-  JD_BEGIN {
+  JD_TRY {
     go_deep(10);
   } JD_CATCH(e) {
     jdt_is_string(jd_rv(e, "$.message"),
@@ -56,11 +54,10 @@ static void test_deep_throw(void) {
                   "deep exception message matches");
     jd_release(e);
   }
-  JD_ENDCATCH
 }
 
 static void nest_deep(int depth) {
-  JD_BEGIN {
+  JD_TRY {
     JD_VAR(a);
     jd_printf(a, "depth=%d", depth);
     if (depth == 0)
@@ -71,11 +68,10 @@ static void nest_deep(int depth) {
   JD_CATCH(e) {
     jd_rethrow(e);
   }
-  JD_ENDCATCH
 }
 
 static void test_deep_nest(void) {
-  JD_BEGIN {
+  JD_TRY {
     nest_deep(10);
   }
   JD_CATCH(e) {
@@ -84,19 +80,18 @@ static void test_deep_nest(void) {
                   "nested scope exception message matches");
     jd_release(e);
   }
-  JD_ENDCATCH
 }
 
 static void test_throw_in_catch(void) {
 #if 0
   int catch = 0, first = 0;
 
-  JD_BEGIN {
+  JD_TRY {
     JD_SV(a, "first");
       jd_throw("Throw from %V block", a);
   }
   JD_CATCH(e1) {
-    JD_BEGIN {
+    JD_TRY {
       JD_SV(a, "catch");
       jd_throw("Throw from %V block", a);
     }

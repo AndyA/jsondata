@@ -71,13 +71,12 @@ int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *ms
     JD_VAR(caught);
     JD_SV(vwant, want);
 
-    JD_BEGIN {
+    JD_TRY {
       func(ctx);
     }
     JD_CATCH(e) {
       jd_assign(caught, e);
     }
-    JD_ENDCATCH
 
     va_start(ap, msg);
     rc = _is(jd_get_ks(caught, "message", 0), vwant, msg, ap);
