@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Werror -D_LARGEFILE64_SOURCE
+CFLAGS=-Wall -Werror -D_LARGEFILE64_SOURCE -std=c99
 LDFLAGS=-lc -lm
 
 ifneq ($(shell $(CC) -v 2>&1 | grep -i clang),)

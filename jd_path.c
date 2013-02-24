@@ -24,7 +24,7 @@ static int is_positive_int(jd_var *v) {
 
 jd_var *jd_get_context(jd_var *root, jd_var *path,
                        jd_path_context *ctx, int vivify) {
-  jd_var *ptr;
+  jd_var *ptr = NULL;
 
   JD_SCOPE {
     JD_2VARS(part, elt);
