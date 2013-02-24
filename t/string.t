@@ -150,7 +150,7 @@ static void test_trim(void) {
 }
 
 static void test_printf(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_2VARS(v, p1);
 
     jdt_is_string(jd_printf(v, "foo"), "foo", "printf");
@@ -195,7 +195,6 @@ static void test_printf(void) {
     jdt_is_string(v, "%^foo", "unknown escape");
 
   }
-  JD_END
 }
 
 static void test_misc(void) {

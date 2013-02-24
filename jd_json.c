@@ -66,14 +66,14 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
 
 static void pad(jd_var *out, struct json_opt *opt, int depth) {
   if (opt->pretty) {
-    JD_BEGIN {
+    JD_SCOPE {
       JD_SV(tab, "\n");
       size_t len = depth * opt->pad;
       const char *spc = " ";
       unsigned i;
       for (i = 0; i < len; i++) jd_append_bytes(tab, spc, 1);
       jd_assign(jd_push(out, 1), tab);
-    } JD_END
+    }
   }
 }
 
@@ -84,7 +84,7 @@ static void to_json_string(jd_var *out, jd_var *str, struct json_opt *opt, int d
 }
 
 static void to_json_array(jd_var *out, jd_var *ar, struct json_opt *opt, int depth) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(tmp);
     unsigned i;
     size_t count = jd_count(ar);
@@ -101,11 +101,11 @@ static void to_json_array(jd_var *out, jd_var *ar, struct json_opt *opt, int dep
     jd_join(jd_push(out, 1), NULL, tmp);
     pad(out, opt, depth);
     jd_set_string(jd_push(out, 1), "]");
-  } JD_END
+  }
 }
 
 static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int depth) {
-  JD_BEGIN {
+  JD_SCOPE {
     size_t count;
     unsigned i;
     JD_2VARS(tmp, keys);
@@ -128,7 +128,7 @@ static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int dept
     jd_join(jd_push(out, 1), NULL, tmp);
     pad(out, opt, depth);
     jd_set_string(jd_push(out, 1), "}");
-  } JD_END
+  }
 }
 
 static void to_json(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
@@ -149,12 +149,12 @@ static void to_json(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
 }
 
 static void to_json_flat(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(tmp);
     jd_set_array(tmp, 1);
     to_json(tmp, v, opt, depth);
     jd_join(out, NULL, tmp);
-  } JD_END
+  }
 }
 
 jd_var *jd_to_json_pretty(jd_var *out, jd_var *v) {
@@ -218,7 +218,7 @@ static jd_var *from_json_array(jd_var *out, struct parser *p) {
 }
 
 static jd_var *from_json_hash(jd_var *out, struct parser *p) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(key);
     jd_set_hash(out, 10);
     for (;;) {
@@ -238,7 +238,6 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
     }
     STEP(p);
   }
-  JD_END
   return out;
 }
 
@@ -380,7 +379,7 @@ static jd_var *from_json(jd_var *out, struct parser *p) {
 }
 
 jd_var *jd_from_json(jd_var *out, jd_var *json) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(tmp);
     struct parser p;
     size_t size;
@@ -389,17 +388,16 @@ jd_var *jd_from_json(jd_var *out, jd_var *json) {
     p.sp = p.tp = p.pp = jd_bytes(tmp, &size);
     p.ep = p.pp + size - 1;
     from_json(out, &p);
-  } JD_END
+  }
 
   return out;
 }
 
 jd_var *jd_from_jsons(jd_var *out, const char *json) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_SV(jv, json);
     jd_from_json(out, jv);
   }
-  JD_END
   return out;
 }
 

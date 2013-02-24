@@ -141,7 +141,7 @@ static void test_basic(void) {
 }
 
 static void throw_oob(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(ar);
 
     jd_set_array(ar, 3);
@@ -149,7 +149,6 @@ static void throw_oob(void *ctx) {
     jd_set_string(jd_push(ar, 1), "ONE");
     jd_get_idx(ar, 5);
   }
-  JD_END
 }
 
 static void test_exceptions(void) {

@@ -114,35 +114,32 @@ static void test_throw_in_catch(void) {
 }
 
 static int fib(int x) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(msg);
     jd_printf(msg, "fib(%d)", x);
     if (x < 2) JD_RETURN(1);
     JD_RETURN(fib(x - 1) + fib(x - 2));
   }
-  JD_END
   return 0;
 }
 
 static void test_return(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     is(fib(5), 8, "fib 5");
   }
-  JD_END
 }
 
 static void backtrace(jd_var *out, int depth) {
-  JD_BEGIN {
+  JD_SCOPE {
     if (depth > 0)
       backtrace(out, depth - 1);
     else
       jd_backtrace(out);
   }
-  JD_END
 }
 
 static void test_backtrace(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(bt);
     backtrace(bt, 10);
     /*jdt_diag("bt=%lJ", bt);*/
@@ -150,11 +147,10 @@ static void test_backtrace(void) {
     size_t count = jd_count(bt);
     ok(count > 10 && count < 20, "backtrace has %ld elements", (unsigned long) count);
   }
-  JD_END
 }
 
 void test_main(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     test_simple_throw();
     test_throw_info();
     test_deep_throw();
@@ -163,7 +159,6 @@ void test_main(void) {
     test_return();
     test_backtrace();
   }
-  JD_END
 }
 
 

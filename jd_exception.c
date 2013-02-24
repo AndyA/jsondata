@@ -100,7 +100,7 @@ static void rethrow(jd_var *e, int release) {
   }
 }
 
-void jd_rethrow(jd_var *e) {
+int jd_rethrow(jd_var *e) {
   rethrow(e, 0);
 }
 

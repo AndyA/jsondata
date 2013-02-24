@@ -65,7 +65,7 @@ static void fstash_common(jd_var *out, char *bp, char *pc) {
 }
 
 static void fstash(jd_var *out, char **bp, char *pc, char *ep, ...) {
-  JD_BEGIN {
+  JD_SCOPE {
     char tmp;
     va_list ap;
     JD_VAR(frag);
@@ -83,7 +83,7 @@ static void fstash(jd_var *out, char **bp, char *pc, char *ep, ...) {
     *ep = tmp;
 
     jd_assign(jd_push(out, 1), frag);
-  } JD_END
+  }
   *bp = ep;
 }
 
@@ -106,7 +106,7 @@ static void fstash_json_pretty(jd_var *out, char **bp, char *pc, char *ep, jd_va
 }
 
 jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(tmp);
     size_t len;
     char *fbuf = (char *) jd_bytes(fmt, &len);
@@ -201,17 +201,16 @@ jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
       /* simple case: no substitution */
       jd_assign(out, fmt);
     }
-
-  } JD_END
+  }
 
   return out;
 }
 
 jd_var *jd_vprintf(jd_var *out, const char *fmt, va_list ap) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_SV(vfmt, fmt);
     jd_vprintvf(out, vfmt, ap);
-  } JD_END
+  }
   return out;
 }
 

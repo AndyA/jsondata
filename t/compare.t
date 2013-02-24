@@ -29,7 +29,7 @@ static int backwards(jd_var *a, jd_var *b) {
 }
 
 static void test_sort(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     check_sort("[\"c\",\"b\",\"a\"]", "[\"a\",\"b\",\"c\"]", jd_compare);
     check_sort("[3,2,1]", "[1,2,3]", jd_compare);
     check_sort("[3.25,2.25,1.25]", "[1.25,2.25,3.25]", jd_compare);
@@ -38,7 +38,7 @@ static void test_sort(void) {
     check_sort("[true,false,\"pi\",4,3.25,2,1.25]",
     "[false,true,1.25,2,3.25,4,\"pi\"]", jd_compare);
     check_sort("[1,2,3]", "[3,2,1]", backwards);
-  } JD_END
+  }
 }
 
 static void test_hashcode(void) {
@@ -59,7 +59,7 @@ static void test_hashcode(void) {
     "null", "\"null\"",
     NULL
   };
-  JD_BEGIN {
+  JD_SCOPE {
     JD_HV(stats, 10);
     JD_2VARS(v, key);
 
@@ -79,27 +79,24 @@ static void test_hashcode(void) {
       jd_int count = jd_get_int(jd_get_key(stats, jd_get_idx(key, i), 0));
       ok(count < 2, "count for %d, %ld < 2", i, (long) count);
     }
-
-  } JD_END
+  }
 }
 
 static void test_compare(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_IV(a, 1);
     JD_RV(b, 1);
     ok(0 == jd_compare(a, b), "(INTEGER) 1 == (REAL) 1");
     is(jd_hashcalc(a), jd_hashcalc(b), "hash((INTEGER) 1) == hash((REAL) 1)");
   }
-  JD_END
 }
 
 static void throw_cant_compare(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_AV(a1, 0);
     JD_AV(a2, 0);
     jd_compare(a1, a2);
   }
-  JD_END
 }
 
 static void test_exceptions(void) {

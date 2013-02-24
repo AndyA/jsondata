@@ -107,6 +107,11 @@ typedef struct jd_activation {
   int line;
 } jd_activation;
 
+#define JD_SCOPE \
+  for ( jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
+        __jd_ar && !(setjmp(__jd_ar->env) && jd_rethrow(jd_catch(__jd_ar))); \
+        jd_ar_up(__jd_ar), __jd_ar = NULL)
+
 #define JD_BEGIN { \
     jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
     if (!setjmp(jd_head->env)) { if (1) do
@@ -233,7 +238,7 @@ jd_var *jd_ar_var(jd_activation *rec);
 void jd_ar_free(jd_activation *rec);
 void jd_ar_up(jd_activation *rec);
 jd_var *jd_catch(jd_activation *rec);
-void jd_rethrow(jd_var *e) JD_NORETURN;
+int jd_rethrow(jd_var *e) JD_NORETURN;
 void jd_ar_throw_info(const char *file, int line,
                       jd_var *info, const char *msg, ...) JD_NORETURN;
 void jd_ar_throw(const char *file, int line,

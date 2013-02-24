@@ -31,7 +31,7 @@ static void do_stuff(jd_var *v, int depth) {
 
   nsleep(0.001);
 
-  JD_BEGIN {
+  JD_SCOPE {
     switch (depth) {
     case 0:
     case 2:
@@ -50,7 +50,6 @@ static void do_stuff(jd_var *v, int depth) {
       break;
     }
   }
-  JD_END
 }
 
 static void *test_threads(void *tid) {
@@ -60,7 +59,7 @@ static void *test_threads(void *tid) {
 }
 
 void test_main(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     int i;
     pthread_t thd[NTHREAD];
     JD_AV(ar, NTHREAD);
@@ -79,7 +78,6 @@ void test_main(void) {
       jdt_is(jd_get_idx(ar, 0), jd_get_idx(ar, i), "slot %d matches slot 0", i);
     }
   }
-  JD_END
 }
 
 

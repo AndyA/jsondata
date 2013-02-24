@@ -5,6 +5,14 @@
 #include "jsondata.h"
 
 int main(void) {
+  JD_SCOPE {
+    JD_VAR(a);
+    jd_set_string(a, "This is A");
+    printf("%s\n", jd_bytes(a, NULL));
+  }
+  printf("Dunscopin'\n");
+
+#if 0
   JD_BEGIN {
     JD_2VARS(a, b);
     jd_set_string(a, "This is A");
@@ -14,6 +22,8 @@ int main(void) {
     jd_rethrow(e);
   }
   JD_ENDCATCH
+#endif
+
   return 0;
 }
 

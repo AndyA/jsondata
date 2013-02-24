@@ -22,14 +22,13 @@ static void test_retain_release(void) {
 }
 
 static void check_numify(const char *in, const char *want, jd_type type) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_2VARS(vin, vout);
     jd_set_string(vin, in);
     jd_numify(vout, vin);
     jdt_is_json(vout, want, "%s -> %s: value matches", in, want);
     is(vout->type, type, "%s -> %s: type matches", in, want);
   }
-  JD_END
 }
 
 static void test_numify(void) {
@@ -45,73 +44,65 @@ static void throw_null(void *ctx) {
 }
 
 static void throw_not_a_string(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_2VARS(ar, tmp);
     jd_set_array(ar, 1);
     jd_substr(tmp, ar, 0, 20);
   }
-  JD_END
 }
 
 static void throw_not_an_array(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(ha);
     jd_set_hash(ha, 1);
     jd_get_idx(ha, 0);
   }
-  JD_END
 }
 
 static void throw_not_a_hash(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_2VARS(ar, tmp);
     jd_set_array(ar, 1);
     jd_keys(ar, tmp);
   }
-  JD_END
 }
 
 static void throw_not_a_closure(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_SV(s, "");
     jd_context(s);
   }
-  JD_END
 }
 
 static void throw_not_an_object(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_SV(s, "");
     jd_ptr(s);
   }
-  JD_END
 }
 
 static void throw_cant_append(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_IV(i, 0);
     JD_SV(s, "");
     jd_append(i, s);
   }
-  JD_END
 }
 
 static void throw_cant_numify(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(o);
     jd_set_object(o, o, NULL);
     jd_numify(o, o);
   }
-  JD_END
 }
 
 static void throw_cant_numify2(void *ctx) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(tmp);
     JD_SV(s, "123abc");
     jd_numify(tmp, s);
   }
-  JD_END
 }
 
 static void test_exceptions(void) {
@@ -145,7 +136,7 @@ static void test_exceptions(void) {
 }
 
 static void test_numify_misc(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_HV(a, 1);
     JD_IV(ac, 2);
     JD_VAR(an);
@@ -155,9 +146,8 @@ static void test_numify_misc(void) {
     jd_numify(an, a);
     jdt_is(an, ac, "numify hash -> count");
   }
-  JD_END
 
-  JD_BEGIN {
+  JD_SCOPE {
     JD_AV(a, 1);
     JD_IV(ac, 2);
     JD_VAR(an);
@@ -166,11 +156,10 @@ static void test_numify_misc(void) {
     jd_numify(an, a);
     jdt_is(an, ac, "numify array -> count");
   }
-  JD_END
 }
 
 static void check_bool(const char *expr[], int expect) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(v);
     int i;
 
@@ -179,7 +168,6 @@ static void check_bool(const char *expr[], int expect) {
       is(jd_test(v), expect, "%s is %s", expr[i], expect ? "true" : "false");
     }
   }
-  JD_END
 }
 
 static void test_test(void) {
@@ -212,21 +200,19 @@ static void test_test(void) {
 }
 
 static void test_object(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(o);
     jd_set_object(o, o, NULL);
     ok(jd_ptr(o) == o, "object stores pointer");
   }
-  JD_END
 }
 
 static void test_version(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(v);
     jd_version(v);
     jdt_diag("Testing libjsondata %V (%V)", jd_rv(v, "$.version"), jd_rv(v, "$.date"));
   }
-  JD_END
 }
 
 static void make_a_hash(jd_var *out) {
@@ -240,7 +226,7 @@ static void make_a_hash(jd_var *out) {
 }
 
 static void test_constructors(void) {
-  JD_BEGIN {
+  JD_SCOPE {
     jd_var *hash = jd_nhv(MAXTYPE);
     make_a_hash(hash);
     /*    jdt_diag("hash: %J", hash);*/
@@ -250,7 +236,6 @@ static void test_constructors(void) {
     "\"string\":\"Hello, World\"}",
     "constructed hash");
   }
-  JD_END
 }
 
 void test_main(void) {

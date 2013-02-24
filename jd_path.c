@@ -26,7 +26,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
                        jd_path_context *ctx, int vivify) {
   jd_var *ptr;
 
-  JD_BEGIN {
+  JD_SCOPE {
     JD_2VARS(part, elt);
 
     if (path->type == ARRAY)
@@ -64,18 +64,18 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
         jd_throw("Unexpected element in structure");
       }
     }
-  } JD_END
+  }
 
   return ptr;
 }
 
 static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   jd_var *rv = NULL;
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(pv);
     jd_vprintf(pv, path, ap);
     rv = jd_get_context(root, pv, NULL, vivify);
-  } JD_END
+  }
   return rv;
 }
 

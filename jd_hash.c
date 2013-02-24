@@ -132,7 +132,7 @@ jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys) {
 }
 
 jd_var *jd_hash_merge(jd_var *out, jd_hash *jdh, int deep) {
-  JD_BEGIN {
+  JD_SCOPE {
     unsigned i;
     size_t count = jd_hash_count(jdh);
     JD_VAR(keys);
@@ -145,7 +145,6 @@ jd_var *jd_hash_merge(jd_var *out, jd_hash *jdh, int deep) {
     }
 
   }
-  JD_END
   return out;
 }
 

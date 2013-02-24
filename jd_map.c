@@ -18,20 +18,19 @@ static int map_filter(jd_var *out, jd_var *cl, jd_var *in) {
 static int grep_filter(jd_var *out, jd_var *cl, jd_var *in) {
   int ok = 0;
 
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(rv);
     jd_eval(cl, rv, in);
     ok = jd_test(rv);
     if (ok) jd_assign(out, in);
   }
-  JD_END
 
   return ok;
 }
 
 static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff,
                             int flat, jd_var *in) {
-  JD_BEGIN {
+  JD_SCOPE {
     size_t count = jd_count(in);
     JD_VAR(rv);
     unsigned i;
@@ -47,14 +46,13 @@ static jd_var *filter_array(jd_var *out, jd_var *cl, filter_function ff,
       }
     }
   }
-  JD_END
 
   return out;
 }
 
 static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff,
                            int flat, jd_var *in) {
-  JD_BEGIN {
+  JD_SCOPE {
     size_t count = jd_count(in);
     JD_2VARS(rv, keys);
     unsigned i;
@@ -72,19 +70,17 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff,
       }
     }
   }
-  JD_END
 
   return out;
 }
 
 static jd_var *filter_scalar(jd_var *out, jd_var *cl, filter_function ff,
                              int flat, jd_var *in) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(rv);
     if (ff(rv, cl, in)) jd_assign(out, rv);
     else jd_set_void(out);
   }
-  JD_END
   return out;
 }
 
@@ -102,12 +98,11 @@ static jd_var *filter(jd_var *out, jd_var *cl, filter_function ff,
 
 static jd_var *safe_filter(jd_var *out, jd_var *cl, filter_function ff,
                            int flat, jd_var *in) {
-  JD_BEGIN {
+  JD_SCOPE {
     JD_VAR(tmp);
     filter(tmp, cl, ff, flat, in);
     jd_assign(out, tmp);
   }
-  JD_END
   return out;
 }
 
