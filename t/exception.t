@@ -14,7 +14,8 @@ static void test_simple_throw(void) {
     jd_set_string(a, "This is A");
     jd_throw("Oops: a=%J", a);
     jd_set_bool(b, 1);
-  } JD_CATCH(e) {
+  }
+  JD_CATCH(e) {
     jdt_is_string(jd_rv(e, "$.message"),
                   "Oops: a=\"This is A\"",
                   "exception message matches");
@@ -26,7 +27,8 @@ static void test_throw_info(void) {
   JD_TRY {
     JD_JV(info, "{\"name\":\"flake\"}");
     jd_throw_info(info, "Have some info");
-  } JD_CATCH(e) {
+  }
+  JD_CATCH(e) {
     jd_delete_ks(e, "backtrace", NULL);
     jdt_is_json(e,
                 "{\"info\":{\"name\":\"flake\"},"
@@ -48,7 +50,8 @@ static void go_deep(int depth) {
 static void test_deep_throw(void) {
   JD_TRY {
     go_deep(10);
-  } JD_CATCH(e) {
+  }
+  JD_CATCH(e) {
     jdt_is_string(jd_rv(e, "$.message"),
                   "Reached the bottom",
                   "deep exception message matches");

@@ -18,7 +18,8 @@ int main(void) {
     jd_set_string(a, "This is A");
     jd_throw("Oops: a=%J", a);
     jd_set_bool(b, 1);
-  } JD_CATCH(e) {
+  }
+  JD_CATCH(e) {
     jd_rethrow(e);
   }
 #endif
