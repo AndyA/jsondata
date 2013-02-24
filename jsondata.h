@@ -119,11 +119,13 @@ typedef struct jd_activation {
         jd_ar_up(__jd_ar), __jd_ar = NULL)
 
 #define JD_TRY \
-  for ( jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
-        __jd_ar && !(setjmp(__jd_ar->env) && jd_catch(__jd_ar)); \
-        jd_ar_up(__jd_ar), __jd_ar = NULL)
+  do { \
+    for ( jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
+          __jd_ar && !(setjmp(__jd_ar->env) && jd_catch(__jd_ar)); \
+          jd_ar_up(__jd_ar), __jd_ar = NULL)
 
 #define JD_CATCH(e) \
+  } while (0); \
   JD_SCOPE \
   for (jd_var *e = JD_GETEX(jd_head->up); \
        e && e->type != VOID; \
