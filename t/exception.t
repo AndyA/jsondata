@@ -87,19 +87,19 @@ static void test_throw_in_catch(void) {
 
   JD_TRY {
     JD_SV(a, "first");
-      jd_throw("Throw from %V block", a);
+    jd_throw("Throw from %V block", a);
   }
-  JD_CATCH(e1) {
+  JD_CATCH(e) {
     JD_TRY {
       JD_SV(a, "catch");
       jd_throw("Throw from %V block", a);
     }
-    JD_CATCH(e2) {
-      jdt_is_string(jd_rv(e2, "$.message"),
+    JD_CATCH(e) {
+      jdt_is_string(jd_rv(e, "$.message"),
                     "Throw from catch block", "got throw catch");
       catch ++;
     }
-    jdt_is_string(jd_rv(e1, "$.message"),
+    jdt_is_string(jd_rv(e, "$.message"),
                   "Throw from first block", "got first catch");
     first++;
   }
