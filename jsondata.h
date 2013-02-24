@@ -113,12 +113,18 @@ typedef struct jd_activation {
         __jd_ar && !(setjmp(__jd_ar->env) && jd_rethrow(jd_catch(__jd_ar))); \
         jd_ar_up(__jd_ar), __jd_ar = NULL)
 
+#define JD_BEGIN \
+  for ( jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
+        __jd_ar && !(setjmp(__jd_ar->env) && jd_catch(__jd_ar)); \
+        jd_ar_up(__jd_ar), __jd_ar = NULL)
+
 #define JD_CURREX (jd_head ? &jd_head->exception : &jd_root_exception)
 
 #define JD_CATCH(e) \
-  for (jd_var *e = JD_CURREX; e && e->type != VOID; jd_release(e), e = NULL)
+  for (jd_var *e = JD_CURREX; \
+       e && e->type != VOID; \
+       jd_release(e), e = NULL)
 
-#define JD_BEGIN JD_SCOPE
 #define JD_ENDCATCH
 #define JD_END
 

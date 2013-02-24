@@ -132,19 +132,24 @@ static void to_json_hash(jd_var *out, jd_var *ha, struct json_opt *opt, int dept
 }
 
 static void to_json(jd_var *out, jd_var *v, struct json_opt *opt, int depth) {
-  switch (v->type) {
-  case STRING:
-    to_json_string(out, v, opt, depth);
-    break;
-  case ARRAY:
-    to_json_array(out, v, opt, depth);
-    break;
-  case HASH:
-    to_json_hash(out, v, opt, depth);
-    break;
-  default:
+  if (v) {
+    switch (v->type) {
+    case STRING:
+      to_json_string(out, v, opt, depth);
+      break;
+    case ARRAY:
+      to_json_array(out, v, opt, depth);
+      break;
+    case HASH:
+      to_json_hash(out, v, opt, depth);
+      break;
+    default:
+      jd_stringify(jd_push(out, 1), v);
+      break;
+    }
+  }
+  else {
     jd_stringify(jd_push(out, 1), v);
-    break;
   }
 }
 

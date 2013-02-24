@@ -58,19 +58,19 @@ void jd_release(jd_var *v) {
   case REAL:
     break;
   case STRING:
-     jd_string_release(v->v.s);
+    jd_string_release(v->v.s);
     break;
   case ARRAY:
-     jd_array_release(v->v.a);
+    jd_array_release(v->v.a);
     break;
   case HASH:
-     jd_hash_release(v->v.h);
+    jd_hash_release(v->v.h);
     break;
   case CLOSURE:
-     jd_closure_release(v->v.c);
+    jd_closure_release(v->v.c);
     break;
   case OBJECT:
-     jd_object_release(v->v.o);
+    jd_object_release(v->v.o);
     break;
   default:
     jd_die("Unhandled type");
@@ -346,6 +346,8 @@ static int compare(jd_var *a, jd_var *b) {
 }
 
 int jd_compare(jd_var *a, jd_var *b) {
+  if (a == NULL || b == NULL)
+    return a == NULL ? b == NULL ? 0 : -1 : 1;
   if (a->type > b->type) return -compare(b, a);
   return compare(a, b);
 }

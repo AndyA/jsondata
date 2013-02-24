@@ -38,6 +38,7 @@ static void free_vars(jd_dvar *dv) {
 
 void jd_ar_free(jd_activation *rec) {
   free_vars(rec->vars);
+  jd_release(&rec->exception);
   jd_free(rec);
 }
 
@@ -49,6 +50,7 @@ void jd_ar_up(jd_activation *rec) {
 jd_var *jd_catch(jd_activation *rec) {
   jd_var *e = jd_head->up ? &jd_head->up->exception : &jd_root_exception;
   jd_assign(e, &jd_head->exception);
+  jd_ar_up(rec);
   return e;
 }
 
