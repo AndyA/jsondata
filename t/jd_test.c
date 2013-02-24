@@ -1,6 +1,6 @@
 /* jd_test.c */
 
-#include "jsondata.h"
+#include "jd_pretty.h"
 #include "jd_test.h"
 #include "tap.h"
 
@@ -67,14 +67,14 @@ int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *ms
   va_list ap;
   int rc = 0;
 
-  JD_SCOPE {
+  scope {
     JD_VAR(caught);
     JD_SV(vwant, want);
 
-    JD_TRY {
+    try {
       func(ctx);
     }
-    JD_CATCH(e) {
+    catch(e) {
       jd_assign(caught, e);
     }
 
@@ -86,7 +86,7 @@ int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *ms
 }
 
 void jdt_diag(const char *msg, ...) {
-  JD_SCOPE {
+  scope {
     JD_VAR(vmsg);
     va_list ap;
 

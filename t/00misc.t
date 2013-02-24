@@ -6,7 +6,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void test_retain_release(void) {
   int i;
@@ -22,7 +22,7 @@ static void test_retain_release(void) {
 }
 
 static void check_numify(const char *in, const char *want, jd_type type) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(vin, vout);
     jd_set_string(vin, in);
     jd_numify(vout, vin);
@@ -44,7 +44,7 @@ static void throw_null(void *ctx) {
 }
 
 static void throw_not_a_string(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(ar, tmp);
     jd_set_array(ar, 1);
     jd_substr(tmp, ar, 0, 20);
@@ -52,7 +52,7 @@ static void throw_not_a_string(void *ctx) {
 }
 
 static void throw_not_an_array(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_VAR(ha);
     jd_set_hash(ha, 1);
     jd_get_idx(ha, 0);
@@ -60,7 +60,7 @@ static void throw_not_an_array(void *ctx) {
 }
 
 static void throw_not_a_hash(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(ar, tmp);
     jd_set_array(ar, 1);
     jd_keys(ar, tmp);
@@ -68,21 +68,21 @@ static void throw_not_a_hash(void *ctx) {
 }
 
 static void throw_not_a_closure(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_SV(s, "");
     jd_context(s);
   }
 }
 
 static void throw_not_an_object(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_SV(s, "");
     jd_ptr(s);
   }
 }
 
 static void throw_cant_append(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_IV(i, 0);
     JD_SV(s, "");
     jd_append(i, s);
@@ -90,7 +90,7 @@ static void throw_cant_append(void *ctx) {
 }
 
 static void throw_cant_numify(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_VAR(o);
     jd_set_object(o, o, NULL);
     jd_numify(o, o);
@@ -98,7 +98,7 @@ static void throw_cant_numify(void *ctx) {
 }
 
 static void throw_cant_numify2(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_VAR(tmp);
     JD_SV(s, "123abc");
     jd_numify(tmp, s);
@@ -136,7 +136,7 @@ static void test_exceptions(void) {
 }
 
 static void test_numify_misc(void) {
-  JD_SCOPE {
+  scope {
     JD_HV(a, 1);
     JD_IV(ac, 2);
     JD_VAR(an);
@@ -147,7 +147,7 @@ static void test_numify_misc(void) {
     jdt_is(an, ac, "numify hash -> count");
   }
 
-  JD_SCOPE {
+  scope {
     JD_AV(a, 1);
     JD_IV(ac, 2);
     JD_VAR(an);
@@ -159,7 +159,7 @@ static void test_numify_misc(void) {
 }
 
 static void check_bool(const char *expr[], int expect) {
-  JD_SCOPE {
+  scope {
     JD_VAR(v);
     int i;
 
@@ -200,7 +200,7 @@ static void test_test(void) {
 }
 
 static void test_object(void) {
-  JD_SCOPE {
+  scope {
     JD_VAR(o);
     jd_set_object(o, o, NULL);
     ok(jd_ptr(o) == o, "object stores pointer");
@@ -208,7 +208,7 @@ static void test_object(void) {
 }
 
 static void test_version(void) {
-  JD_SCOPE {
+  scope {
     JD_VAR(v);
     jd_version(v);
     jdt_diag("Testing libjsondata %V (%V)", jd_rv(v, "$.version"), jd_rv(v, "$.date"));
@@ -226,7 +226,7 @@ static void make_a_hash(jd_var *out) {
 }
 
 static void test_constructors(void) {
-  JD_SCOPE {
+  scope {
     jd_var *hash = jd_nhv(MAXTYPE);
     make_a_hash(hash);
     /*    jdt_diag("hash: %J", hash);*/

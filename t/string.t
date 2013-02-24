@@ -6,7 +6,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void is_str(jd_var *v, const char *s, const char *msg) {
   jd_var sv = JD_INIT;
@@ -150,7 +150,7 @@ static void test_trim(void) {
 }
 
 static void test_printf(void) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(v, p1);
 
     jdt_is_string(jd_printf(v, "foo"), "foo", "printf");

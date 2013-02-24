@@ -6,16 +6,16 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void test_simple_throw(void) {
-  JD_TRY {
+  try {
     JD_2VARS(a, b);
     jd_set_string(a, "This is A");
     jd_throw("Oops: a=%J", a);
     jd_set_bool(b, 1);
   }
-  JD_CATCH(e) {
+  catch (e) {
     jdt_is_string(jd_rv(e, "$.message"),
                   "Oops: a=\"This is A\"",
                   "exception message matches");
@@ -24,11 +24,11 @@ static void test_simple_throw(void) {
 }
 
 static void test_throw_info(void) {
-  JD_TRY {
+  try {
     JD_JV(info, "{\"name\":\"flake\"}");
     jd_throw_info(info, "Have some info");
   }
-  JD_CATCH(e) {
+  catch (e) {
     jd_delete_ks(e, "backtrace", NULL);
     jdt_is_json(e,
                 "{\"info\":{\"name\":\"flake\"},"
@@ -48,10 +48,10 @@ static void go_deep(int depth) {
 }
 
 static void test_deep_throw(void) {
-  JD_TRY {
+  try {
     go_deep(10);
   }
-  JD_CATCH(e) {
+  catch (e) {
     jdt_is_string(jd_rv(e, "$.message"),
                   "Reached the bottom",
                   "deep exception message matches");
@@ -60,7 +60,7 @@ static void test_deep_throw(void) {
 }
 
 static void nest_deep(int depth) {
-  JD_TRY {
+  try {
     JD_VAR(a);
     jd_printf(a, "depth=%d", depth);
     if (depth == 0)
@@ -68,16 +68,16 @@ static void nest_deep(int depth) {
     else
       nest_deep(depth - 1);
   }
-  JD_CATCH(e) {
+  catch (e) {
     jd_rethrow(e);
   }
 }
 
 static void test_deep_nest(void) {
-  JD_TRY {
+  try {
     nest_deep(10);
   }
-  JD_CATCH(e) {
+  catch (e) {
     jdt_is_string(jd_rv(e, "$.message"),
                   "Reached the bottom",
                   "nested scope exception message matches");
@@ -88,16 +88,16 @@ static void test_deep_nest(void) {
 static void test_throw_in_catch(void) {
   int catch = 0, first = 0;
 
-  JD_TRY {
+  try {
     JD_SV(a, "first");
     jd_throw("Throw from %V block", a);
   }
-  JD_CATCH(e) {
-    JD_TRY {
+  catch (e) {
+    try {
       JD_SV(a, "catch");
       jd_throw("Throw from %V block", a);
     }
-    JD_CATCH(e) {
+    catch (e) {
       jdt_is_string(jd_rv(e, "$.message"),
                     "Throw from catch block", "got throw catch");
       catch ++;
@@ -112,7 +112,7 @@ static void test_throw_in_catch(void) {
 
 
 static int fib(int x) {
-  JD_SCOPE {
+  scope {
     JD_VAR(msg);
     jd_printf(msg, "fib(%d)", x);
     if (x < 2) JD_RETURN(1);
@@ -122,13 +122,13 @@ static int fib(int x) {
 }
 
 static void test_return(void) {
-  JD_SCOPE {
+  scope {
     is(fib(5), 8, "fib 5");
   }
 }
 
 static void backtrace(jd_var *out, int depth) {
-  JD_SCOPE {
+  scope {
     if (depth > 0)
       backtrace(out, depth - 1);
     else
@@ -137,7 +137,7 @@ static void backtrace(jd_var *out, int depth) {
 }
 
 static void test_backtrace(void) {
-  JD_SCOPE {
+  scope {
     JD_VAR(bt);
     backtrace(bt, 10);
     /*jdt_diag("bt=%lJ", bt);*/
@@ -148,7 +148,7 @@ static void test_backtrace(void) {
 }
 
 void test_main(void) {
-  JD_SCOPE {
+  scope {
     test_simple_throw();
     test_throw_info();
     test_deep_throw();

@@ -10,7 +10,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static int run_forked(void (*f)(void *), void *ctx, jd_var *out) {
   int outfd[2];

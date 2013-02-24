@@ -3,7 +3,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void test_clone(void) {
   jd_var dst = JD_INIT, src = JD_INIT, ref = JD_INIT;

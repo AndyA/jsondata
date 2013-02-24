@@ -10,7 +10,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 #define NTHREAD 10
 
@@ -33,7 +33,7 @@ static void do_stuff(jd_var *v, int depth) {
 
   nsleep(0.001);
 
-  JD_SCOPE {
+  scope {
     switch (depth) {
     case 0:
     case 2:
@@ -61,7 +61,7 @@ static void *test_threads(void *tid) {
 }
 
 void test_main(void) {
-  JD_SCOPE {
+  scope {
     int i;
     pthread_t thd[NTHREAD];
     JD_AV(ar, NTHREAD);

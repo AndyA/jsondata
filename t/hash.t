@@ -6,7 +6,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void test_hash(size_t sz) {
   jd_var ha = JD_INIT, keys = JD_INIT;

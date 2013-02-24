@@ -6,7 +6,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void test_path(void) {
   jd_var m = JD_INIT;
@@ -72,7 +72,7 @@ static void test_path(void) {
 }
 
 static void throw_unexpected(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_VAR(x);
     jd_set_string(jd_lv(x, "$.hello"), "Hello, World");
     jd_set_int(jd_lv(x, "$.hello.index"), 123);
@@ -80,7 +80,7 @@ static void throw_unexpected(void *ctx) {
 }
 
 static void throw_bad_path(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_VAR(x);
     jd_set_string(jd_lv(x, "@.hello"), "Hello, World");
     jdt_diag("No exception thrown, x=%J", x);
@@ -88,7 +88,7 @@ static void throw_bad_path(void *ctx) {
 }
 
 static void throw_bad_path2(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_VAR(x);
     JD_AV(path, 1); /* empty */
     jd_get_context(x, path, NULL, 1);
@@ -113,7 +113,7 @@ static int nneq(void *a, void *b) {
 }
 
 static void test_context(void) {
-  JD_SCOPE {
+  scope {
     JD_JV(obj, "{\"one\":[1],\"two\":[2,4]}");
     JD_SV(ps, "$.one.0");
     JD_JV(pa, "[\"$\",\"one\",\"0\"]");
@@ -125,7 +125,7 @@ static void test_context(void) {
     "array path (numeric)");
   }
 
-  JD_SCOPE {
+  scope {
     JD_VAR(obj);
     JD_JV(path, "[\"$\",0]");
     ok(!!jd_get_context(obj, path, NULL, 1), "vivify path");

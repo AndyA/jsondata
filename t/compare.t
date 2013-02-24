@@ -6,18 +6,18 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void check_sort(const char *in, const char *want,
                        int (*cmp)(jd_var *, jd_var *)) {
-  JD_TRY {
+  try {
     JD_2VARS(jin, jwant);
     jd_from_jsons(jin, in);
     jd_from_jsons(jwant, want);
     jd_sortv(jin, cmp);
     jdt_is(jin, jwant, "%s sorts as %s", in, want);
   }
-  JD_CATCH(e) {
+  catch (e) {
     jdt_diag("Exception: %V", e);
     fail("Exception: %s", jd_bytes(e, NULL));
   }
@@ -28,7 +28,7 @@ static int backwards(jd_var *a, jd_var *b) {
 }
 
 static void test_sort(void) {
-  JD_SCOPE {
+  scope {
     check_sort("[\"c\",\"b\",\"a\"]", "[\"a\",\"b\",\"c\"]", jd_compare);
     check_sort("[3,2,1]", "[1,2,3]", jd_compare);
     check_sort("[3.25,2.25,1.25]", "[1.25,2.25,3.25]", jd_compare);
@@ -58,7 +58,7 @@ static void test_hashcode(void) {
     "null", "\"null\"",
     NULL
   };
-  JD_SCOPE {
+  scope {
     JD_HV(stats, 10);
     JD_2VARS(v, key);
 
@@ -82,7 +82,7 @@ static void test_hashcode(void) {
 }
 
 static void test_compare(void) {
-  JD_SCOPE {
+  scope {
     JD_IV(a, 1);
     JD_RV(b, 1);
     ok(0 == jd_compare(a, b), "(INTEGER) 1 == (REAL) 1");
@@ -91,7 +91,7 @@ static void test_compare(void) {
 }
 
 static void throw_cant_compare(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_AV(a1, 0);
     JD_AV(a2, 0);
     jd_compare(a1, a2);

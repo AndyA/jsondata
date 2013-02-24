@@ -6,7 +6,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void test_sort(void) {
   jd_var ar = JD_INIT;
@@ -141,7 +141,7 @@ static void test_basic(void) {
 }
 
 static void throw_oob(void *ctx) {
-  JD_SCOPE {
+  scope {
     JD_VAR(ar);
 
     jd_set_array(ar, 3);

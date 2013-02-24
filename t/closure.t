@@ -5,7 +5,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static int tc1(jd_var *rv, jd_var *ctx, jd_var *arg) {
   if (ctx->type != INTEGER) jd_set_int(ctx, 0);
@@ -14,7 +14,7 @@ static int tc1(jd_var *rv, jd_var *ctx, jd_var *arg) {
 }
 
 static void test_closure(void) {
-  JD_SCOPE {
+  scope {
     JD_3VARS(cl1, cl2, args);
     jd_set_closure(cl1, tc1);
     jd_assign(cl2, cl1);
@@ -36,7 +36,7 @@ static int closure(jd_var *rv, jd_var *ctx, jd_var *arg) {
 }
 
 static void test_clone_deep(void) {
-  JD_SCOPE {
+  scope {
     JD_3VARS(ctx, cl1, cl2);
 
     jd_set_hash(ctx, 1);
@@ -55,7 +55,7 @@ static void test_clone_deep(void) {
 }
 
 static void test_clone_shallow(void) {
-  JD_SCOPE {
+  scope {
     JD_3VARS(ctx, cl1, cl2);
 
     jd_set_hash(ctx, 1);

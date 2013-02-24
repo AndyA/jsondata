@@ -6,7 +6,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static int double_it(jd_var *rv, jd_var *ctx, jd_var *args) {
   jd_set_int(rv, jd_get_int(args) * 2);
@@ -32,7 +32,7 @@ static int blow_up(jd_var *rv, jd_var *ctx, jd_var *args) {
 }
 
 static void check_map(const char *json, const char *want, jd_closure_func f) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(in, out);
     JD_CV(cl, f);
     jd_from_jsons(in, json);
@@ -42,7 +42,7 @@ static void check_map(const char *json, const char *want, jd_closure_func f) {
 }
 
 static void check_grep(const char *json, const char *want, jd_closure_func f) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(in, out);
     JD_CV(cl, f);
     jd_from_jsons(in, json);
@@ -52,7 +52,7 @@ static void check_grep(const char *json, const char *want, jd_closure_func f) {
 }
 
 static void check_dmap(const char *json, const char *want, jd_closure_func f) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(in, out);
     JD_CV(cl, f);
     jd_from_jsons(in, json);
@@ -62,7 +62,7 @@ static void check_dmap(const char *json, const char *want, jd_closure_func f) {
 }
 
 static void check_dgrep(const char *json, const char *want, jd_closure_func f) {
-  JD_SCOPE {
+  scope {
     JD_2VARS(in, out);
     JD_CV(cl, f);
     jd_from_jsons(in, json);
@@ -74,7 +74,7 @@ static void check_dgrep(const char *json, const char *want, jd_closure_func f) {
 static void check_throws(const char *json, int hits) {
   int pos, caught, running;
   for (pos = 0, caught = 0, running = 1; running; pos++) {
-    JD_TRY {
+    try {
       JD_2VARS(in, out);
       JD_CV(cl, blow_up);
       jd_set_int(jd_context(cl), pos);
@@ -82,7 +82,7 @@ static void check_throws(const char *json, int hits) {
       jd_dmap(out, cl, in);
       running = 0;
     }
-    JD_CATCH(e) {
+    catch (e) {
       jd_release(e);
       caught++;
     }
@@ -156,7 +156,7 @@ static void test_dgrep(void) {
 }
 
 static void test_inplace(void) {
-  JD_SCOPE {
+  scope {
     JD_CV(dbl, double_it);
     JD_CV(odd, is_odd);
     JD_JV(x, "{\"foo\":[1,2,3]}");

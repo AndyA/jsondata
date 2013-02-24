@@ -6,7 +6,7 @@
 #include "util.h"
 #include "tap.h"
 #include "jd_test.h"
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 static void test_to_json(void) {
   jd_var vin = JD_INIT, vout = JD_INIT, vwant = JD_INIT;
@@ -69,11 +69,11 @@ static void test_from_json(void) {
 
 static void throws(const char *json, const char *want, jd_int pos) {
   int thrown = 0;
-  JD_TRY {
+  try {
     JD_VAR(out);
     jd_from_jsons(out, json);
   }
-  JD_CATCH(e) {
+  catch (e) {
     jdt_is_string(jd_rv(e, "$.message"),
                   want, "parse \"%s\" throws \"%s\"", json, want);
     jd_int offset = jd_get_int(jd_rv(e, "$.info.offset"));
