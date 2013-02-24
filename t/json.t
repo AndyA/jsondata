@@ -67,7 +67,7 @@ static void test_from_json(void) {
     check_from_json(json[i]);
 }
 
-static void throws(const char *json, const char *want) {
+static void throws(const char *json, const char *want, jd_int pos) {
   int thrown = 0;
   JD_BEGIN {
     JD_VAR(out);
@@ -76,6 +76,12 @@ static void throws(const char *json, const char *want) {
   JD_CATCH(e) {
     jdt_is_string(jd_rv(e, "$.message"),
                   want, "parse \"%s\" throws \"%s\"", json, want);
+    jd_int offset = jd_get_int(jd_rv(e, "$.info.offset"));
+    if (!is(offset, pos, "position = " JD_INT_FMT, pos)) {
+      diag("# json = %s", json);
+      diag("# wanted " JD_INT_FMT, pos);
+      diag("# got " JD_INT_FMT, offset);
+    }
     jd_release(e);
     thrown = 1;
   }
@@ -84,15 +90,15 @@ static void throws(const char *json, const char *want) {
 }
 
 static void test_exceptions(void) {
-  throws("", "Syntax error");
-  throws("[1)", "Expected comma or closing bracket");
-  throws("{\"x\":1)", "Expected comma or closing brace");
-  throws("{\"x\")", "Missing colon");
-  throws("\"\\u\"", "Bad escape");
-  throws("triffic", "Expected true or false");
-  throws("nice", "Expected null");
-  throws("!!", "Syntax error");
-  throws("\"\\u0100\"", "Can't handle unicode");
+  throws("", "Syntax error", 0);
+  throws("[1)", "Expected comma or closing bracket", 2);
+  throws("{\"x\":1)", "Expected comma or closing brace", 6);
+  throws("{\"x\")", "Missing colon", 4);
+  throws("\"\\u\"", "Bad escape", 1);
+  throws("triffic", "Expected true or false", 0);
+  throws("nice", "Expected null", 0);
+  throws("!!", "Syntax error", 0);
+  throws("\"\\u0100\"", "Can't handle unicode", 1);
 }
 
 void test_main(void) {

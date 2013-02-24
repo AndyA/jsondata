@@ -174,6 +174,8 @@ jd_var *jd_to_json(jd_var *out, jd_var *v) {
 }
 
 struct parser {
+  const char *sp;
+  const char *tp;
   const char *pp;
   const char *ep;
 };
@@ -182,6 +184,13 @@ struct parser {
 #define JUMP(p, n) do { (p)->pp += (n); } while (0)
 #define STEP(p) JUMP(p, 1)
 #define SKIP(p) do { while (isspace(CHAR(p))) STEP(p); } while (0)
+#define MARK(p) do { (p)->tp = (p)->pp; } while (0)
+
+static jd_var *pinfo(struct parser *p) {
+  JD_VAR(info);
+  jd_set_int(jd_lv(info, "$.offset"), p->tp - p->sp);
+  return info;
+}
 
 static size_t p_has(struct parser *p, const char *s) {
   size_t l = strlen(s);
@@ -199,8 +208,10 @@ static jd_var *from_json_array(jd_var *out, struct parser *p) {
     if (CHAR(p) == ']') break;
     from_json(jd_push(out, 1), p);
     SKIP(p);
+    MARK(p);
     if (CHAR(p) == ']') break;
-    if (CHAR(p) != ',') jd_throw("Expected comma or closing bracket");
+    if (CHAR(p) != ',')
+      jd_throw_info(pinfo(p), "Expected comma or closing bracket");
   }
   STEP(p);
   return out;
@@ -215,12 +226,15 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
       if (CHAR(p) == '}') break;
       from_json(key, p);
       SKIP(p);
-      if (CHAR(p) != ':') jd_throw("Missing colon");
+      MARK(p);
+      if (CHAR(p) != ':') jd_throw_info(pinfo(p), "Missing colon");
       STEP(p);
+      MARK(p);
       from_json(jd_get_key(out, key, 1), p);
       SKIP(p);
+      MARK(p);
       if (CHAR(p) == '}') break;
-      if (CHAR(p) != ',') jd_throw("Expected comma or closing brace");
+      if (CHAR(p) != ',') jd_throw_info(pinfo(p), "Expected comma or closing brace");
     }
     STEP(p);
   }
@@ -228,8 +242,8 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
   return out;
 }
 
-static void append_byte(jd_var *out, unsigned c) {
-  if (c >= 0x100) jd_throw("Can't handle unicode");
+static void append_byte(struct parser *p, jd_var *out, unsigned c) {
+  if (c >= 0x100) jd_throw_info(pinfo(p), "Can't handle unicode");
   jd_append_bytes(out, &c, 1);
 }
 
@@ -245,7 +259,7 @@ static unsigned parse_escape(struct parser *p) {
   return esc;
 
 bad:
-  jd_throw("Bad escape");
+  jd_throw_info(pinfo(p), "Bad escape");
   return 0;
 }
 
@@ -254,43 +268,44 @@ static jd_var *from_json_string(jd_var *out, struct parser *p) {
   char c;
   for (;;) {
     STEP(p);
+    MARK(p);
     c = CHAR(p);
     if (c == '"') break;
     if (c == '\\') {
       STEP(p);
       switch (CHAR(p)) {
       case 'b':
-        append_byte(out, 0x08);
+        append_byte(p, out, 0x08);
         break;
       case 't':
-        append_byte(out, 0x09);
+        append_byte(p, out, 0x09);
         break;
       case 'n':
-        append_byte(out, 0x0A);
+        append_byte(p, out, 0x0A);
         break;
       case 'f':
-        append_byte(out, 0x0C);
+        append_byte(p, out, 0x0C);
         break;
       case 'r':
-        append_byte(out, 0x0D);
+        append_byte(p, out, 0x0D);
         break;
       case '\\':
-        append_byte(out, '\\');
+        append_byte(p, out, '\\');
         break;
       case '"':
-        append_byte(out, '"');
+        append_byte(p, out, '"');
         break;
       case '/':
-        append_byte(out, '/');
+        append_byte(p, out, '/');
         break;
       case 'u':
         STEP(p);
-        append_byte(out, parse_escape(p));
+        append_byte(p, out, parse_escape(p));
         break;
       }
     }
     else {
-      append_byte(out, c);
+      append_byte(p, out, c);
     }
   }
   STEP(p);
@@ -307,7 +322,7 @@ static jd_var *from_json_bool(jd_var *out, struct parser *p) {
     JUMP(p, sz);
     return jd_set_bool(out, 0);
   }
-  jd_throw("Expected true or false");
+  jd_throw_info(pinfo(p), "Expected true or false");
   return NULL;
 }
 
@@ -317,7 +332,7 @@ static jd_var *from_json_null(jd_var *out, struct parser *p) {
     JUMP(p, sz);
     return jd_set_void(out);
   }
-  jd_throw("Expected null");
+  jd_throw_info(pinfo(p), "Expected null");
   return NULL;
 }
 
@@ -338,12 +353,13 @@ static jd_var *from_json_num(jd_var *out, struct parser *p) {
     return jd_set_real(out, r);
   }
 
-  jd_throw("Syntax error");
+  jd_throw_info(pinfo(p), "Syntax error");
   return NULL;
 }
 
 static jd_var *from_json(jd_var *out, struct parser *p) {
   SKIP(p);
+  MARK(p);
   switch (CHAR(p)) {
   case '[':
     return from_json_array(out, p);
@@ -370,7 +386,7 @@ jd_var *jd_from_json(jd_var *out, jd_var *json) {
     size_t size;
 
     jd_stringify(tmp, json);
-    p.pp = jd_bytes(tmp, &size);
+    p.sp = p.tp = p.pp = jd_bytes(tmp, &size);
     p.ep = p.pp + size - 1;
     from_json(out, &p);
   } JD_END
