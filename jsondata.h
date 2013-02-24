@@ -108,7 +108,10 @@ typedef struct jd_activation {
   int line;
 } jd_activation;
 
-#define JD_CURREX (jd_head ? &jd_head->exception : &jd_root_exception)
+#define JD_GETEX(rec) \
+  (rec ? &rec->exception : &jd_root_exception)
+
+#define JD_CURREX JD_GETEX(jd_head)
 
 #define JD_SCOPE \
   for ( jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
@@ -121,7 +124,8 @@ typedef struct jd_activation {
         jd_ar_up(__jd_ar), __jd_ar = NULL)
 
 #define JD_CATCH(e) \
-  for (jd_var *e = JD_CURREX; \
+  JD_SCOPE \
+  for (jd_var *e = JD_GETEX(jd_head->up); \
        e && e->type != VOID; \
        jd_release(e), e = NULL)
 

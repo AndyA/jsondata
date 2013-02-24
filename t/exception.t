@@ -83,7 +83,6 @@ static void test_deep_nest(void) {
 }
 
 static void test_throw_in_catch(void) {
-#if 0
   int catch = 0, first = 0;
 
   JD_TRY {
@@ -106,7 +105,6 @@ static void test_throw_in_catch(void) {
   }
   is(catch, 1, "catch block exception seen");
   is(first, 1, "first block exception seen");
-#endif
 }
 
 
