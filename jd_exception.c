@@ -47,20 +47,8 @@ void jd_ar_up(jd_activation *rec) {
 }
 
 jd_var *jd_catch(jd_activation *rec) {
-  jd_dvar *ex = jd_head->vars;
-  jd_var *e = &ex->v;
-  jd_head->vars = ex->next;
-  if (jd_head->up) {
-    ex->next = jd_head->up->vars;
-    jd_head->up->vars = ex;
-  }
-  else {
-    jd_assign(&jd_root_exception, &ex->v);
-    jd_release(&ex->v);
-    jd_free(ex);
-    e = &jd_root_exception;
-  }
-  jd_ar_up(rec);
+  jd_var *e = jd_head->up ? &jd_head->up->exception : &jd_root_exception;
+  jd_assign(e, &jd_head->exception);
   return e;
 }
 
@@ -76,7 +64,7 @@ static void rethrow(jd_var *e, int release) JD_NORETURN;
 static void rethrow(jd_var *e, int release) {
   if (jd_head) {
     /*    printf("throw %s at %s:%d\n", jd_bytes(e, NULL), jd_head->file, jd_head->line);*/
-    jd_assign(jd_ar_var(jd_head), e);
+    jd_assign(&jd_head->exception, e);
     if (release) jd_release(e);
     longjmp(jd_head->env, 1);
   }
