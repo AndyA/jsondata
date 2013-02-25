@@ -147,26 +147,16 @@ static void test_backtrace(void) {
   }
 }
 
-/* Unfortunately the setjmp/longjmp that's used to implement try/catch
- * leaves any auto variables in the function's scope in an indeterminate
- * state. There's a good discussion of the problem here:
- *
- *  http://stackoverflow.com/questions/7271313/ \
- *    what-is-an-automatic-variable-in-this-setjmp-longjmp-context
- *  http://bit.ly/We5GaS
- *
- * Making block volatile appears not to work - possibly because the
- * volatility has to be cast away to pass it to jd_free().
- *
- * Caveat Emptor.
- */
-static void *block = NULL;
 static void cleanup(int throw) {
+  /* Because try/catch use setjmp/longjmp we have to make any auto
+   * variables volatile if we need them to persist outside the try
+   * scope.
+   */
+  void *volatile block = NULL;
   try {
     block = jd_alloc(100);
     if (throw) jd_throw("Allocated block, freaked me out");
   }
-  /*  jdt_diag("Cleanup, block=%p", block);*/
   jd_free(block);
   catch (e) jd_rethrow(e);
 }
