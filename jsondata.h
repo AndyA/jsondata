@@ -126,8 +126,6 @@ typedef struct jd_activation {
 #define JD_GETEX(rec) \
   (rec ? &rec->exception : &jd_root_exception)
 
-#define JD_CURREX JD_GETEX(jd_head)
-
 #define JD_SCOPE \
   for ( jd_activation *__jd_ar = jd_ar_push(__LINE__, __FILE__); \
         __jd_ar && !(setjmp(__jd_ar->env) && jd_rethrow(jd_catch(__jd_ar))); \
