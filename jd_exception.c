@@ -170,8 +170,7 @@ MAKE_MAKER(rv, double, jd_set_real)
 MAKE_MAKER(sv, const char *, jd_set_string)
 
 void *jd_alloca(size_t sz) {
-  jd_dvar *dv = ar_slot(get_head());
-  return dv->alloca = jd_alloc(sz);
+  return ar_slot(get_head())->alloca = jd_alloc(sz);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
