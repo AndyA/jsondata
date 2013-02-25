@@ -21,12 +21,22 @@ static void test_setjmp2(int t) {
     p = malloc(200);
     if (t) longjmp(jb, 2000);
   }
-  printf("    p=%p (longjmp depends on arg)\n", p);
+  printf("    p=%p (longjmp depends on constant true arg)\n", p);
 }
 
-int main(void) {
+static void test_setjmp3(int t) {
+  volatile void *p;
+  if (!setjmp(jb)) {
+    p = malloc(300);
+    if (t) longjmp(jb, 3000);
+  }
+  printf("    p=%p (longjmp depends on argc < 1000)\n", p);
+}
+
+int main(int argc, char *argv[]) {
   test_setjmp1();
   test_setjmp2(1);
+  test_setjmp3(argc < 1000);
   return 0;
 }
 
