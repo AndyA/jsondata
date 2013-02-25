@@ -2,18 +2,17 @@
 
 #include <stdio.h>
 
-#include "jsondata.h"
+#include "jd_pretty.h"
 
 int main(void) {
-  JD_TRY {
+  try {
     JD_2VARS(a, b);
     jd_set_string(a, "This is A");
     jd_throw("Oops: a=%J", a);
     jd_set_bool(b, 1);
   }
-  JD_CATCH(e) {
-    jd_rethrow(e);
-  }
+  puts("cleanup");
+  catch (e) jd_rethrow(e);
 
   return 0;
 }

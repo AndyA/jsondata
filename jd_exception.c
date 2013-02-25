@@ -80,7 +80,7 @@ static void rethrow(jd_var *e, int release) {
       for (i = 0; i < count; i++) {
         jd_var *slot = jd_get_idx(bt, i);
         fprintf(stderr, "  %sat %s:" JD_INT_FMT "\n",
-                i ? "via context " : "",
+                i ? "via scope " : "",
                 jd_bytes(jd_get_ks(slot, "file", 0), NULL),
                 jd_get_int(jd_get_ks(slot, "line", 0)));
       }
