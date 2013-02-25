@@ -12,7 +12,7 @@ static void test_setjmp1(void) {
     p = malloc(100);
     longjmp(jb, 1000);
   }
-  printf("  p=%p (longjmp always)\n", p);
+  printf("    p=%p (longjmp always)\n", p);
 }
 
 static void test_setjmp2(int t) {
@@ -21,7 +21,7 @@ static void test_setjmp2(int t) {
     p = malloc(200);
     if (t) longjmp(jb, 2000);
   }
-  printf("  p=%p (longjmp depends on arg)\n", p);
+  printf("    p=%p (longjmp depends on arg)\n", p);
 }
 
 int main(void) {
