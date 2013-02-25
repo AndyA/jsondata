@@ -97,6 +97,7 @@ typedef struct {
 typedef struct jd_dvar {
   struct jd_dvar *next;
   jd_var v;
+  void *alloca;
 } jd_dvar;
 
 typedef struct jd_activation {
@@ -257,6 +258,8 @@ jd_var *jd_niv(jd_int v);
 jd_var *jd_njv(const char *v);
 jd_var *jd_nrv(double v);
 jd_var *jd_nsv(const char *v);
+
+void *jd_alloca(size_t sz);
 
 jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in);

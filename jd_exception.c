@@ -31,6 +31,7 @@ static void free_vars(jd_dvar *dv) {
   while (dv) {
     jd_dvar *next = dv->next;
     jd_release(&dv->v);
+    jd_free(dv->alloca);
     jd_free(dv);
     dv = next;
   }
@@ -54,11 +55,15 @@ jd_var *jd_catch(jd_activation *rec) {
   return e;
 }
 
-jd_var *jd_ar_var(jd_activation *rec) {
+static jd_dvar *ar_slot(jd_activation *rec) {
   jd_dvar *dv = jd_alloc(sizeof(jd_dvar));
   dv->next = rec->vars;
   rec->vars = dv;
-  return &dv->v;
+  return dv;
+}
+
+jd_var *jd_ar_var(jd_activation *rec) {
+  return &(ar_slot(rec)->v);
 }
 
 static void rethrow(jd_var *e, int release) JD_NORETURN;
@@ -139,8 +144,13 @@ void jd_ar_throw(const char *file, int line,
   va_end(ap);
 }
 
+static jd_activation *get_head(void) {
+  if (!jd_head) jd_die("Illegal outside scope");
+  return jd_head;
+}
+
 jd_var *jd_nv(void) {
-  return jd_ar_var(jd_head);
+  return jd_ar_var(get_head());
 }
 
 #define MAKE_MAKER(n, t, f) \
@@ -158,6 +168,11 @@ MAKE_MAKER(iv, jd_int, jd_set_int)
 MAKE_MAKER(jv, const char *, jd_from_jsons)
 MAKE_MAKER(rv, double, jd_set_real)
 MAKE_MAKER(sv, const char *, jd_set_string)
+
+void *jd_alloca(size_t sz) {
+  jd_dvar *dv = ar_slot(get_head());
+  return dv->alloca = jd_alloc(sz);
+}
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

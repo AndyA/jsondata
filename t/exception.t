@@ -88,8 +88,8 @@ static void test_deep_nest(void) {
 static void test_throw_in_catch(void) {
   int catch = 0, first = 0;
 
-try {
-  JD_SV(a, "first");
+  try {
+    JD_SV(a, "first");
     jd_throw("Throw from %V block", a);
   }
   catch (e) {
@@ -101,9 +101,9 @@ try {
       jdt_is_string(jd_rv(e, "$.message"),
                     "Throw from catch block", "got throw catch");
       catch ++;
-  }
-  jdt_is_string(jd_rv(e, "$.message"),
-                "Throw from first block", "got first catch");
+    }
+    jdt_is_string(jd_rv(e, "$.message"),
+                  "Throw from first block", "got first catch");
     first++;
   }
   is(catch, 1, "catch block exception seen");
@@ -183,6 +183,27 @@ static void test_cleanup(void) {
   is(exception->type, HASH, "exception fired");
 }
 
+static void auto_cleanup(int throw) {
+  scope {
+    char *block = jd_alloca(100);
+    if (throw) jd_throw("Allocated block, freaked me out");
+    strcpy(block, "Hello, World");
+  }
+}
+
+static void test_auto_cleanup(void) {
+  JD_VAR(exception);
+  try {
+    auto_cleanup(0);
+    auto_cleanup(1);
+  }
+  catch (e) {
+    jd_assign(exception, e);
+    jd_release(e);
+  }
+  is(exception->type, HASH, "exception fired");
+}
+
 void test_main(void) {
   scope {
     test_simple_throw();
@@ -193,6 +214,7 @@ void test_main(void) {
     test_return();
     test_backtrace();
     test_cleanup();
+    test_auto_cleanup();
   }
 }
 
