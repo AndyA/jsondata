@@ -147,6 +147,29 @@ static void test_backtrace(void) {
   }
 }
 
+static void cleanup(void) {
+  void *block = NULL;
+  try {
+    block = jd_alloc(100);
+    if (block) jd_throw("Allocated block, freaked me out");
+  }
+  jdt_diag("Cleanup!");
+  jd_free(block);
+  catch (e) jd_rethrow(e);
+}
+
+static void test_cleanup(void) {
+  JD_VAR(exception);
+  try {
+    cleanup();
+  }
+  catch (e) {
+    jd_assign(exception, e);
+    jd_release(e);
+  }
+  is(exception->type, HASH, "exception fired");
+}
+
 void test_main(void) {
   scope {
     test_simple_throw();
@@ -156,6 +179,7 @@ void test_main(void) {
     test_throw_in_catch();
     test_return();
     test_backtrace();
+    test_cleanup();
   }
 }
 
