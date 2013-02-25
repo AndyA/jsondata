@@ -154,7 +154,7 @@ jd_var *jd_nv(void) {
 }
 
 #define MAKE_MAKER(n, t, f) \
-  jd_var *jd_n ## n (t v) {  \
+  jd_var *jd_n ## n (t v) { \
     jd_var *nv = jd_nv();   \
     f(nv, v);               \
     return nv;              \
