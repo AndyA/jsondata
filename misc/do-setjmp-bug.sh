@@ -1,0 +1,14 @@
+#!/bin/bash
+
+for cc in gcc clang; do
+  for opt in g O{1..3}; do
+    out="sjb-$cc-$opt"
+    echo "Testing $out"
+    $cc -o $out -$opt setjmp-bug.c && ./$out && objdump -d $out > $out.s
+  done
+done
+
+
+
+# vim:ts=2:sw=2:sts=2:et:ft=sh
+
