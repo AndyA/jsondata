@@ -10,12 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TD(x) #x
+#define X(x) #x,
 static const char *typename[] = {
-#include "jd_type.h"
+  JD_TYPE_LIST
   NULL
 };
-#undef TD
+#undef X
 
 void *(*jd_alloc_hook)(size_t) = malloc;
 void (*jd_free_hook)(void *) = free;

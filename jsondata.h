@@ -13,12 +13,26 @@ typedef long jd_int;
 
 #define JD_NORETURN __attribute__((noreturn))
 
-#define TD(x) x
+#define JD_TYPE_LIST \
+  /* simple */       \
+  X(VOID)            \
+  X(BOOL)            \
+  X(INTEGER)         \
+  X(REAL)            \
+  X(STRING)          \
+  /* complex */      \
+  X(ARRAY)           \
+  X(HASH)            \
+  /* magic */        \
+  X(CLOSURE)         \
+  X(OBJECT)
+
+#define X(x) x,
 typedef enum {
-#include "jd_type.h"
+  JD_TYPE_LIST
   MAXTYPE
 } jd_type;
-#undef TD
+#undef X
 
 #define JD_IS_SIMPLE(t)  ((t) <= STRING)
 #define JD_IS_MAGIC(t)   ((t) >= CLOSURE)
