@@ -88,8 +88,8 @@ static void test_deep_nest(void) {
 static void test_throw_in_catch(void) {
   int catch = 0, first = 0;
 
-  try {
-    JD_SV(a, "first");
+try {
+  JD_SV(a, "first");
     jd_throw("Throw from %V block", a);
   }
   catch (e) {
@@ -101,9 +101,9 @@ static void test_throw_in_catch(void) {
       jdt_is_string(jd_rv(e, "$.message"),
                     "Throw from catch block", "got throw catch");
       catch ++;
-    }
-    jdt_is_string(jd_rv(e, "$.message"),
-                  "Throw from first block", "got first catch");
+  }
+  jdt_is_string(jd_rv(e, "$.message"),
+                "Throw from first block", "got first catch");
     first++;
   }
   is(catch, 1, "catch block exception seen");
@@ -147,13 +147,26 @@ static void test_backtrace(void) {
   }
 }
 
-static void cleanup(void) {
-  void *block = NULL;
+/* Unfortunately the setjmp/longjmp that's used to implement try/catch
+ * leaves any auto variables in the function's scope in an indeterminate
+ * state. There's a good discussion of the problem here:
+ *
+ *  http://stackoverflow.com/questions/7271313/ \
+ *    what-is-an-automatic-variable-in-this-setjmp-longjmp-context
+ *  http://bit.ly/We5GaS
+ *
+ * Making block volatile appears not to work - possibly because the
+ * volatility has to be cast away to pass it to jd_free().
+ *
+ * Caveat Emptor.
+ */
+static void *block = NULL;
+static void cleanup(int throw) {
   try {
     block = jd_alloc(100);
-    if (block) jd_throw("Allocated block, freaked me out");
+    if (throw) jd_throw("Allocated block, freaked me out");
   }
-  jdt_diag("Cleanup!");
+  /*  jdt_diag("Cleanup, block=%p", block);*/
   jd_free(block);
   catch (e) jd_rethrow(e);
 }
@@ -161,7 +174,7 @@ static void cleanup(void) {
 static void test_cleanup(void) {
   JD_VAR(exception);
   try {
-    cleanup();
+    cleanup(1);
   }
   catch (e) {
     jd_assign(exception, e);
