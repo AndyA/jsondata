@@ -194,6 +194,7 @@ static void auto_cleanup(int throw) {
 static void test_auto_cleanup(void) {
   JD_VAR(exception);
   try {
+    jd_alloca(200);
     auto_cleanup(0);
     auto_cleanup(1);
   }
