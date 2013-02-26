@@ -145,10 +145,10 @@ typedef struct jd_activation {
        jd_release(e), e = NULL)
 
 #define JD_RETURN(x) \
-  return ({               \
+  return ({                   \
     __typeof__(x) _tmp = (x); \
-    jd_ar_up(__jd_ar);    \
-    _tmp;                 \
+    jd_ar_up(__jd_ar);        \
+    _tmp;                     \
   })
 
 #define JD_VAR(x) \
