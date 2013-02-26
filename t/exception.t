@@ -127,6 +127,20 @@ static void test_return(void) {
   }
 }
 
+static int jdv(void) {
+  scope {
+    JD_IV(rv, 123);
+    JD_RETURN(jd_get_int(rv));
+  }
+  return 0;
+}
+
+static void test_jdv_return(void) {
+  scope {
+    is(jdv(), 123, "returned value calculated from jd_var");
+  }
+}
+
 static void backtrace(jd_var *out, int depth) {
   scope {
     if (depth > 0)
@@ -203,6 +217,7 @@ void test_main(void) {
     test_deep_nest();
     test_throw_in_catch();
     test_return();
+    test_jdv_return();
     test_backtrace();
     test_cleanup();
     test_auto_cleanup();
