@@ -151,6 +151,9 @@ typedef struct jd_activation {
     _tmp;                     \
   })
 
+#define JD_RETURN_VOID \
+  do { jd_ar_up(__jd_ar); return; } while (0)
+
 #define JD_VAR(x) \
   jd_var *x = jd_nv()
 
