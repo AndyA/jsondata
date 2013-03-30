@@ -79,14 +79,17 @@ static void check_exit(void (*f)(void *), void *ctx, const char *want, int want_
 }
 
 static void uncaught(void *ctx) {
+  (void) ctx;
   jd_throw("Oops");
 }
 
 static void *nomem(size_t sz) {
+  (void) sz;
   return NULL;
 }
 
 static void oom(void *ctx) {
+  (void) ctx;
   jd_alloc_hook = nomem;
   jd_var v = JD_INIT;
   jd_set_string(&v, "Boom!");

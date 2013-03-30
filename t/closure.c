@@ -8,6 +8,8 @@
 #include "jd_pretty.h"
 
 static int tc1(jd_var *rv, jd_var *ctx, jd_var *arg) {
+  (void) rv;
+  (void) arg;
   if (ctx->type != INTEGER) jd_set_int(ctx, 0);
   jd_set_int(ctx, jd_get_int(ctx) + 1);
   return 0;
@@ -30,6 +32,8 @@ static void test_closure(void) {
 }
 
 static int closure(jd_var *rv, jd_var *ctx, jd_var *arg) {
+  (void) rv;
+  (void) arg;
   jd_var *counter = jd_rv(ctx, "$.counter");
   jd_set_int(counter, jd_get_int(counter) + 1);
   return 0;

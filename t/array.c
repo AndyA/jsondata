@@ -141,6 +141,7 @@ static void test_basic(void) {
 }
 
 static void throw_oob(void *ctx) {
+  (void) ctx;
   scope {
     JD_VAR(ar);
 

@@ -121,8 +121,8 @@ unsigned long jd_string_hashcalc(jd_string *jds, jd_type t) {
   return h;
 }
 
-jd_var *jd_string_sub(jd_string *jds, int from, int len, jd_var *out) {
-  size_t sl = jd_string_length(jds);
+jd_var *jd_string_sub(jd_string *jds, int volatile from, int volatile len, jd_var *volatile out) {
+  int sl = (int) jd_string_length(jds);
 
   if (from < 0) from += sl;
   if (len <= 0 || from < 0 || from >= sl) {
@@ -190,7 +190,7 @@ jd_var *jd_string_numify(jd_string *jds, jd_var *out) {
   char *end;
   jd_int iv;
   double rv;
-  size_t sl;
+  int sl;
 
   if (str_is(jds, "true"))
     return jd_set_bool(out, 1);
@@ -199,7 +199,7 @@ jd_var *jd_string_numify(jd_string *jds, jd_var *out) {
   if (str_is(jds, "null"))
     return jd_set_void(out);
 
-  sl = jd_string_length(jds);
+  sl = (int) jd_string_length(jds);
   iv = (jd_int) JD_STRTOINT(jds->data, &end, 10);
   if (end - jds->data == sl)
     return jd_set_int(out, iv);

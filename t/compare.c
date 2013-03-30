@@ -74,7 +74,7 @@ static void test_hashcode(void) {
 
     /*    jdt_diag("Hash stats: %lJ", stats);*/
     jd_keys(key, stats);
-    for (i = 0; i < jd_count(key); i++) {
+    for (i = 0; i < (int) jd_count(key); i++) {
       jd_int count = jd_get_int(jd_get_key(stats, jd_get_idx(key, i), 0));
       ok(count < 2, "count for %d, %ld < 2", i, (long) count);
     }
@@ -91,6 +91,7 @@ static void test_compare(void) {
 }
 
 static void throw_cant_compare(void *ctx) {
+  (void) ctx;
   scope {
     JD_AV(a1, 0);
     JD_AV(a2, 0);

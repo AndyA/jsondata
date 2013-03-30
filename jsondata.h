@@ -140,7 +140,7 @@ typedef struct jd_activation {
 #define JD_CATCH(e) \
   } while (0); \
   JD_SCOPE \
-  for (jd_var *e = JD_GETEX(jd_head->up); \
+  for (jd_var *volatile e = JD_GETEX(jd_head->up); \
        e && e->type != VOID; \
        jd_release(e), e = NULL)
 

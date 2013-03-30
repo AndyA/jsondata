@@ -29,6 +29,7 @@ static int is_positive_int(jd_var *v) {
 jd_var *jd_get_context(jd_var *root, jd_var *path,
                        jd_path_context *ctx, int vivify) {
   jd_var *ptr = NULL;
+  (void) ctx;
 
   JD_SCOPE {
     JD_2VARS(part, elt);
@@ -51,7 +52,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
       }
 
       if (ptr->type == ARRAY) {
-        size_t ac = jd_count(ptr);
+        int  ac = (int) jd_count(ptr);
         jd_int ix = jd_get_int(elt);
         if (ix == ac && vivify)
           ptr = jd_push(ptr, 1);

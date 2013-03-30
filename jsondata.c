@@ -525,7 +525,7 @@ jd_var *jd_clone(jd_var *out, jd_var *v, int deep) {
 }
 
 static jd_var *subref(jd_var *out, jd_var *v, int from, int len) {
-  if (from == 0 && len == jd_length(v)) return jd_assign(out, v);
+  if (from == 0 && len == (int) jd_length(v)) return jd_assign(out, v);
   return jd_substr(out, v, from, len);
 }
 

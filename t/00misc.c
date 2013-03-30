@@ -40,10 +40,12 @@ static void test_numify(void) {
 }
 
 static void throw_null(void *ctx) {
+  (void) ctx;
   jd_release(NULL);
 }
 
 static void throw_not_a_string(void *ctx) {
+  (void) ctx;
   scope {
     JD_2VARS(ar, tmp);
     jd_set_array(ar, 1);
@@ -52,6 +54,7 @@ static void throw_not_a_string(void *ctx) {
 }
 
 static void throw_not_an_array(void *ctx) {
+  (void) ctx;
   scope {
     JD_VAR(ha);
     jd_set_hash(ha, 1);
@@ -60,6 +63,7 @@ static void throw_not_an_array(void *ctx) {
 }
 
 static void throw_not_a_hash(void *ctx) {
+  (void) ctx;
   scope {
     JD_2VARS(ar, tmp);
     jd_set_array(ar, 1);
@@ -68,6 +72,7 @@ static void throw_not_a_hash(void *ctx) {
 }
 
 static void throw_not_a_closure(void *ctx) {
+  (void) ctx;
   scope {
     JD_SV(s, "");
     jd_context(s);
@@ -75,6 +80,7 @@ static void throw_not_a_closure(void *ctx) {
 }
 
 static void throw_not_an_object(void *ctx) {
+  (void) ctx;
   scope {
     JD_SV(s, "");
     jd_ptr(s);
@@ -82,6 +88,7 @@ static void throw_not_an_object(void *ctx) {
 }
 
 static void throw_cant_append(void *ctx) {
+  (void) ctx;
   scope {
     JD_IV(i, 0);
     JD_SV(s, "");
@@ -90,6 +97,7 @@ static void throw_cant_append(void *ctx) {
 }
 
 static void throw_cant_numify(void *ctx) {
+  (void) ctx;
   scope {
     JD_VAR(o);
     jd_set_object(o, o, NULL);
@@ -98,6 +106,7 @@ static void throw_cant_numify(void *ctx) {
 }
 
 static void throw_cant_numify2(void *ctx) {
+  (void) ctx;
   scope {
     JD_VAR(tmp);
     JD_SV(s, "123abc");
@@ -158,7 +167,7 @@ static void test_numify_misc(void) {
   }
 }
 
-static void check_bool(const char *expr[], int expect) {
+static void check_bool(const char **volatile expr, int volatile expect) {
   scope {
     JD_VAR(v);
     int i;

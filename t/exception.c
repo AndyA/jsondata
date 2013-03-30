@@ -86,10 +86,10 @@ static void test_deep_nest(void) {
 }
 
 static void test_throw_in_catch(void) {
-  int catch = 0, first = 0;
+  int volatile catch = 0, first = 0;
 
-  try {
-    JD_SV(a, "first");
+try {
+  JD_SV(a, "first");
     jd_throw("Throw from %V block", a);
   }
   catch (e) {
@@ -101,9 +101,9 @@ static void test_throw_in_catch(void) {
       jdt_is_string(jd_rv(e, "$.message"),
                     "Throw from catch block", "got throw catch");
       catch ++;
-    }
-    jdt_is_string(jd_rv(e, "$.message"),
-                  "Throw from first block", "got first catch");
+  }
+  jdt_is_string(jd_rv(e, "$.message"),
+                "Throw from first block", "got first catch");
     first++;
   }
   is(catch, 1, "catch block exception seen");

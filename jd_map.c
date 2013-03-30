@@ -80,6 +80,7 @@ static jd_var *filter_hash(jd_var *out, jd_var *cl, filter_function ff,
 
 static jd_var *filter_scalar(jd_var *out, jd_var *cl, filter_function ff,
                              int flat, jd_var *in) {
+  (void) flat;
   JD_SCOPE {
     JD_VAR(rv);
     if (ff(rv, cl, in)) jd_assign(out, rv);

@@ -82,6 +82,8 @@ static void pad(jd_var *out, struct json_opt *opt, int depth) {
 }
 
 static void to_json_string(jd_var *out, jd_var *str, struct json_opt *opt, int depth) {
+  (void) opt;
+  (void) depth;
   jd_set_string(jd_push(out, 1), "\"");
   escape_string(jd_push(out, 1), str);
   jd_set_string(jd_push(out, 1), "\"");

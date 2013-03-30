@@ -72,6 +72,7 @@ static void test_path(void) {
 }
 
 static void throw_unexpected(void *ctx) {
+  (void) ctx;
   scope {
     JD_VAR(x);
     jd_set_string(jd_lv(x, "$.hello"), "Hello, World");
@@ -80,6 +81,7 @@ static void throw_unexpected(void *ctx) {
 }
 
 static void throw_bad_path(void *ctx) {
+  (void) ctx;
   scope {
     JD_VAR(x);
     jd_set_string(jd_lv(x, "@.hello"), "Hello, World");
@@ -88,6 +90,7 @@ static void throw_bad_path(void *ctx) {
 }
 
 static void throw_bad_path2(void *ctx) {
+  (void) ctx;
   scope {
     JD_VAR(x);
     JD_AV(path, 1); /* empty */

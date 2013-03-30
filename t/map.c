@@ -9,16 +9,19 @@
 #include "jd_pretty.h"
 
 static int double_it(jd_var *rv, jd_var *ctx, jd_var *args) {
+  (void) ctx;
   jd_set_int(rv, jd_get_int(args) * 2);
   return 0;
 }
 
 static int is_odd(jd_var *rv, jd_var *ctx, jd_var *args) {
+  (void) ctx;
   jd_set_bool(rv, jd_get_int(args) & 1);
   return 0;
 }
 
 static int is_true(jd_var *rv, jd_var *ctx, jd_var *args) {
+  (void) ctx;
   jd_set_bool(rv, jd_test(args));
   return 0;
 }
@@ -72,7 +75,7 @@ static void check_dgrep(const char *json, const char *want, jd_closure_func f) {
 }
 
 static void check_throws(const char *json, int hits) {
-  int pos, caught, running;
+  int volatile pos, caught, running;
   for (pos = 0, caught = 0, running = 1; running; pos++) {
     try {
       JD_2VARS(in, out);
