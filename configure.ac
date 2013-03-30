@@ -12,6 +12,7 @@ LT_INIT
 AC_PROG_CC
 AC_PROG_CC_C99
 AC_SYS_LARGEFILE
+BT_REQUIRE_PTHREAD
 
 AC_MSG_CHECKING([whether to enable compiler warnings])
 if test x"$GCC" = x"yes" ; then
