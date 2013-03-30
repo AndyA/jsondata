@@ -14,8 +14,7 @@
 #include "jd_private.h"
 #include "jsondata.h"
 
-struct jd_except_tls_struct
-{
+struct jd_except_tls_struct {
   jd_activation *head;
   jd_var root_exception;
 };
@@ -38,9 +37,9 @@ static struct jd_except_tls_struct *jd_except_tls(void) {
 
   pthread_once(&jd_except_tls_once, jd_except_tls_init);
   p = (struct jd_except_tls_struct *) pthread_getspecific(jd_except_tls_key);
-  if(!p) {
+  if (!p) {
     p = (struct jd_except_tls_struct *) jd_alloc(sizeof(struct jd_except_tls_struct));
-    if(!p) {
+    if (!p) {
       return NULL;
     }
     pthread_setspecific(jd_except_tls_key, (void *) p);
@@ -52,14 +51,14 @@ static struct jd_except_tls_struct *jd_except_tls(void) {
 
 jd_activation **jd_head_tls(void) {
   struct jd_except_tls_struct *p;
-  
+
   p = jd_except_tls();
   return &(p->head);
 }
 
 jd_var *jd_root_exception_tls(void) {
   struct jd_except_tls_struct *p;
-  
+
   p = jd_except_tls();
   return &(p->root_exception);
 }
