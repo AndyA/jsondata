@@ -12,10 +12,10 @@ use constant PRIVATE => 'jd_private.h';
 my @bad_public  = my @good_public  = read_header(PUBLIC);
 my @bad_private = my @good_private = read_header(PRIVATE);
 
-s/jd_+/jd__/ for @bad_public;
-s/jd_+/jd_/  for @good_public;
-s/jd_+/jd_/  for @bad_private;
-s/jd_+/jd__/ for @good_private;
+s/^jd_+/jd__/ for @bad_public;
+s/^jd_+/jd_/  for @good_public;
+s/^jd_+/jd_/  for @bad_private;
+s/^jd_+/jd__/ for @good_private;
 
 my %fixup = ();
 @fixup{ @bad_public, @bad_private } = ( @good_public, @good_private );
