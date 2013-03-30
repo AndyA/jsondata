@@ -103,12 +103,14 @@ static void test_exceptions(void) {
 }
 
 void test_main(void) {
-  nest_in("Bucket size 1");
-  test_hash(1);
-  nest_out();
-  nest_in("Bucket size 10");
-  test_hash(10);
-  nest_out();
+  subtest("Bucket size 1") {
+    test_hash(1);
+  }
+
+  subtest("Bucket size 10") {
+    test_hash(10);
+  }
+
   test_ks();
   test_hash_with();
   test_exceptions();

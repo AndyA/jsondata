@@ -36,14 +36,16 @@ void done_testing(void) {
   printf("1..%d\n", test_no);
 }
 
-void nest_in(const char *p) {
+int nest_in(const char *p) {
   if (npfx == MAX_PREFIX) die("Too many prefixes");
   pfx[npfx++] = p;
+  return 0;
 }
 
-void nest_out(void) {
+int nest_out(void) {
   if (npfx == 0) die("Can't go out a level - we're at the top");
   npfx--;
+  return 0;
 }
 
 static void prefix(void) {
