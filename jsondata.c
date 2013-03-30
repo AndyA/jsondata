@@ -31,7 +31,7 @@ void jd_die(const char *msg, ...) {
   vfprintf(stderr, msg, ap);
   fprintf(stderr, "\n");
   va_end(ap);
-  exit(1);
+  abort();
 }
 
 static void oom(void) {

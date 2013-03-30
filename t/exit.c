@@ -72,7 +72,7 @@ static void check_exit(void (*f)(void *), void *ctx, const char *want, int want_
   status = run_forked(f, ctx, &out);
   split_lines(&lines, &out);
   jdt_is_string(jd_get_idx(&lines, 0), want, "got exception");
-  is(status, want_status, "exit status = %d", want_status);
+  is(status, want_status, "exit status = %d (got %d)", want_status, status);
 
   jd_release(&out);
   jd_release(&lines);
@@ -97,11 +97,11 @@ static void oom(void *ctx) {
 }
 
 static void test_uncaught(void) {
-  check_exit(uncaught, NULL, "Uncaught exception: Oops", 256);
+  check_exit(uncaught, NULL, "Uncaught exception: Oops", 134);
 }
 
 static void test_oom(void) {
-  check_exit(oom, NULL, "Fatal: Out of memory", 256);
+  check_exit(oom, NULL, "Fatal: Out of memory", 134);
 }
 
 void test_main(void) {

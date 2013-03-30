@@ -143,7 +143,7 @@ static void rethrow(jd_var *e, int release) {
       }
     }
     if (release) jd_release(e);
-    exit(1);
+    abort();
   }
 }
 
