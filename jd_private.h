@@ -1,7 +1,7 @@
-/* jsondata.h */
+/* jd_private.h */
 
-#ifndef __JD_PRIVATE_H
-#define __JD_PRIVATE_H
+#ifndef JD_PRIVATE_H_
+#define JD_PRIVATE_H_
 
 #include "jsondata.h"
 
@@ -77,7 +77,7 @@ void jd_object_free(jd_object *jdo);
 void jd_object_retain(jd_object *jdo);
 void jd_object_release(jd_object *jdo);
 
-#endif
+#endif /*!JD_PRIVATE_H_*/
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

@@ -1,7 +1,7 @@
 /* jsondata.h */
 
-#ifndef __JSONDATA_H
-#define __JSONDATA_H
+#ifndef JSONDATA_H_
+#define JSONDATA_H_
 
 #include <stddef.h>
 #include <stdarg.h>
@@ -285,7 +285,7 @@ jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_dmap(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_dgrep(jd_var *out, jd_var *func, jd_var *in);
 
-#endif
+#endif /*!JSONDATA_H_*/
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

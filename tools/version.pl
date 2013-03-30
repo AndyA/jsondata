@@ -45,9 +45,9 @@ while (<DATA>) {
 __DATA__
 /* version.h */
 
-#ifndef __VERSION_H
-#define __VERSION_H
+#ifndef VERSION_H_
+#define VERSION_H_
 
 .defines
 
-#endif
+#endif /*!VERSION_H_*/
