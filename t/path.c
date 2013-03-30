@@ -7,6 +7,7 @@
 #include "tap.h"
 #include "jd_test.h"
 #include "jd_pretty.h"
+#include "jd_path.h"
 
 static void test_path(void) {
   jd_var m = JD_INIT;
@@ -136,7 +137,34 @@ static void test_context(void) {
   }
 }
 
+static void test_parser(void) {
+  scope {
+    JD_AV(want, 10);
+    JD_AV(got, 10);
+    jd_var *tok;
+    jd__path_parser p;
+    JD_SV(path, "$..foo[33]['a key']");
+
+    jd_set_array_with(jd_push(want, 1), jd_niv('$'), NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv(JP_DOTDOT), NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv(JP_KEY), jd_nsv("foo"),  NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv('['), NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv(JP_INDEX), jd_niv(33),  NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv(']'), NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv('['), NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv(JP_KEY), jd_nsv("a key"),  NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv(']'), NULL);
+
+    jd__path_init_parser(&p, path);
+    while (tok = jd__path_token(&p), tok)
+      jd_assign(jd_push(got, 1), tok);
+
+    jdt_is(got, want, "parse %V ok", path);
+  }
+}
+
 void test_main(void) {
+  test_parser();
   test_exceptions();
   test_path();
   test_context();

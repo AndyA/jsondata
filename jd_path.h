@@ -1,0 +1,26 @@
+/* jd_path.h */
+
+#ifndef JD_PATH_H_
+#define JD_PATH_H_
+
+#include "jsondata.h"
+
+typedef struct {
+  jd_var *path; /* source string */
+  const char *sp, *cp, *ep;
+} jd__path_parser;
+
+enum {
+  JP_DOTDOT,
+  JP_INDEX,
+  JP_KEY
+};
+
+void jd__path_init_parser(jd__path_parser *p, jd_var *path);
+jd_var *jd__path_token(jd__path_parser *p);
+
+#endif
+
+
+/* vim:ts=2:sw=2:sts=2:et:ft=c
+ */

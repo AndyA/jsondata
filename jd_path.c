@@ -7,9 +7,85 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <string.h>
 
-#include "jd_private.h"
 #include "jsondata.h"
+#include "jd_private.h"
+#include "jd_path.h"
+
+/* See:
+ *  http://goessner.net/articles/JsonPath/
+ *
+ * Syntax is per that spec except that:
+ *   (expr) and ?(expr) are (currently) unhandled
+ *   ( | ) may be used as alternation
+ *
+ * The use of ( | ) to declare alternations doesn't clash with (expr)
+ * because (expr) can only appear inside [] and alternation can only
+ * appear outside []:
+ *
+ *         $.foo.(bar.0|baz.1[?(@.x < 3)])
+ *               |      expr: ^^^^^^^^^^ |
+ *  alternation: ^^^^^^^^^^^^^^^^^^^^^^^^^
+ */
+
+/* parsing */
+
+void jd__path_init_parser(jd__path_parser *p, jd_var *path) {
+  size_t len;
+  p->path = path;
+  p->sp = p->cp = jd_bytes(path, &len);
+  p->ep = p->sp + len - 1;
+}
+
+static const char *single = "$@.*|,?[]()";
+
+jd_var *jd__path_token(jd__path_parser *p) {
+  if (p->cp == p->ep) return NULL;
+
+  /* safe to go one char off the end: there's always a trailing nul */
+  if (p->cp[0] == '.' && p->cp[1] == '.') {
+    p->cp += 2;
+    return jd_set_array_with(jd_nv(), jd_niv(JP_DOTDOT), NULL);
+  }
+
+  if (strchr(single, *(p->cp)))
+    return jd_set_array_with(jd_nv(), jd_niv(*(p->cp)++), NULL);
+
+  if (*(p->cp) == '\'') {
+    JD_VAR(key);
+    const char *sp = ++(p->cp);
+    while (p->cp != p->ep && *(p->cp) != '\'')
+      (p->cp)++;
+    (p->cp)++;
+    return jd_set_array_with(jd_nv(), jd_niv(JP_KEY),
+                             jd_substr(key, p->path, sp - p->sp, p->cp - sp - 1),
+                             NULL);
+  }
+
+  if (isdigit(*(p->cp))) {
+    JD_VAR(idx);
+    const char *sp = (p->cp)++;
+    while (p->cp != p->ep && isdigit(*(p->cp)))
+      (p->cp)++;
+    return jd_set_array_with(jd_nv(), jd_niv(JP_INDEX),
+                             jd_numify(idx, jd_substr(idx, p->path, sp - p->sp, p->cp - sp)),
+                             NULL);
+  }
+
+  if (isalpha(*(p->cp))) {
+    JD_VAR(key);
+    const char *sp = (p->cp)++;
+    while (p->cp != p->ep && isalnum(*(p->cp)))
+      (p->cp)++;
+    return jd_set_array_with(jd_nv(), jd_niv(JP_KEY),
+                             jd_substr(key, p->path, sp - p->sp, p->cp - sp),
+                             NULL);
+  }
+
+  jd_throw("Syntax error in path");
+  return NULL;
+}
 
 static int is_positive_int(jd_var *v) {
   jd_string *jds;
