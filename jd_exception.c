@@ -8,8 +8,8 @@
 #include "jd_private.h"
 #include "jsondata.h"
 
-__thread jd_activation *jd_head = NULL;
-__thread jd_var jd_root_exception = JD_INIT;
+jd_activation *jd_head = NULL;
+jd_var jd_root_exception = JD_INIT;
 
 jd_activation *jd_ar_push(int line, const char *file) {
   jd_activation *rec = jd_alloc(sizeof(jd_activation));

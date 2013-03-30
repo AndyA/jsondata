@@ -175,8 +175,8 @@ typedef struct jd_activation {
 #define jd_throw(msg, ...) \
   jd_ar_throw(__FILE__, __LINE__, msg, ## __VA_ARGS__)
 
-extern __thread jd_activation *jd_head;
-extern __thread jd_var jd_root_exception;
+extern jd_activation *jd_head;
+extern jd_var jd_root_exception;
 
 extern void *(*jd_alloc_hook)(size_t);
 extern void (*jd_free_hook)(void *);
