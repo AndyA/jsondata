@@ -58,6 +58,7 @@ typedef struct {
   jd_ohdr hdr;
   size_t size, used;
   char *data;
+  jd_dvar *magic;
 } jd_string;
 
 typedef struct {

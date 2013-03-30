@@ -77,6 +77,8 @@ void jd__object_free(jd_object *jdo);
 void jd__object_retain(jd_object *jdo);
 void jd__object_release(jd_object *jdo);
 
+void jd_free_vars(jd_dvar *dv);
+
 #endif /*!JD_PRIVATE_H_*/
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
