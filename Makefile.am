@@ -1,3 +1,7 @@
+DIST_SUBDIRS = t m4
+
+SUBDIRS = . t
+
 ACLOCAL_AMFLAGS = -I m4
 
 lib_LTLIBRARIES = libjsondata.la
@@ -16,4 +20,4 @@ jdtest_SOURCES = jdtest.c
 jdtest_LDADD = libjsondata.la
 
 test:
-	$(MAKE) -C t
+	cd t && $(MAKE) test
