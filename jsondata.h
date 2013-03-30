@@ -175,8 +175,8 @@ typedef struct jd_activation {
 #define jd_throw(msg, ...) \
   jd_ar_throw(__FILE__, __LINE__, msg, ## __VA_ARGS__)
 
-extern jd_activation *jd_head;
-extern jd_var jd_root_exception;
+#define jd_head (*jd_head_tls())
+#define jd_root_exception (*jd_root_exception_tls())
 
 extern void *(*jd_alloc_hook)(size_t);
 extern void (*jd_free_hook)(void *);
@@ -284,6 +284,9 @@ jd_var *jd_map(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_grep(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_dmap(jd_var *out, jd_var *func, jd_var *in);
 jd_var *jd_dgrep(jd_var *out, jd_var *func, jd_var *in);
+
+jd_activation **jd_head_tls(void);
+jd_var *jd_root_exception_tls(void);
 
 #endif /*!JSONDATA_H_*/
 
