@@ -74,7 +74,7 @@ int jdt_throws(void (*func)(void *), void *ctx, const char *want, const char *ms
     try {
       func(ctx);
     }
-    catch(e) {
+    catch (e) {
       jd_assign(caught, e);
     }
 

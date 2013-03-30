@@ -81,7 +81,7 @@ static void hook_alloc(void) {
 static void check_leaks(void) {
   size_t size;
   unsigned count;
-  
+
   size = get_leaks(&count);
   if (!ok(size == expected_leak_size && count == expected_leak_count, "memory leaks")) {
     diag("%lu bytes lost in %u allocations", (unsigned long) size, count);

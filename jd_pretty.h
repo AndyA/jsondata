@@ -11,5 +11,5 @@
 
 #endif /*!JD_PRETTY_H_*/
 
-/* vim:ts=2:sw=2:sts=2:et:ft=c 
+/* vim:ts=2:sw=2:sts=2:et:ft=c
  */
