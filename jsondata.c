@@ -146,6 +146,29 @@ jd_var *jd_set_array(jd_var *v, size_t size) {
   return v;
 }
 
+jd_var *jd_set_array_with(jd_var *v, ...) {
+  va_list ap, aq;
+  size_t count;
+
+  va_start(ap, v);
+  va_copy(aq, ap);
+
+  for (count = 0; va_arg(aq, jd_var *); count++)
+    ;
+
+  va_end(aq);
+
+  jd_set_array(v, count);
+
+  jd_var *vv, *slot = jd_push(v, count);
+  while (vv = va_arg(ap, jd_var *), vv)
+    jd_assign(slot++, vv);
+
+  va_end(ap);
+
+  return v;
+}
+
 jd_var *jd_set_hash(jd_var *v, size_t size) {
   jd_release(v);
   v->type = HASH;

@@ -158,11 +158,20 @@ static void test_exceptions(void) {
              "array index exception");
 }
 
+static void test_array_with(void) {
+  scope {
+    JD_VAR(ar);
+    jd_set_array_with(ar, jd_nsv("Hello"), jd_niv(1234), NULL);
+    jdt_is_json(ar, "[\"Hello\",1234]", "jd_set_array_with");
+  }
+}
+
 void test_main(void) {
   test_basic();
   test_join();
   test_sort();
   test_exceptions();
+  test_array_with();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
