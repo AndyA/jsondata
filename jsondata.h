@@ -193,6 +193,7 @@ jd_var *jd_set_bytes(jd_var *v, const void *s, size_t size);
 jd_var *jd_set_empty_string(jd_var *v, size_t size);
 jd_var *jd_set_array(jd_var *v, size_t size);
 jd_var *jd_set_array_with(jd_var *v, ...);
+jd_var *jd_set_hash_with(jd_var *v, ...);
 jd_var *jd_set_hash(jd_var *v, size_t size);
 jd_var *jd_set_closure(jd_var *v, jd_closure_func f);
 jd_var *jd_set_object(jd_var *v, void *o, void (*free)(void *));

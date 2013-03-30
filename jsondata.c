@@ -146,23 +146,45 @@ jd_var *jd_set_array(jd_var *v, size_t size) {
   return v;
 }
 
-jd_var *jd_set_array_with(jd_var *v, ...) {
-  va_list ap, aq;
+static size_t varg_count(va_list ap) {
+  va_list aq;
   size_t count;
-
-  va_start(ap, v);
   va_copy(aq, ap);
-
-  for (count = 0; va_arg(aq, jd_var *); count++)
-    ;
-
+  for (count = 0; va_arg(aq, jd_var *); count++) ;
   va_end(aq);
+  return count;
+}
+
+jd_var *jd_set_array_with(jd_var *v, ...) {
+  va_list ap;
+  va_start(ap, v);
+  size_t count = varg_count(ap);
 
   jd_set_array(v, count);
 
   jd_var *vv, *slot = jd_push(v, count);
   while (vv = va_arg(ap, jd_var *), vv)
     jd_assign(slot++, vv);
+
+  va_end(ap);
+
+  return v;
+}
+
+jd_var *jd_set_hash_with(jd_var *v, ...) {
+  va_list ap;
+  va_start(ap, v);
+  size_t count = varg_count(ap);
+
+  if (count & 1)
+    jd_throw("Odd number of elements in hash initializer: %lu",
+             (unsigned long) count);
+
+  jd_set_hash(v, count / 2);
+
+  jd_var *kv;
+  while (kv = va_arg(ap, jd_var *), kv)
+    jd_assign(jd_get_key(v, kv, 1), va_arg(ap, jd_var *));
 
   va_end(ap);
 

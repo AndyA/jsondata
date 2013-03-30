@@ -79,6 +79,29 @@ static void test_ks(void) {
   jd_release(&h);
 }
 
+static void test_hash_with(void) {
+  scope {
+    JD_VAR(ar);
+    jd_set_hash_with(ar, jd_nsv("Hello"), jd_niv(1234), NULL);
+    jdt_is_json(ar, "{\"Hello\":1234}", "jd_set_hash_with");
+  }
+}
+
+static void throw_odd(void *ctx) {
+  (void) ctx;
+  scope {
+    JD_VAR(x);
+    jd_set_hash_with(x, jd_nsv("Hello"), jd_niv(9999), jd_nrv(1.24), NULL);
+    jdt_diag("Exception not thrown, x=%lJ", x);
+  }
+}
+
+static void test_exceptions(void) {
+  jdt_throws(throw_odd, NULL,
+             "Odd number of elements in hash initializer: 3",
+             "Odd number of elements");
+}
+
 void test_main(void) {
   nest_in("Bucket size 1");
   test_hash(1);
@@ -87,6 +110,8 @@ void test_main(void) {
   test_hash(10);
   nest_out();
   test_ks();
+  test_hash_with();
+  test_exceptions();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
