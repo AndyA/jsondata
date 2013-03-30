@@ -16,8 +16,8 @@ BT_REQUIRE_PTHREAD
 
 AC_MSG_CHECKING([whether to enable compiler warnings])
 if test x"$GCC" = x"yes" ; then
-   AC_MSG_RESULT([yes, -W -Wall])
-   AM_CPPFLAGS="$_CPPFLAGS -W -Wall"
+   AC_MSG_RESULT([yes, -W -Wall -Werror])
+   AM_CPPFLAGS="$_CPPFLAGS -W -Wall -Werror"
 else
    AC_MSG_RESULT([no])
 fi
