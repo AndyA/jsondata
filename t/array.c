@@ -166,12 +166,24 @@ static void test_array_with(void) {
   }
 }
 
+static void test_no_scope(void) {
+  jd_var ar = JD_INIT;
+  jd_var val = JD_INIT;
+  jd_set_array(&ar, 10);
+  jd_set_string(&val, "Hello!");
+  jd_assign(jd_push(&ar, 1), &val);
+  jdt_is_json(jd_get_idx(&ar, 0), "\"Hello!\"", "jd_get_idx outside scope");
+  jd_release(&ar);
+  jd_release(&val);
+}
+
 void test_main(void) {
   test_basic();
   test_join();
   test_sort();
   test_exceptions();
   test_array_with();
+  test_no_scope();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
