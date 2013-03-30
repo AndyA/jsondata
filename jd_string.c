@@ -67,7 +67,7 @@ jd_string *jd__string_space(jd_string *jds, size_t minspace) {
 }
 
 void jd__string_free(jd_string *jds) {
-  jd_free_vars(jds->magic);
+  jd__free_vars(jds->magic);
   jd_free(jds->data);
   jd_free(jds);
 }

@@ -77,7 +77,7 @@ void jd__object_free(jd_object *jdo);
 void jd__object_retain(jd_object *jdo);
 void jd__object_release(jd_object *jdo);
 
-void jd_free_vars(jd_dvar *dv);
+void jd__free_vars(jd_dvar *dv);
 
 #endif /*!JD_PRIVATE_H_*/
 

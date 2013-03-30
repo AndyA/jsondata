@@ -79,7 +79,7 @@ jd_activation *jd_ar_pop(void) {
   return rec;
 }
 
-void jd_free_vars(jd_dvar *dv) {
+void jd__free_vars(jd_dvar *dv) {
   while (dv) {
     jd_dvar *next = dv->next;
     jd_release(&dv->v);
@@ -90,7 +90,7 @@ void jd_free_vars(jd_dvar *dv) {
 }
 
 void jd_ar_free(jd_activation *rec) {
-  jd_free_vars(rec->vars);
+  jd__free_vars(rec->vars);
   jd_release(&rec->exception);
   jd_free(rec);
 }
