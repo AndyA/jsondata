@@ -13,7 +13,7 @@
 #include <string.h>
 
 static jd_string *safe_vprintf(jd_string *jds, const char *fmt, va_list ap) {
-  jd_string_empty(jds);
+  jd__string_empty(jds);
   for (;;) {
     va_list aq;
     va_copy(aq, ap);
@@ -24,7 +24,7 @@ static jd_string *safe_vprintf(jd_string *jds, const char *fmt, va_list ap) {
       return jds;
       break;
     }
-    jd_string_ensure(jds, sz + 1);
+    jd__string_ensure(jds, sz + 1);
   }
 }
 
@@ -81,7 +81,7 @@ static void fstash(jd_var *out, char **bp, char *pc, char *ep, ...) {
 
     va_start(ap, ep);
     jd_set_empty_string(frag, 100);
-    safe_vprintf(jd_as_string(frag), pc, ap);
+    safe_vprintf(jd__as_string(frag), pc, ap);
     va_end(ap);
 
     *ep = tmp;

@@ -15,14 +15,14 @@
 #define ELT(jda, idx) \
   (BASE(jda) + (idx))
 
-jd_array *jd_array_new(size_t size) {
+jd_array *jd__array_new(size_t size) {
   jd_array *jda = jd_alloc(sizeof(jd_array));
-  jd_string_init(&jda->s, size * sizeof(jd_var));
+  jd__string_init(&jda->s, size * sizeof(jd_var));
   return jda;
 }
 
-void jd_array_retain(jd_array *jda) {
-  jd_string_retain(&jda->s);
+void jd__array_retain(jd_array *jda) {
+  jd__string_retain(&jda->s);
 }
 
 static void release(jd_array *jda, unsigned from, size_t count) {
@@ -30,10 +30,10 @@ static void release(jd_array *jda, unsigned from, size_t count) {
   for (i = from; i < from + count; i++) jd_release(ELT(jda, i));
 }
 
-void jd_array_release(jd_array *jda) {
+void jd__array_release(jd_array *jda) {
   if (jda->s.hdr.refs == 1)
-    release(jda, 0, jd_array_count(jda));
-  jd_string_release(&jda->s);
+    release(jda, 0, jd__array_count(jda));
+  jd__string_release(&jda->s);
 }
 
 static unsigned cook_idx(int idx, size_t count, size_t max) {
@@ -44,37 +44,37 @@ static unsigned cook_idx(int idx, size_t count, size_t max) {
 }
 
 static unsigned check_idx(jd_array *jda, int idx) {
-  size_t count = jd_array_count(jda);
+  size_t count = jd__array_count(jda);
   return cook_idx(idx, count, count);
 }
 
 static unsigned check_idx_open(jd_array *jda, int idx) {
-  size_t count = jd_array_count(jda);
+  size_t count = jd__array_count(jda);
   return cook_idx(idx, count, count + 1);
 }
 
-jd_var *jd_array_get(jd_array *jda, int idx) {
+jd_var *jd__array_get(jd_array *jda, int idx) {
   return ELT(jda, check_idx(jda, idx));
 }
 
-size_t jd_array_count(jd_array *jda) {
+size_t jd__array_count(jd_array *jda) {
   return jda->s.used / sizeof(jd_var);
 }
 
-jd_var *jd_array_insert(jd_array *jda, int idx, size_t count) {
+jd_var *jd__array_insert(jd_array *jda, int idx, size_t count) {
   unsigned ix = check_idx_open(jda, idx);
-  size_t sz = jd_array_count(jda);
+  size_t sz = jd__array_count(jda);
   size_t need = count * sizeof(jd_var);
-  jd_string_space(&jda->s, need);
+  jd__string_space(&jda->s, need);
   memmove(ELT(jda, ix + count), ELT(jda, ix), (sz - ix) * sizeof(jd_var));
   memset(ELT(jda, ix), 0, count * sizeof(jd_var));
   jda->s.used += need;
   return ELT(jda, ix);
 }
 
-size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot) {
+size_t jd__array_remove(jd_array *jda, int idx, size_t count, jd_var *slot) {
   unsigned ix = check_idx_open(jda, idx);
-  size_t avail = jd_array_count(jda) - ix;
+  size_t avail = jd__array_count(jda) - ix;
   if (count > avail) count = avail;
   if (slot) {
     unsigned i;
@@ -88,24 +88,24 @@ size_t jd_array_remove(jd_array *jda, int idx, size_t count, jd_var *slot) {
   return count;
 }
 
-jd_var *jd_array_push(jd_array *jda, size_t count) {
-  return jd_array_insert(jda, jd_array_count(jda), count);
+jd_var *jd__array_push(jd_array *jda, size_t count) {
+  return jd__array_insert(jda, jd__array_count(jda), count);
 }
 
-jd_var *jd_array_unshift(jd_array *jda, size_t count) {
-  return jd_array_insert(jda, 0, count);
+jd_var *jd__array_unshift(jd_array *jda, size_t count) {
+  return jd__array_insert(jda, 0, count);
 }
 
-size_t jd_array_shift(jd_array *jda, size_t count, jd_var *slot) {
-  return jd_array_remove(jda, 0, count, slot);
+size_t jd__array_shift(jd_array *jda, size_t count, jd_var *slot) {
+  return jd__array_remove(jda, 0, count, slot);
 }
 
-size_t jd_array_pop(jd_array *jda, size_t count, jd_var *slot) {
-  return jd_array_remove(jda, -(int) count, count, slot);
+size_t jd__array_pop(jd_array *jda, size_t count, jd_var *slot) {
+  return jd__array_remove(jda, -(int) count, count, slot);
 }
 
 static jd_var *array_stringify(jd_var *out, jd_array *jda) {
-  size_t count = jd_array_count(jda);
+  size_t count = jd__array_count(jda);
   jd_set_array(out, count);
   unsigned i;
 
@@ -118,7 +118,7 @@ static jd_var *array_stringify(jd_var *out, jd_array *jda) {
 
 static jd_var *array_join(jd_var *out, jd_var *sep, jd_array *jda) {
   size_t len = 0;
-  size_t count = jd_array_count(jda);
+  size_t count = jd__array_count(jda);
   size_t slen = sep ? jd_length(sep) : 0;
   unsigned i;
 
@@ -137,19 +137,19 @@ static jd_var *array_join(jd_var *out, jd_var *sep, jd_array *jda) {
   return out;
 }
 
-jd_var *jd_array_join(jd_var *out, jd_var *sep, jd_array *jda) {
+jd_var *jd__array_join(jd_var *out, jd_var *sep, jd_array *jda) {
   JD_SCOPE {
     JD_VAR(ar);
     array_stringify(ar, jda);
-    array_join(out, sep, jd_as_array(ar));
+    array_join(out, sep, jd__as_array(ar));
   }
   return out;
 }
 
-jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v) {
-  jd_array *va = jd_as_array(v);
-  size_t count = jd_array_count(va);
-  jd_var *slot = jd_array_insert(jda, idx, count);
+jd_array *jd__array_splice(jd_array *jda, int idx, jd_var *v) {
+  jd_array *va = jd__as_array(v);
+  size_t count = jd__array_count(va);
+  jd_var *slot = jd__array_insert(jda, idx, count);
   unsigned i;
   for (i = 0; i < count; i++) {
     jd_assign(&slot[i], ELT(va, i));
@@ -157,18 +157,18 @@ jd_array *jd_array_splice(jd_array *jda, int idx, jd_var *v) {
   return jda;
 }
 
-jd_array *jd_array_append(jd_array *jda, jd_var *v) {
-  return jd_array_splice(jda, jd_array_count(jda), v);
+jd_array *jd__array_append(jd_array *jda, jd_var *v) {
+  return jd__array_splice(jda, jd__array_count(jda), v);
 }
 
-jd_array *jd_array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *)) {
-  qsort(jda->s.data, jd_array_count(jda), sizeof(jd_var),
+jd_array *jd__array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *)) {
+  qsort(jda->s.data, jd__array_count(jda), sizeof(jd_var),
         (int ( *)(const void *, const void *)) cmp);
   return jda;
 }
 
-jd_var *jd_array_clone(jd_var *out, jd_array *jda, int deep) {
-  size_t count = jd_array_count(jda);
+jd_var *jd__array_clone(jd_var *out, jd_array *jda, int deep) {
+  size_t count = jd__array_count(jda);
   jd_var *slot;
   unsigned i;
 

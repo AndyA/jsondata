@@ -7,7 +7,7 @@
 #include "jd_private.h"
 #include "jsondata.h"
 
-jd_hash *jd_hash_new(size_t size) {
+jd_hash *jd__hash_new(size_t size) {
   jd_hash *jdh = jd_alloc(sizeof(jd_hash));
   if (size < 20) size = 20;
   jdh->b = jd_alloc(sizeof(jd_hash_bucket *) * size);
@@ -17,7 +17,7 @@ jd_hash *jd_hash_new(size_t size) {
   return jdh;
 }
 
-void jd_hash_retain(jd_hash *jdh) {
+void jd__hash_retain(jd_hash *jdh) {
   jdh->hdr.refs++;
 }
 
@@ -41,12 +41,12 @@ void jd_hash_free(jd_hash *jdh) {
   jd_free(jdh);
 }
 
-void jd_hash_release(jd_hash *jdh) {
+void jd__hash_release(jd_hash *jdh) {
   if (jdh->hdr.refs-- <= 1)
     jd_hash_free(jdh);
 }
 
-size_t jd_hash_count(jd_hash *jdh) {
+size_t jd__hash_count(jd_hash *jdh) {
   return jdh->used;
 }
 
@@ -62,7 +62,7 @@ static jd_hash_bucket *hash_find(jd_hash *jdh, jd_var *key, jd_hash_bucket ***in
   }
 }
 
-jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify) {
+jd_var *jd__hash_get(jd_hash *jdh, jd_var *key, int vivify) {
   jd_hash_bucket **prev, *b;
   b = hash_find(jdh, key, &prev);
   if (!b) {
@@ -72,21 +72,21 @@ jd_var *jd_hash_get(jd_hash *jdh, jd_var *key, int vivify) {
     *prev = b;
     jdh->used++;
     /* conditional rehash; if we rehash we have to find the key again */
-    if (jd_hash_maint(jdh))
+    if (jd__hash_maint(jdh))
       b = hash_find(jdh, key, &prev);
   }
   return &b->value;
 }
 
-jd_hash *jd_hash_rehash(jd_hash *jdh) {
-  size_t count = jd_hash_count(jdh);
-  jd_hash *tmp = jd_hash_new(count * 4);
+jd_hash *jd__hash_rehash(jd_hash *jdh) {
+  size_t count = jd__hash_count(jdh);
+  jd_hash *tmp = jd__hash_new(count * 4);
   unsigned i;
 
   for (i = 0; i < jdh->size; i++) {
     jd_hash_bucket *b;
     for (b = jdh->b[i]; b; b = b->next) {
-      jd_assign(jd_hash_get(tmp, &b->key, 1), &b->value);
+      jd_assign(jd__hash_get(tmp, &b->key, 1), &b->value);
     }
   }
 
@@ -98,15 +98,15 @@ jd_hash *jd_hash_rehash(jd_hash *jdh) {
   return jdh;
 }
 
-int jd_hash_maint(jd_hash *jdh) {
+int jd__hash_maint(jd_hash *jdh) {
   if (jdh->used > jdh->size / 2) {
-    jd_hash_rehash(jdh);
+    jd__hash_rehash(jdh);
     return 1;
   }
   return 0;
 }
 
-int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot) {
+int jd__hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot) {
   jd_hash_bucket **prev, *b;
   b = hash_find(jdh, key, &prev);
   if (!b) return 0;
@@ -119,8 +119,8 @@ int jd_hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot) {
   return 1;
 }
 
-jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys) {
-  size_t count = jd_hash_count(jdh);
+jd_var *jd__hash_keys(jd_hash *jdh, jd_var *keys) {
+  size_t count = jd__hash_count(jdh);
   unsigned i;
 
   jd_set_array(keys, count);
@@ -135,26 +135,26 @@ jd_var *jd_hash_keys(jd_hash *jdh, jd_var *keys) {
   return keys;
 }
 
-jd_var *jd_hash_merge(jd_var *out, jd_hash *jdh, int deep) {
+jd_var *jd__hash_merge(jd_var *out, jd_hash *jdh, int deep) {
   JD_SCOPE {
     unsigned i;
-    size_t count = jd_hash_count(jdh);
+    size_t count = jd__hash_count(jdh);
     JD_VAR(keys);
 
-    jd_hash_keys(jdh, keys);
+    jd__hash_keys(jdh, keys);
     for (i = 0; i < count; i++) {
       jd_var *k = jd_get_idx(keys, i);
-      if (deep) jd_clone(jd_get_key(out, k, 1), jd_hash_get(jdh, k, 0), 1);
-      else jd_assign(jd_get_key(out, k, 1), jd_hash_get(jdh, k, 0));
+      if (deep) jd_clone(jd_get_key(out, k, 1), jd__hash_get(jdh, k, 0), 1);
+      else jd_assign(jd_get_key(out, k, 1), jd__hash_get(jdh, k, 0));
     }
 
   }
   return out;
 }
 
-jd_var *jd_hash_clone(jd_var *out, jd_hash *jdh, int deep) {
-  jd_set_hash(out, jd_hash_count(jdh));
-  return jd_hash_merge(out, jdh, deep);
+jd_var *jd__hash_clone(jd_var *out, jd_hash *jdh, int deep) {
+  jd_set_hash(out, jd__hash_count(jdh));
+  return jd__hash_merge(out, jdh, deep);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

@@ -17,8 +17,8 @@ static int is_positive_int(jd_var *v) {
   unsigned i;
 
   if (v->type != STRING) return 1;
-  jds = jd_as_string(v);
-  sl = jd_string_length(jds);
+  jds = jd__as_string(v);
+  sl = jd__string_length(jds);
   if (sl == 0) return 0;
   if (jds->data[0] == '0' && sl != 1) return 0;
   for (i = 0; i < sl; i++)
