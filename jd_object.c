@@ -1,5 +1,9 @@
 /* jd_object.c */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include "jsondata.h"
 
 jd_object *jd_object_new(void *o, void (*free)(void *)) {

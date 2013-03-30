@@ -1,5 +1,9 @@
 /* jd_closure.c */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include "jsondata.h"
 
 jd_closure *jd_closure_new(jd_closure_func f) {

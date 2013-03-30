@@ -1,0 +1,8 @@
+Building from a git checkout:
+
+$ git submodule update --init --recursive
+$ autoreconf -i
+$ ./configure [options]
+$ make
+$ make test
+$ sudo make install

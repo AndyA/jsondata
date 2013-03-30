@@ -1,5 +1,9 @@
 /* jsondata.c */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include "jd_private.h"
 #include "jsondata.h"
 #include "version.h"

@@ -1,15 +1,68 @@
 /* jd_exception.c */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
+#include <string.h>
 
 #include "jd_private.h"
 #include "jsondata.h"
 
-__thread jd_activation *jd_head = NULL;
-__thread jd_var jd_root_exception = JD_INIT;
+struct jd_except_tls_struct
+{
+  jd_activation *head;
+  jd_var root_exception;
+};
+
+static pthread_once_t jd_except_tls_once = PTHREAD_ONCE_INIT;
+static pthread_key_t jd_except_tls_key;
+
+static void jd_except_tls_destruct(void *data);
+
+static void jd_except_tls_init(void) {
+  pthread_key_create(&jd_except_tls_key, jd_except_tls_destruct);
+}
+
+static void jd_except_tls_destruct(void *data) {
+  jd_free(data);
+}
+
+static struct jd_except_tls_struct *jd_except_tls(void) {
+  struct jd_except_tls_struct *p;
+
+  pthread_once(&jd_except_tls_once, jd_except_tls_init);
+  p = (struct jd_except_tls_struct *) pthread_getspecific(jd_except_tls_key);
+  if(!p) {
+    p = (struct jd_except_tls_struct *) jd_alloc(sizeof(struct jd_except_tls_struct));
+    if(!p) {
+      return NULL;
+    }
+    pthread_setspecific(jd_except_tls_key, (void *) p);
+    memset(p, 0, sizeof(struct jd_except_tls_struct));
+    p->root_exception.type = VOID;
+  }
+  return p;
+}
+
+jd_activation **jd_head_tls(void) {
+  struct jd_except_tls_struct *p;
+  
+  p = jd_except_tls();
+  return &(p->head);
+}
+
+jd_var *jd_root_exception_tls(void) {
+  struct jd_except_tls_struct *p;
+  
+  p = jd_except_tls();
+  return &(p->root_exception);
+}
 
 jd_activation *jd_ar_push(int line, const char *file) {
   jd_activation *rec = jd_alloc(sizeof(jd_activation));
