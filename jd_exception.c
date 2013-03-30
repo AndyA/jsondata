@@ -1,5 +1,9 @@
 /* jd_exception.c */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <setjmp.h>
 #include <stdarg.h>
 #include <stdlib.h>
