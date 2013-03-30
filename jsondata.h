@@ -39,6 +39,7 @@ typedef enum {
 #define JD_IS_COMPLEX(t) (!JD_IS_SIMPLE(t) && !JD_IS_MAGIC(t))
 
 typedef struct _jd_var jd_var;
+typedef struct _jd_dvar jd_dvar;
 typedef struct _jd_hash_bucket jd_hash_bucket;
 typedef struct _jd_closure jd_closure;
 
@@ -78,6 +79,7 @@ typedef struct {
 
 struct _jd_var {
   jd_type type;
+  jd_dvar *magic;
   union {
     int b;
     jd_int i;
@@ -108,11 +110,12 @@ typedef struct {
 
 #define JD_INIT { .type = VOID }
 
-typedef struct jd_dvar {
-  struct jd_dvar *next;
+struct _jd_dvar {
+  unsigned magic_type; /* when used as magic */
+  struct _jd_dvar *next;
   jd_var v;
   void *alloca;
-} jd_dvar;
+};
 
 typedef struct jd_activation {
   struct jd_activation *up;
