@@ -30,16 +30,16 @@ static void jd_except_tls_init(void) {
 }
 
 static void jd_except_tls_destruct(void *data) {
-  free(data);
+  jd_free(data);
 }
 
 static struct jd_except_tls_struct *jd_except_tls(void) {
   struct jd_except_tls_struct *p;
-  
-	pthread_once(&jd_except_tls_once, jd_except_tls_init);
+
+  pthread_once(&jd_except_tls_once, jd_except_tls_init);
   p = (struct jd_except_tls_struct *) pthread_getspecific(jd_except_tls_key);
   if(!p) {
-    p = (struct jd_except_tls_struct *) malloc(sizeof(struct jd_except_tls_struct));
+    p = (struct jd_except_tls_struct *) jd_alloc(sizeof(struct jd_except_tls_struct));
     if(!p) {
       return NULL;
     }
