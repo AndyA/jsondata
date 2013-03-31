@@ -221,42 +221,6 @@ jd_var *jd__path_compile(jd_var *path) {
   return magic;
 }
 
-static int iter_maker_iter(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_var *ctx = jd_get_idx(context, 0); /* array */
-
-  jd_var *makers = ctx++;
-  jd_var *idx = ctx++;
-  jd_var *current = ctx++;
-
-  for (;;) {
-    while (current->type == VOID) {
-      if (jd_get_int(idx) == (jd_int) jd_count(makers)) {
-        jd_set_void(result);
-        return 1;
-      }
-
-      jd_eval(jd_get_idx(makers, jd_get_int(idx)), current, NULL);
-      jd_set_int(idx, jd_get_int(idx) + 1);
-    }
-    jd_eval(current, result, NULL);
-    if (result->type != VOID)
-      return 1;
-    jd_set_void(current);
-  }
-}
-
-/* That really is the right name... */
-jd_var *jd__make_iter_maker_iter(jd_var *out, jd_var *makers) {
-  jd_var *ctx = jd_set_array(jd_context(jd_set_closure(out, iter_maker_iter)), 10);
-  jd_var *slot = jd_push(ctx, 3);
-  jd_assign(slot++, makers);
-  jd_set_int(slot++, 0); /* index into makers */
-  jd_set_void(slot++); /* redundant init: empty slot for current iter */
-
-  return out;
-}
-
 static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   scope {
@@ -276,8 +240,6 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
 
       while (ipos = (jd_int) jd_count(iters), ipos <= (jd_int) jd_count(active))
         jd_eval(jd_get_idx(path, ipos), jd_push(iters, 1), NULL);
-
-      /*jd__make_iter_maker_iter(jd_push(iters, 1), jd_get_idx(path, ipos));*/
 
       jd_eval(jd_get_idx(iters, ipos - 1), &nv, NULL);
       if (nv.type == VOID) {
