@@ -244,6 +244,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
                        jd_path_context *ctx, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path, ...);
 jd_var *jd_rv(jd_var *root, const char *path, ...);
+jd_var *jd_path_iter(jd_var *v, jd_var *path);
 
 jd_var *jd_to_json(jd_var *out, jd_var *v);
 jd_var *jd_to_json_pretty(jd_var *out, jd_var *v);

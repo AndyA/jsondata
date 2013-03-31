@@ -8,6 +8,11 @@
 #include <stddef.h>
 #include <stdarg.h>
 
+enum {
+  MAGIC_NONE,
+  MAGIC_PATH
+};
+
 jd_string *jd__string_init(jd_string *jds, size_t size);
 jd_string *jd__string_new(size_t size);
 jd_string *jd__string_empty(jd_string *jds);

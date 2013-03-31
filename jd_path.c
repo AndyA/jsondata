@@ -103,18 +103,47 @@ static int if_list(jd_var *result, jd_var *context, jd_var *args) {
   return 1;
 }
 
+static int if_seq(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_int idx = jd_get_int(jd_get_idx(context, 0));
+  jd_int lim = jd_get_int(jd_get_idx(context, 1));
+  if (idx < lim) {
+    jd_assign(result, jd_get_idx(context, 0));
+    jd_set_int(jd_get_idx(context, 0), idx + 1);
+  }
+  else {
+    jd_set_void(result);
+  }
+  return 1;
+}
+
 static void list_iter(jd_var *out, jd_var *list) {
-  jd_var idx = JD_INIT;
-  jd_set_int(&idx, 0);
   jd_set_closure(out, if_list);
-  jd_set_array_with(jd_context(out), list, &idx, NULL);
+  jd_var *slot = jd_push(jd_set_array(jd_context(out), 2), 2);
+  jd_assign(slot++, list);
+  jd_set_int(slot++, 0);
+}
+
+static void seq_iter(jd_var *out, jd_int idx, jd_int lim) {
+  jd_set_closure(out, if_seq);
+  jd_var *slot = jd_push(jd_set_array(jd_context(out), 2), 2);
+  jd_set_int(slot++, idx);
+  jd_set_int(slot++, lim);
 }
 
 static int pf_wild(jd_var *result, jd_var *context, jd_var *args) {
   (void) context;
-  jd_var keys = JD_INIT;
-  list_iter(result, jd_keys(&keys, args));
-  jd_release(&keys);
+  if (args && args->type == HASH) {
+    jd_var keys = JD_INIT;
+    list_iter(result, jd_keys(&keys, args));
+    jd_release(&keys);
+    return 1;
+  }
+  if (args && args->type == ARRAY) {
+    seq_iter(result, 0, (jd_int) jd_count(args));
+    return 1;
+  }
+  seq_iter(result, 0, 0); /* empty */
   return 1;
 }
 
@@ -183,6 +212,19 @@ jd_var *jd__path_parse(jd_var *out, jd_var *path) {
     path_parse(out, &p);
   }
   return out;
+}
+
+jd_var *jd__path_compile(jd_var *path) {
+  jd_var *magic = jd__get_magic(path, MAGIC_PATH);
+  if (magic->type == VOID)
+    jd__path_parse(magic, path);
+  return magic;
+}
+
+jd_var *jd_path_iter(jd_var *v, jd_var *path) {
+  (void) v;
+  (void) path;
+  return NULL;
 }
 
 static int is_positive_int(jd_var *v) {

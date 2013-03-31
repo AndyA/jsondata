@@ -170,7 +170,7 @@ static void test_parser(void) {
     JD_JV(want, "[ [\"foo\"], [\"that\", \"this\"],  [12] ]");
     JD_JV(hash, "{\"this\":12,\"that\":true}");
     JD_AV(got, 10);
-    jd__path_parse(comp, path);
+    comp = jd__path_compile(path);
     size_t cnt = jd_count(comp);
     for (unsigned i = 0; i < cnt; i++) {
       JD_AV(alt, 10);
