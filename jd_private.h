@@ -79,6 +79,8 @@ void jd__object_release(jd_object *jdo);
 
 void jd__free_vars(jd_dvar *dv);
 
+jd_var *jd__get_magic(jd_var *v, unsigned mtype);
+
 #endif /*!JD_PRIVATE_H_*/
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
