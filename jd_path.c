@@ -88,7 +88,7 @@ jd_var *jd__path_token(jd__path_parser *p) {
   return NULL;
 }
 
-static int if_literal_key(jd_var *result, jd_var *context, jd_var *args) {
+static int if_literal(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   jd_assign(result, context);
   jd_release(context);
@@ -99,9 +99,9 @@ static int if_literal_key(jd_var *result, jd_var *context, jd_var *args) {
  * args:    a jd_var to iterate (ignored)
  * result:  a closure that will iterate all the keys
  */
-static int pf_literal_key(jd_var *result, jd_var *context, jd_var *args) {
+static int pf_literal(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
-  jd_set_closure(result, if_literal_key);
+  jd_set_closure(result, if_literal);
   jd_assign(jd_context(result), context);
   return 1;
 }
@@ -122,7 +122,7 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       break;
     case JP_KEY:
     case JP_INDEX:
-      jd_set_closure(cl, pf_literal_key);
+      jd_set_closure(cl, pf_literal);
       jd_assign(jd_context(cl), jd_get_idx(tok, 1));
       jd_assign(jd_push(out, 1), cl);
       break;
