@@ -12,6 +12,7 @@
 #include "jsondata.h"
 #include "jd_private.h"
 #include "jd_path.h"
+#include "jd_pretty.h"
 
 /* See:
  *  http://goessner.net/articles/JsonPath/
@@ -87,6 +88,54 @@ jd_var *jd__path_token(jd__path_parser *p) {
   return NULL;
 }
 
+static int if_literal_key(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_assign(result, context);
+  return 1;
+}
+
+/* context: the literal key
+ * args:    a jd_var to iterate (ignored)
+ * result:  a closure that will iterate all the keys
+ */
+static int pf_literal_key(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_set_closure(result, if_literal_key);
+  jd_assign(jd_context(result), context);
+  return 1;
+}
+
+/* Returns an array of closures. During iteration each closure will be called
+ * with a pointer to part of a structure that is being iterated and will return
+ * another closure, an iterator for all the keys, indexes or, in the case of '..',
+ * sub-paths that match at the current location.
+ */
+static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
+  JD_2VARS(tok, cl);
+  jd_set_array(out, 10);
+  while (tok = jd__path_token(p), tok) {
+    switch (jd_get_int(jd_get_idx(tok, 0))) {
+    case JP_KEY:
+      jd_set_closure(cl, pf_literal_key);
+      jd_assign(jd_context(cl), jd_get_idx(tok, 1));
+      jd_assign(jd_push(out, 1), cl);
+      break;
+    default:
+      jd_throw("Unhandled token");
+    }
+  }
+  return out;
+}
+
+jd_var *jd__path_parse(jd_var *out, jd_var *path) {
+  scope {
+    jd__path_parser p;
+    jd__path_init_parser(&p, path);
+    path_parse(out, &p);
+  }
+  return out;
+}
+
 static int is_positive_int(jd_var *v) {
   jd_string *jds;
   size_t sl;
@@ -107,7 +156,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
   jd_var *ptr = NULL;
   (void) ctx;
 
-  JD_SCOPE {
+  scope {
     JD_2VARS(part, elt);
 
     if (path->type == ARRAY)
@@ -152,7 +201,7 @@ jd_var *jd_get_context(jd_var *root, jd_var *path,
 
 static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   jd_var *rv = NULL;
-  JD_SCOPE {
+  scope {
     JD_VAR(pv);
     jd_vprintf(pv, path, ap);
     rv = jd_get_context(root, pv, NULL, vivify);

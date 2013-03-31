@@ -137,7 +137,7 @@ static void test_context(void) {
   }
 }
 
-static void test_parser(void) {
+static void test_toker(void) {
   scope {
     JD_AV(want, 10);
     JD_AV(got, 10);
@@ -163,7 +163,20 @@ static void test_parser(void) {
   }
 }
 
+static void test_parser(void) {
+  scope {
+    JD_4VARS(comp, cl1, cl2, tmp);
+    JD_SV(path, "foo");
+    jd__path_parse(comp, path);
+    cl1 = jd_get_idx(comp, 0);
+    jd_eval(cl1, cl2, NULL); /* closure returns closure... */
+    jd_eval(cl2, tmp, NULL); /* ...which returns literal */
+    jdt_is_json(tmp, "\"foo\"", "literal iterator");
+  }
+}
+
 void test_main(void) {
+  test_toker();
   test_parser();
   test_exceptions();
   test_path();
