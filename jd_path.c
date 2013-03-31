@@ -91,6 +91,7 @@ jd_var *jd__path_token(jd__path_parser *p) {
 static int if_literal_key(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   jd_assign(result, context);
+  jd_release(context);
   return 1;
 }
 
@@ -115,13 +116,18 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
   jd_set_array(out, 10);
   while (tok = jd__path_token(p), tok) {
     switch (jd_get_int(jd_get_idx(tok, 0))) {
+    case '$':
+    case '@':
+    case '.':
+      break;
     case JP_KEY:
+    case JP_INDEX:
       jd_set_closure(cl, pf_literal_key);
       jd_assign(jd_context(cl), jd_get_idx(tok, 1));
       jd_assign(jd_push(out, 1), cl);
       break;
     default:
-      jd_throw("Unhandled token");
+      jd_throw("Unhandled token: %J", tok);
     }
   }
   return out;

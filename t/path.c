@@ -165,13 +165,23 @@ static void test_toker(void) {
 
 static void test_parser(void) {
   scope {
-    JD_4VARS(comp, cl1, cl2, tmp);
-    JD_SV(path, "foo");
+    JD_3VARS(comp, cl, tmp);
+    JD_SV(path, "$.foo.12");
+    JD_JV(want, "[ [\"foo\"], [12] ]");
+    JD_AV(got, 10);
     jd__path_parse(comp, path);
-    cl1 = jd_get_idx(comp, 0);
-    jd_eval(cl1, cl2, NULL); /* closure returns closure... */
-    jd_eval(cl2, tmp, NULL); /* ...which returns literal */
-    jdt_is_json(tmp, "\"foo\"", "literal iterator");
+    size_t cnt = jd_count(comp);
+    for (unsigned i = 0; i < cnt; i++) {
+      JD_AV(alt, 10);
+      jd_eval(jd_get_idx(comp, i), cl, NULL); /* closure returns closure... */
+      for (;;) {
+        jd_eval(cl, tmp, NULL); /* ...which returns literal */
+        if (tmp->type == VOID) break;
+        jd_assign(jd_push(alt, 1), tmp);
+      }
+      jd_assign(jd_push(got, 1), alt);
+    }
+    jdt_is(got, want, "parsed %V", path);
   }
 }
 
