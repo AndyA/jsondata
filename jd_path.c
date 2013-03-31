@@ -169,11 +169,13 @@ static int pf_wild(jd_var *result, jd_var *context, jd_var *args) {
   return 1;
 }
 
+#if 0
 static int pf_list(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   list_iter(result, context);
   return 1;
 }
+#endif
 
 static int if_literal(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
@@ -306,9 +308,6 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       break;
     case '*':
       jd_set_closure(jd_push(alt, 1), pf_wild);
-      break;
-    case '#': /* TEMPORARY, BROKEN (avoid compiler warning for pf_list) */
-      jd_set_closure(jd_push(alt, 1), pf_list);
       break;
     default:
       jd_throw("Unhandled token: %J", tok);
