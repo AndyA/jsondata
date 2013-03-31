@@ -1,6 +1,7 @@
 /*.d
 /*.o
 /00misc
+/TAGS
 /array
 /clone
 /closure
