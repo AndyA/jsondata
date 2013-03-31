@@ -19,5 +19,5 @@ jdtest_SOURCES = jdtest.c
 
 jdtest_LDADD = libjsondata.la
 
-test:
+test: all
 	cd t && $(MAKE) test
