@@ -80,7 +80,6 @@ typedef struct {
 
 struct _jd_var {
   jd_type type;
-  jd_dvar *magic;
   union {
     int b;
     jd_int i;
