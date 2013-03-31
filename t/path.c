@@ -239,6 +239,7 @@ static void check_iter(const char *json, const char *path, ...) {
 static void test_iter(void) {
   scope {
     check_iter("[]", "$.foo", "$.foo", NULL);
+    check_iter("[]", "$.foo[bar,baz]", "$.foo.bar", "$.foo.baz", NULL);
   }
 }
 

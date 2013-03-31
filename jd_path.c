@@ -220,6 +220,29 @@ jd_var *jd__make_append_factory(jd_var *out, jd_var *factories) {
   return out;
 }
 
+static void parse_index(jd_var *alt, jd__path_parser *p) {
+  JD_VAR(tok);
+
+  for (;;) {
+    tok = jd__path_token(p);
+    if (!tok) jd_throw("Missing ] in path");
+    switch (jd_get_int(jd_get_idx(tok, 0))) {
+    case ']':
+      return;
+    case ',':
+      break;
+    case '*':
+      jd_set_closure(jd_push(alt, 1), pf_wild);
+      break;
+    case JP_KEY:
+    case JP_INDEX:
+      jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
+                jd_get_idx(tok, 1));
+      break;
+    }
+  }
+}
+
 /* Returns an array of closures. During iteration each closure will be called
  * with a pointer to part of a structure that is being iterated and will return
  * another closure: an iterator for all the keys, indexes or, in the case of '..',
@@ -237,6 +260,9 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
     case '$':
       jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
                 jd_nsv("$"));
+      break;
+    case '[':
+      parse_index(alt, p);
       break;
     case JP_KEY:
     case JP_INDEX:
