@@ -77,7 +77,7 @@ void jd_release(jd_var *v) {
     jd__object_release(v->v.o);
     break;
   default:
-    jd_die("Unhandled type");
+    jd_throw("Unhandled type in release: %V", v);
     break;
   }
   memset(v, 0, sizeof(*v));
@@ -107,7 +107,7 @@ void jd_retain(jd_var *v) {
     jd__object_retain(v->v.o);
     break;
   default:
-    jd_die("Unhandled type");
+    jd_throw("Unhandled type in retain: %V", v);
     break;
   }
 }
