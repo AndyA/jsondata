@@ -185,7 +185,7 @@ static void test_parser(void) {
   scope {
     JD_3VARS(comp, cl, tmp);
     JD_SV(path, "$.foo.*.12");
-    JD_JV(want, "[ [\"foo\"], [\"that\", \"this\"],  [12] ]");
+    JD_JV(want, "[ [\"$\"], [\"foo\"], [\"that\", \"this\"], [12] ]");
     JD_JV(hash, "{\"this\":12,\"that\":true}");
     JD_AV(got, 10);
     comp = jd__path_compile(path);
@@ -238,7 +238,7 @@ static void check_iter(const char *json, const char *path, ...) {
 
 static void test_iter(void) {
   scope {
-    check_iter("[]", "$.foo", "foo", NULL);
+    check_iter("[]", "$.foo", "$.foo", NULL);
   }
 }
 

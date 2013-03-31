@@ -182,9 +182,12 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
   while (tok = jd__path_token(p), tok) {
     jd_set_void(cl);
     switch (jd_get_int(jd_get_idx(tok, 0))) {
-    case '$':
     case '@':
     case '.':
+      break;
+    case '$':
+      jd_set_closure(cl, pf_literal);
+      jd_assign(jd_context(cl), jd_nsv("$"));
       break;
     case JP_KEY:
     case JP_INDEX:
