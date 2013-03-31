@@ -163,6 +163,24 @@ static void test_toker(void) {
   }
 }
 
+static void test_compile(void) {
+  scope {
+    JD_SV(path1, "$.foo.*.12");
+    JD_VAR(path2);
+
+    jd_var *c1 = jd__path_compile(path1);
+    not_null(c1, "compiled path not null");
+    jd_assign(path2, path1);
+    jd_var *c2 = jd__path_compile(path2);
+    ok(c1 == c2, "string assign keeps magic");
+
+    jd_set_string(path1, "$.bar");
+    jd_var *c3 = jd__path_compile(path1);
+    not_null(c1, "compiled path not null");
+    ok(c3 != c1, "change string: new magic");
+  }
+}
+
 static void test_parser(void) {
   scope {
     JD_3VARS(comp, cl, tmp);
@@ -189,6 +207,7 @@ static void test_parser(void) {
 void test_main(void) {
   test_toker();
   test_parser();
+  test_compile();
   test_exceptions();
   test_path();
   test_context();
