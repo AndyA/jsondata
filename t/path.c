@@ -246,6 +246,12 @@ static void test_iter(void) {
     "$.foo.1",
     "$.foo.2",
     NULL);
+    check_iter("[]", "$.foo[0:3,'x']",
+    "$.foo.0",
+    "$.foo.1",
+    "$.foo.2",
+    "$.foo.x",
+    NULL);
     check_iter("[]", "$.foo[0:3][0:10:5]",
     "$.foo.0.0",
     "$.foo.0.5",
