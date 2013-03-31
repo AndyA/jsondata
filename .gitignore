@@ -14,6 +14,7 @@
 .gdb_history
 .libs
 /TAGS
+/andy/
 /autom4te.cache
 /config.cache
 /config.guess
