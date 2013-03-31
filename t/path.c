@@ -233,7 +233,7 @@ static void check_iter(const char *json, const char *path, ...) {
     /* i is [ slot, path, captures ] */
     jd_assign(jd_push(got, 1), jd_get_idx(i, 1));
   }
-  jdt_is(got, want, "iterated %V", pathv);
+  jdt_is(got, want, "iterated %s", path);
 }
 
 static void test_iter(void) {
