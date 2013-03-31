@@ -204,10 +204,49 @@ static void test_parser(void) {
   }
 }
 
+static jd_var *array_with_args(jd_var *out, va_list ap) {
+  jd_set_array(out, 10);
+  const char *v;
+
+  while (v = va_arg(ap, const char *), v) {
+    jd_set_string(jd_push(out, 1), v);
+  }
+
+  return out;
+}
+
+static void check_iter(const char *json, const char *path, ...) {
+  JD_SV(pathv, path);
+  JD_AV(got, 10);
+  JD_JV(v, json);
+  JD_3VARS(iter, i, want);
+
+  va_list ap;
+  va_start(ap, path);
+  array_with_args(want, ap);
+  va_end(ap);
+
+  jd_path_iter(iter, v, pathv, 1);
+  for (;;) {
+    jd_eval(iter, i, NULL);
+    if (i->type == VOID) break;
+    /* i is [ slot, path, captures ] */
+    jd_assign(jd_push(got, 1), jd_get_idx(i, 1));
+  }
+  jdt_is(got, want, "iterated %V", pathv);
+}
+
+static void test_iter(void) {
+  scope {
+    check_iter("[]", "$.foo", NULL);
+  }
+}
+
 void test_main(void) {
   test_toker();
   test_parser();
   test_compile();
+  test_iter();
   test_exceptions();
   test_path();
   test_context();

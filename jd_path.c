@@ -221,10 +221,75 @@ jd_var *jd__path_compile(jd_var *path) {
   return magic;
 }
 
-jd_var *jd_path_iter(jd_var *v, jd_var *path) {
-  (void) v;
-  (void) path;
-  return NULL;
+static int iter_maker_iter(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_var *ctx = jd_get_idx(context, 0); /* array */
+
+  jd_var *makers = ctx++;
+  jd_var *idx = ctx++;
+  jd_var *current = ctx++;
+
+  for (;;) {
+    while (current->type == VOID) {
+      if (jd_get_int(idx) == (jd_int) jd_count(makers)) {
+        jd_set_void(result);
+        return 1;
+      }
+
+      jd_eval(jd_get_idx(makers, jd_get_int(idx)), current, NULL);
+      jd_set_int(idx, jd_get_int(idx) + 1);
+    }
+    jd_eval(current, result, NULL);
+    if (result->type != VOID)
+      return 1;
+    jd_set_void(current);
+  }
+}
+
+/* That really is the right name... */
+jd_var *jd__make_iter_maker_iter(jd_var *out, jd_var *makers) {
+  jd_var *ctx = jd_set_array(jd_context(jd_set_closure(out, iter_maker_iter)), 10);
+  jd_var *slot = jd_push(ctx, 3);
+  jd_assign(slot++, makers);
+  jd_set_int(slot++, 0); /* index into makers */
+  jd_set_void(slot++); /* redundant init: empty slot for current iter */
+
+  return out;
+}
+
+static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_var *ctx = jd_get_idx(context, 0); /* array */
+  jd_var *path = ctx++;
+  jd_var *var = ctx++;
+  jd_var *iters = ctx++;
+  jd_var *active = ctx++;
+  jd_var *vivify = ctx++;
+  jd_int pos;
+
+  (void) var;
+  (void) vivify;
+
+  while (pos = (jd_int) jd_count(iters), pos < (jd_int) jd_count(path))
+    jd__make_iter_maker_iter(jd_push(iters, 1), jd_get_idx(path, pos));
+
+  while (pos = (jd_int) jd_count(active), pos < (jd_int) jd_count(iters))
+    jd_eval(jd_get_idx(iters, pos), jd_push(active, 1), NULL);
+
+  jd_set_void(result);
+  return 1;
+}
+
+jd_var *jd_path_iter(jd_var *out, jd_var *v, jd_var *path, int vivify) {
+  jd_var *ctx = jd_set_array(jd_context(jd_set_closure(out, iter_func)), 10);
+  /* build context */
+  jd_var *slot = jd_push(ctx, 5);
+  jd_assign(slot++, jd__path_compile(path));
+  jd_assign(slot++, v);
+  jd_set_array(slot++, 10); /* active iterators */
+  jd_set_array(slot++, 10); /* current path */
+  jd_set_bool(slot++, vivify);
+  return out;
 }
 
 static int is_positive_int(jd_var *v) {
