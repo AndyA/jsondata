@@ -259,24 +259,50 @@ jd_var *jd__make_iter_maker_iter(jd_var *out, jd_var *makers) {
 
 static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
-  jd_var *ctx = jd_get_idx(context, 0); /* array */
-  jd_var *path = ctx++;
-  jd_var *var = ctx++;
-  jd_var *iters = ctx++;
-  jd_var *active = ctx++;
-  jd_var *vivify = ctx++;
-  jd_int pos;
+  scope {
+    jd_var *ctx = jd_get_idx(context, 0); /* array */
+    jd_var *path = ctx++;
+    jd_var *var = ctx++;
+    jd_var *iters = ctx++;
+    jd_var *active = ctx++;
+    jd_var *vivify = ctx++;
+    jd_int ipos;
 
-  (void) var;
-  (void) vivify;
+    (void) var;
+    (void) vivify;
 
-  while (pos = (jd_int) jd_count(iters), pos < (jd_int) jd_count(path))
-    jd__make_iter_maker_iter(jd_push(iters, 1), jd_get_idx(path, pos));
+    while (jd_count(active) < jd_count(path)) {
+      jd_var nv = JD_INIT;
 
-  while (pos = (jd_int) jd_count(active), pos < (jd_int) jd_count(iters))
-    jd_eval(jd_get_idx(iters, pos), jd_push(active, 1), NULL);
+      while (ipos = (jd_int) jd_count(iters), ipos <= (jd_int) jd_count(active))
+        jd_eval(jd_get_idx(path, ipos), jd_push(iters, 1), NULL);
 
-  jd_set_void(result);
+      /*jd__make_iter_maker_iter(jd_push(iters, 1), jd_get_idx(path, ipos));*/
+
+      jd_eval(jd_get_idx(iters, ipos - 1), &nv, NULL);
+      if (nv.type == VOID) {
+        /* don't need to release nv if it's void */
+        if (jd_count(active) == 0) {
+          jd_set_void(result);
+          JD_RETURN(1);
+        }
+        jd_pop(active, 1, NULL);
+        jd_pop(iters, 1, NULL);
+        continue;
+      }
+
+      jd_assign(jd_push(active, 1), &nv);
+      jd_release(&nv);
+    }
+
+    /* return [ slot, path, captures ] */
+    jd_set_array(result, 2);
+    jd_var *slot = jd_push(result, 2);
+    jd_set_void(slot++); /* TODO slot */
+    jd_join(slot++, jd_nsv("."), active); /* path */
+    jd_pop(active, 1, NULL);
+  }
+
   return 1;
 }
 
