@@ -70,13 +70,17 @@ jd_var *jd__path_token(jd__path_parser *p) {
   }
 
   if (isdigit(*(p->cp))) {
-    JD_VAR(idx);
-    const char *sp = (p->cp)++;
-    while (p->cp != p->ep && isdigit(*(p->cp)))
+    jd_var *slice = jd_set_array_with(jd_nv(), jd_niv(JP_SLICE), NULL);
+    for (;;) {
+      const char *sp = (p->cp)++;
+      if (!isdigit(*sp)) jd_throw("Expected a number in a slice");
+      while (p->cp != p->ep && isdigit(*(p->cp)))
+        (p->cp)++;
+      jd_var *idx = jd_substr(jd_push(slice, 1), p->path, sp - p->sp, p->cp - sp);
+      jd_numify(idx, idx);
+      if (p->cp == p->ep || *(p->cp) != ':') return slice;
       (p->cp)++;
-    return jd_set_array_with(jd_nv(), jd_niv(JP_INDEX),
-                             jd_numify(idx, jd_substr(idx, p->path, sp - p->sp, p->cp - sp)),
-                             NULL);
+    }
   }
 
   if (isalpha(*(p->cp))) {
@@ -122,9 +126,10 @@ static int if_seq(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   jd_int idx = jd_get_int(jd_get_idx(context, 0));
   jd_int lim = jd_get_int(jd_get_idx(context, 1));
+  jd_int stp = jd_get_int(jd_get_idx(context, 2));
   if (idx < lim) {
     jd_assign(result, jd_get_idx(context, 0));
-    jd_set_int(jd_get_idx(context, 0), idx + 1);
+    jd_set_int(jd_get_idx(context, 0), idx + stp);
   }
   else {
     jd_set_void(result);
@@ -139,11 +144,13 @@ static void list_iter(jd_var *out, jd_var *list) {
   jd_set_int(slot++, 0);
 }
 
-static void seq_iter(jd_var *out, jd_int idx, jd_int lim) {
+static jd_var *seq_iter(jd_var *out, jd_int idx, jd_int lim, jd_int stp) {
   jd_set_closure(out, if_seq);
-  jd_var *slot = jd_push(jd_set_array(jd_context(out), 2), 2);
+  jd_var *slot = jd_push(jd_set_array(jd_context(out), 3), 3);
   jd_set_int(slot++, idx);
   jd_set_int(slot++, lim);
+  jd_set_int(slot++, stp);
+  return out;
 }
 
 static int pf_wild(jd_var *result, jd_var *context, jd_var *args) {
@@ -155,10 +162,10 @@ static int pf_wild(jd_var *result, jd_var *context, jd_var *args) {
     return 1;
   }
   if (args && args->type == ARRAY) {
-    seq_iter(result, 0, (jd_int) jd_count(args));
+    seq_iter(result, 0, (jd_int) jd_count(args), 1);
     return 1;
   }
-  seq_iter(result, 0, 0); /* empty */
+  seq_iter(result, 0, 0, 1); /* empty */
   return 1;
 }
 
@@ -235,6 +242,15 @@ jd_var *jd__make_append_factory(jd_var *out, jd_var *factories) {
   return out;
 }
 
+static void slice_iter(jd_var *out, jd_var *tok) {
+  size_t tsz = jd_count(tok);
+  jd_int start = jd_get_int(jd_get_idx(tok, 1));
+  jd_int end = tsz > 2 ? jd_get_int(jd_get_idx(tok, 2)) : start + 1;
+  jd_int step = tsz > 3 ? jd_get_int(jd_get_idx(tok, 3)) : 1;
+
+  static_factory(out, seq_iter(jd_nv(), start, end, step));
+}
+
 static void parse_index(jd_var *alt, jd__path_parser *p) {
   JD_VAR(tok);
 
@@ -250,9 +266,11 @@ static void parse_index(jd_var *alt, jd__path_parser *p) {
       jd_set_closure(jd_push(alt, 1), pf_wild);
       break;
     case JP_KEY:
-    case JP_INDEX:
       jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
                 jd_get_idx(tok, 1));
+      break;
+    case JP_SLICE:
+      slice_iter(jd_push(alt, 1), tok);
       break;
     }
   }
@@ -280,9 +298,11 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       parse_index(alt, p);
       break;
     case JP_KEY:
-    case JP_INDEX:
       jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
                 jd_get_idx(tok, 1));
+      break;
+    case JP_SLICE:
+      slice_iter(jd_push(alt, 1), tok);
       break;
     case '*':
       jd_set_closure(jd_push(alt, 1), pf_wild);

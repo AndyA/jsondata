@@ -149,7 +149,7 @@ static void test_toker(void) {
     jd_set_array_with(jd_push(want, 1), jd_niv(JP_DOTDOT), NULL);
     jd_set_array_with(jd_push(want, 1), jd_niv(JP_KEY), jd_nsv("foo"),  NULL);
     jd_set_array_with(jd_push(want, 1), jd_niv('['), NULL);
-    jd_set_array_with(jd_push(want, 1), jd_niv(JP_INDEX), jd_niv(33),  NULL);
+    jd_set_array_with(jd_push(want, 1), jd_niv(JP_SLICE), jd_niv(33),  NULL);
     jd_set_array_with(jd_push(want, 1), jd_niv(']'), NULL);
     jd_set_array_with(jd_push(want, 1), jd_niv('['), NULL);
     jd_set_array_with(jd_push(want, 1), jd_niv(JP_KEY), jd_nsv("a key"),  NULL);
@@ -241,6 +241,19 @@ static void test_iter(void) {
     check_iter("[]", "$.foo", "$.foo", NULL);
     check_iter("[]", "$.foo[bar,baz]", "$.foo.bar", "$.foo.baz", NULL);
     check_iter("[]", "$[bar,baz].foo", "$.bar.foo", "$.baz.foo", NULL);
+    check_iter("[]", "$.foo[0:3]",
+    "$.foo.0",
+    "$.foo.1",
+    "$.foo.2",
+    NULL);
+    check_iter("[]", "$.foo[0:3][0:10:5]",
+    "$.foo.0.0",
+    "$.foo.0.5",
+    "$.foo.1.0",
+    "$.foo.1.5",
+    "$.foo.2.0",
+    "$.foo.2.5",
+    NULL);
   }
 }
 

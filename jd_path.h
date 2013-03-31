@@ -12,7 +12,7 @@ typedef struct {
 
 enum {
   JP_DOTDOT,
-  JP_INDEX,
+  JP_SLICE,
   JP_KEY
 };
 
