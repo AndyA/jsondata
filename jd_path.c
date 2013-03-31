@@ -30,6 +30,11 @@
  *  alternation: ^^^^^^^^^^^^^^^^^^^^^^^^^
  */
 
+/* TODO the various iterator factories that always return the same sequence
+ * could be implemented as a standard factory that clones and returns the
+ * closure it's supplied.
+ */
+
 /* parsing */
 
 void jd__path_init_parser(jd__path_parser *p, jd_var *path) {
@@ -86,6 +91,16 @@ jd_var *jd__path_token(jd__path_parser *p) {
 
   jd_throw("Syntax error in path");
   return NULL;
+}
+
+static int static_iter(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_clone(result, context, 1);
+  return 1;
+}
+
+static void static_factory(jd_var *out, jd_var *cl) {
+  jd_assign(jd_context(jd_set_closure(out, static_iter)), cl);
 }
 
 static int if_list(jd_var *result, jd_var *context, jd_var *args) {
