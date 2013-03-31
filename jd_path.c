@@ -108,7 +108,7 @@ static int pf_literal_key(jd_var *result, jd_var *context, jd_var *args) {
 
 /* Returns an array of closures. During iteration each closure will be called
  * with a pointer to part of a structure that is being iterated and will return
- * another closure, an iterator for all the keys, indexes or, in the case of '..',
+ * another closure: an iterator for all the keys, indexes or, in the case of '..',
  * sub-paths that match at the current location.
  */
 static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
