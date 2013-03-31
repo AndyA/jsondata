@@ -16,6 +16,8 @@ enum {
   JP_KEY
 };
 
+jd_var *jd__make_append_iter(jd_var *out, jd_var *iters);
+jd_var *jd__make_append_factory(jd_var *out, jd_var *factories);
 void jd__path_init_parser(jd__path_parser *p, jd_var *path);
 jd_var *jd__path_token(jd__path_parser *p);
 jd_var *jd__path_parse(jd_var *out, jd_var *path);

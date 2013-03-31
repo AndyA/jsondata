@@ -171,39 +171,89 @@ static int pf_literal(jd_var *result, jd_var *context, jd_var *args) {
   return 1;
 }
 
+static int append_iter(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_var *slot = jd_get_idx(context, 0);
+  jd_var *iters = slot++;
+  jd_var *idx = slot++;
+  for (;;) {
+    if (jd_get_int(idx) == (jd_int) jd_count(iters)) {
+      jd_set_void(result);
+      return 1;
+    }
+    jd_eval(jd_get_idx(iters, jd_get_int(idx)), result, NULL);
+    if (result->type != VOID) return 1;
+    jd_set_int(idx, jd_get_int(idx) + 1);
+  }
+}
+
+jd_var *jd__make_append_iter(jd_var *out, jd_var *iters) {
+  jd_var *slot = jd_push(jd_set_array(jd_context(jd_set_closure(out, append_iter)), 2), 2);
+  jd_assign(slot++, iters);
+  jd_set_int(slot++, 0);
+  return out;
+}
+
+static int factory_iter(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  size_t cnt = jd_count(context);
+  jd_var iters = JD_INIT;
+
+  jd_set_array(&iters, cnt);
+  jd_var *slot = jd_push(&iters, cnt);
+
+  for (unsigned i = 0; i < cnt; i++)
+    jd_eval(jd_get_idx(context, i), slot++, args);
+
+  jd__make_append_iter(result, &iters);
+  jd_release(&iters);
+  return 1;
+}
+
+jd_var *jd__make_append_factory(jd_var *out, jd_var *factories) {
+  if (factories->type == CLOSURE)
+    jd_assign(out, factories);
+  else if (jd_count(factories) == 1)
+    jd_assign(out, jd_get_idx(factories, 0));
+  else
+    jd_assign(jd_context(jd_set_closure(out, factory_iter)), factories);
+  return out;
+}
+
 /* Returns an array of closures. During iteration each closure will be called
  * with a pointer to part of a structure that is being iterated and will return
  * another closure: an iterator for all the keys, indexes or, in the case of '..',
  * sub-paths that match at the current location.
  */
 static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
-  JD_2VARS(tok, cl);
+  JD_2VARS(tok, alt);
   jd_set_array(out, 10);
   while (tok = jd__path_token(p), tok) {
-    jd_set_void(cl);
+    jd_set_array(alt, 10);
     switch (jd_get_int(jd_get_idx(tok, 0))) {
     case '@':
     case '.':
       break;
     case '$':
-      jd_set_closure(cl, pf_literal);
-      jd_assign(jd_context(cl), jd_nsv("$"));
+      jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
+                jd_nsv("$"));
       break;
     case JP_KEY:
     case JP_INDEX:
-      jd_set_closure(cl, pf_literal);
-      jd_assign(jd_context(cl), jd_get_idx(tok, 1));
+      jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
+                jd_get_idx(tok, 1));
       break;
     case '*':
-      jd_set_closure(cl, pf_wild);
+      jd_set_closure(jd_push(alt, 1), pf_wild);
       break;
     case '#': /* TEMPORARY, BROKEN (avoid compiler warning for pf_list) */
-      jd_set_closure(cl, pf_list);
+      jd_set_closure(jd_push(alt, 1), pf_list);
       break;
     default:
       jd_throw("Unhandled token: %J", tok);
     }
-    if (cl->type != VOID) jd_assign(jd_push(out, 1), cl);
+    if (jd_count(alt) != 0)
+      jd__make_append_factory(jd_push(out, 1), alt);
   }
   return out;
 }
