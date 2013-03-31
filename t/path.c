@@ -240,6 +240,7 @@ static void test_iter(void) {
   scope {
     check_iter("[]", "$.foo", "$.foo", NULL);
     check_iter("[]", "$.foo[bar,baz]", "$.foo.bar", "$.foo.baz", NULL);
+    check_iter("[]", "$[bar,baz].foo", "$.bar.foo", "$.baz.foo", NULL);
   }
 }
 
