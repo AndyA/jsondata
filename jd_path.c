@@ -88,6 +88,42 @@ jd_var *jd__path_token(jd__path_parser *p) {
   return NULL;
 }
 
+static int if_list(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_var *ctx = jd_get_idx(context, 0);
+  jd_int cnt = (jd_int) jd_count(&ctx[0]);
+  jd_int idx = jd_get_int(&ctx[1]);
+  if (idx < cnt) {
+    jd_assign(result, jd_get_idx(&ctx[0], idx));
+    jd_set_int(&ctx[1], idx + 1);
+  }
+  else {
+    jd_set_void(result);
+  }
+  return 1;
+}
+
+static void list_iter(jd_var *out, jd_var *list) {
+  jd_var idx = JD_INIT;
+  jd_set_int(&idx, 0);
+  jd_set_closure(out, if_list);
+  jd_set_array_with(jd_context(out), list, &idx, NULL);
+}
+
+static int pf_wild(jd_var *result, jd_var *context, jd_var *args) {
+  (void) context;
+  jd_var keys = JD_INIT;
+  list_iter(result, jd_keys(&keys, args));
+  jd_release(&keys);
+  return 1;
+}
+
+static int pf_list(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  list_iter(result, context);
+  return 1;
+}
+
 static int if_literal(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   jd_assign(result, context);
@@ -115,6 +151,7 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
   JD_2VARS(tok, cl);
   jd_set_array(out, 10);
   while (tok = jd__path_token(p), tok) {
+    jd_set_void(cl);
     switch (jd_get_int(jd_get_idx(tok, 0))) {
     case '$':
     case '@':
@@ -124,11 +161,17 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
     case JP_INDEX:
       jd_set_closure(cl, pf_literal);
       jd_assign(jd_context(cl), jd_get_idx(tok, 1));
-      jd_assign(jd_push(out, 1), cl);
+      break;
+    case '*':
+      jd_set_closure(cl, pf_wild);
+      break;
+    case '#': /* TEMPORARY, BROKEN (avoid compiler warning for pf_list) */
+      jd_set_closure(cl, pf_list);
       break;
     default:
       jd_throw("Unhandled token: %J", tok);
     }
+    if (cl->type != VOID) jd_assign(jd_push(out, 1), cl);
   }
   return out;
 }

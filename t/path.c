@@ -166,14 +166,15 @@ static void test_toker(void) {
 static void test_parser(void) {
   scope {
     JD_3VARS(comp, cl, tmp);
-    JD_SV(path, "$.foo.12");
-    JD_JV(want, "[ [\"foo\"], [12] ]");
+    JD_SV(path, "$.foo.*.12");
+    JD_JV(want, "[ [\"foo\"], [\"that\", \"this\"],  [12] ]");
+    JD_JV(hash, "{\"this\":12,\"that\":true}");
     JD_AV(got, 10);
     jd__path_parse(comp, path);
     size_t cnt = jd_count(comp);
     for (unsigned i = 0; i < cnt; i++) {
       JD_AV(alt, 10);
-      jd_eval(jd_get_idx(comp, i), cl, NULL); /* closure returns closure... */
+      jd_eval(jd_get_idx(comp, i), cl, hash); /* closure returns closure... */
       for (;;) {
         jd_eval(cl, tmp, NULL); /* ...which returns literal */
         if (tmp->type == VOID) break;
