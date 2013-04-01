@@ -460,6 +460,8 @@ jd_var *jd_path_next(jd_var *iter, jd_var *path, jd_var *captures) {
   return rs;
 }
 
+#if 1
+
 jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify) {
   jd_var *ptr = NULL;
 
@@ -505,6 +507,22 @@ jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify) {
 
   return ptr;
 }
+
+#else
+
+/* TODO doesn't work in the $.foo case because we can't vivify
+ * the root of the structure.
+ */
+
+jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify) {
+  jd_var iter = JD_INIT;
+  jd_path_iter(&iter, root, path, vivify);
+  jd_var *rv = jd_path_next(&iter, NULL, NULL);
+  jd_release(&iter);
+  return rv;
+}
+
+#endif
 
 static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   jd_var *rv = NULL;
