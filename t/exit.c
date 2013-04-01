@@ -65,14 +65,14 @@ static jd_var *split_lines(jd_var *out, jd_var *s) {
   return out;
 }
 
-static void check_exit(void (*f)(void *), void *ctx, const char *want, int want_status) {
+static void check_exit(void (*f)(void *), void *ctx, const char *want) {
   jd_var out = JD_INIT, lines = JD_INIT;
   int status;
 
   status = run_forked(f, ctx, &out);
   split_lines(&lines, &out);
   jdt_is_string(jd_get_idx(&lines, 0), want, "got exception");
-  is(status, want_status, "exit status = %d (got %d)", want_status, status);
+  ok(status != 0, "exit status != 0 (got %d)", status);
 
   jd_release(&out);
   jd_release(&lines);
@@ -97,11 +97,11 @@ static void oom(void *ctx) {
 }
 
 static void test_uncaught(void) {
-  check_exit(uncaught, NULL, "Uncaught exception: Oops", 134);
+  check_exit(uncaught, NULL, "Uncaught exception: Oops");
 }
 
 static void test_oom(void) {
-  check_exit(oom, NULL, "Fatal: Out of memory", 134);
+  check_exit(oom, NULL, "Fatal: Out of memory");
 }
 
 void test_main(void) {
