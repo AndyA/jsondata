@@ -1,0 +1,156 @@
+[
+   {
+      "in" : {
+         "data" : {},
+         "path" : "$.foo",
+         "vivify" : 1
+      },
+      "out" : {
+         "data" : {
+            "foo" : "$.foo"
+         },
+         "path" : [
+            "$.foo"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {},
+         "path" : "$.foo[bar,baz]",
+         "vivify" : 1
+      },
+      "out" : {
+         "data" : {
+            "foo" : {
+               "bar" : "$.foo.bar",
+               "baz" : "$.foo.baz"
+            }
+         },
+         "path" : [
+            "$.foo.bar",
+            "$.foo.baz"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {},
+         "path" : "$[bar,baz].foo",
+         "vivify" : 1
+      },
+      "out" : {
+         "data" : {
+            "bar" : {
+               "foo" : "$.bar.foo"
+            },
+            "baz" : {
+               "foo" : "$.baz.foo"
+            }
+         },
+         "path" : [
+            "$.bar.foo",
+            "$.baz.foo"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {},
+         "path" : "$.foo[0:3]",
+         "vivify" : 1
+      },
+      "out" : {
+         "data" : {
+            "foo" : [
+               "$.foo.0",
+               "$.foo.1",
+               "$.foo.2"
+            ]
+         },
+         "path" : [
+            "$.foo.0",
+            "$.foo.1",
+            "$.foo.2"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {},
+         "path" : "$.foo[0:3]['bar','baz']",
+         "vivify" : 1
+      },
+      "out" : {
+         "data" : {
+            "foo" : [
+               {
+                  "bar" : "$.foo.0.bar",
+                  "baz" : "$.foo.0.baz"
+               },
+               {
+                  "bar" : "$.foo.1.bar",
+                  "baz" : "$.foo.1.baz"
+               },
+               {
+                  "bar" : "$.foo.2.bar",
+                  "baz" : "$.foo.2.baz"
+               }
+            ]
+         },
+         "path" : [
+            "$.foo.0.bar",
+            "$.foo.0.baz",
+            "$.foo.1.bar",
+            "$.foo.1.baz",
+            "$.foo.2.bar",
+            "$.foo.2.baz"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {},
+         "path" : "$.foo[0:3][0:10:5]",
+         "vivify" : 1
+      },
+      "out" : {
+         "data" : {
+            "foo" : [
+               [
+                  "$.foo.0.0",
+                  null,
+                  null,
+                  null,
+                  null,
+                  "$.foo.0.5"
+               ],
+               [
+                  "$.foo.1.0",
+                  null,
+                  null,
+                  null,
+                  null,
+                  "$.foo.1.5"
+               ],
+               [
+                  "$.foo.2.0",
+                  null,
+                  null,
+                  null,
+                  null,
+                  "$.foo.2.5"
+               ]
+            ]
+         },
+         "path" : [
+            "$.foo.0.0",
+            "$.foo.0.5",
+            "$.foo.1.0",
+            "$.foo.1.5",
+            "$.foo.2.0",
+            "$.foo.2.5"
+         ]
+      }
+   }
+]
