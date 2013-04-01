@@ -8,8 +8,8 @@ static int _is(jd_var *got, jd_var *want, const char *msg, va_list ap) {
   int rc;
   rc = test(jd_compare(got, want) == 0, msg, ap);
   if (!rc) {
-    jdt_diag("wanted %lJ", want);
-    jdt_diag("got %lJ", got);
+    jdt_diag("wanted %V", want);
+    jdt_diag("got %V", got);
   }
   return rc;
 }
@@ -17,9 +17,15 @@ static int _is(jd_var *got, jd_var *want, const char *msg, va_list ap) {
 static int _isj(jd_var *got, jd_var *want, const char *msg, va_list ap) {
   jd_var vgot = JD_INIT;
   int rc;
-
   jd_to_json(&vgot, got);
-  rc = _is(&vgot, want, msg, ap);
+  rc = test(jd_compare(&vgot, want) == 0, msg, ap);
+  if (!rc) {
+    jd_var pwant = JD_INIT;
+    jd_from_json(&pwant, want);
+    jdt_diag("wanted %lJ", &pwant);
+    jdt_diag("got %lJ", got);
+    jd_release(&pwant);
+  }
   jd_release(&vgot);
   return rc;
 }
