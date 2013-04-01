@@ -175,7 +175,7 @@ static void test_iter(void) {
             jd_assign(slot, cpath);
           }
           jdt_is(got, jd_get_ks(out, "path", 0), "iterated");
-          jdt_is(data, jd_get_ks(out, "data", 0), "data structure vivified");
+          jdt_is(data, jd_get_ks(out, "data", 0), "data structure");
         }
       }
     }
