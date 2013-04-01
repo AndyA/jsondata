@@ -147,14 +147,14 @@ static void test_traverse(void) {
   }
 }
 
-static void test_iter(void) {
+static void test_iter(const char *specfile) {
   scope {
     JD_4VARS(model, data, iter, cpath);
     JD_VAR(got);
     unsigned i;
 
-    subtest(MODEL) {
-      load_json(model, MODEL);
+    subtest(specfile) {
+      load_json(model, specfile);
 
       for (i = 0; i < jd_count(model); i++) {
         jd_var *tc = jd_get_idx(model, i);
@@ -187,7 +187,7 @@ void test_main(void) {
   test_parser();
   test_compile();
   test_traverse();
-  test_iter();
+  test_iter(MODEL);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
