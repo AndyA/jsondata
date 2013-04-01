@@ -386,10 +386,14 @@ jd_var *jd_path_iter(jd_var *out, jd_var *v, jd_var *path, int vivify) {
   /* build context */
   jd_var *slot = jd_push(ctx, 5);
   jd_assign(slot++, jd__path_compile(path));
+  jd_var *vv = jd_set_hash(slot++ , 1);
   jd_assign(slot++, v);
   jd_set_array(slot++, 10); /* active iterators */
   jd_set_array(slot++, 10); /* current path */
   jd_set_bool(slot++, vivify);
+
+  jd_assign(jd_get_ks(vv, "$", 1), v);
+
   return out;
 }
 
