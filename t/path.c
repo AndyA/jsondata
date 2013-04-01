@@ -268,7 +268,8 @@ static jd_var *check_iter(const char *json, const char *path, int vivify,
   JD_SV(pathv, path);
   JD_AV(got, 10);
   JD_JV(v, json);
-  JD_3VARS(iter, i, want);
+  JD_3VARS(iter, cpath, want);
+  jd_var *slot;
 
   va_list ap;
   va_start(ap, expect);
@@ -276,38 +277,41 @@ static jd_var *check_iter(const char *json, const char *path, int vivify,
   va_end(ap);
 
   jd_path_iter(iter, v, pathv, vivify);
-  for (;;) {
-    jd_eval(iter, i, NULL);
-    if (i->type == VOID) break;
-    /* i is [ slot, path, captures ] */
-    jd_assign(jd_push(got, 1), jd_get_idx(i, 1));
+  while (slot = jd_path_next(iter, cpath, NULL), slot) {
+    jd_assign(jd_push(got, 1), cpath);
+    jd_assign(slot, cpath);
   }
   jdt_is(got, want, "iterated %s", path);
   jdt_is_json(v, expect, "data structure vivified");
   return v;
 }
 
+
 static void test_iter(void) {
   scope {
     check_iter("{}", "$.foo", 1,
-    "{\"foo\":null}",
+    "{\"foo\":\"$.foo\"}",
     "$.foo", NULL);
+
     check_iter("{}", "$.foo[bar,baz]", 1,
-    "{\"foo\":{\"bar\":null,\"baz\":null}}",
+    "{\"foo\":{\"bar\":\"$.foo.bar\",\"baz\":\"$.foo.baz\"}}",
     "$.foo.bar", "$.foo.baz", NULL);
+
     check_iter("{}", "$[bar,baz].foo", 1,
-    "{\"bar\":{\"foo\":null},\"baz\":{\"foo\":null}}",
+    "{\"bar\":{\"foo\":\"$.bar.foo\"},\"baz\":{\"foo\":\"$.baz.foo\"}}",
     "$.bar.foo", "$.baz.foo", NULL);
+
     check_iter("{}", "$.foo[0:3]", 1,
-    "{\"foo\":[null,null,null]}",
+    "{\"foo\":[\"$.foo.0\",\"$.foo.1\",\"$.foo.2\"]}",
     "$.foo.0",
     "$.foo.1",
     "$.foo.2",
     NULL);
+
     check_iter("{}", "$.foo[0:3]['bar','baz']", 1,
-    "{\"foo\":[{\"bar\":null,\"baz\":null},"
-    "{\"bar\":null,\"baz\":null},"
-    "{\"bar\":null,\"baz\":null}]}",
+    "{\"foo\":[{\"bar\":\"$.foo.0.bar\",\"baz\":\"$.foo.0.baz\"},"
+    "{\"bar\":\"$.foo.1.bar\",\"baz\":\"$.foo.1.baz\"},"
+    "{\"bar\":\"$.foo.2.bar\",\"baz\":\"$.foo.2.baz\"}]}",
     "$.foo.0.bar",
     "$.foo.0.baz",
     "$.foo.1.bar",
@@ -315,10 +319,11 @@ static void test_iter(void) {
     "$.foo.2.bar",
     "$.foo.2.baz",
     NULL);
+
     check_iter("{}", "$.foo[0:3][0:10:5]", 1,
-    "{\"foo\":[[null,null,null,null,null,null],"
-    "[null,null,null,null,null,null],"
-    "[null,null,null,null,null,null]]}",
+    "{\"foo\":[[\"$.foo.0.0\",null,null,null,null,\"$.foo.0.5\"],"
+    "[\"$.foo.1.0\",null,null,null,null,\"$.foo.1.5\"],"
+    "[\"$.foo.2.0\",null,null,null,null,\"$.foo.2.5\"]]}",
     "$.foo.0.0",
     "$.foo.0.5",
     "$.foo.1.0",
