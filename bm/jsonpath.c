@@ -6,12 +6,14 @@
 #include <sys/time.h>
 #include <time.h>
 
+#include "util.h"
 #include "jd_pretty.h"
 
 static jd_var data = JD_INIT;
 static jd_var data2 = JD_INIT;
 static jd_var paths = JD_INIT;
-static unsigned long ops = 0;
+
+const char *test_name = "jsonpath";
 
 static jd_var *load_string(jd_var *out, const char *filename) {
   FILE *f;
@@ -75,7 +77,7 @@ static jd_var *path_iter(jd_var *iter, jd_var *data) {
   return iter;
 }
 
-static void setup(void) {
+void setup(void) {
   scope {
     load_json(&data, "model.json");
 
@@ -90,13 +92,7 @@ static void setup(void) {
   }
 }
 
-static double now(void) {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return (double) tv.tv_sec + (double) tv.tv_usec / 1000000;
-}
-
-static void test(void) {
+void test(void) {
   unsigned i;
   size_t pcnt = jd_count(&paths);
 
@@ -105,40 +101,16 @@ static void test(void) {
     jd_var *path = jd_get_idx(&paths, i);
     const char *pstr = jd_bytes(path, NULL);
     jd_assign(jd_lv(&data2, pstr), jd_rv(&data, pstr));
-    ops++;
+    count_ops(1);
   }
 
   jd_assign(&data, &data2);
 }
 
-static void pdata(jd_var *data) {
-  scope {
-    printf("%s\n", jd_bytes(jd_to_json_pretty(jd_nv(), data), NULL));
-  }
-}
-
-int main(int argc, char *argv[]) {
-  int i, count = 1;
-  const char *tc_env = NULL;
-
-  if (argc > 1)
-    count = atoi(argv[1]);
-  else if (tc_env = getenv("JD_BM_COUNT"), tc_env)
-    count = atoi(tc_env);
-
-  setup();
-  double start = now();
-  for (i = 0; i < count; i++)
-    test();
-  double elapsed = now() - start;
-
-  if (count == 1)
-    pdata(&data);
-
-  printf("%lu operations, %.2f seconds, %.2f op/s, %.2f us/op\n",
-         ops, elapsed, (double) ops / elapsed, 1000000 * elapsed / (double) ops);
-
-  return 0;
+void teardown(void) {
+  jd_release(&data);
+  jd_release(&data2);
+  jd_release(&paths);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

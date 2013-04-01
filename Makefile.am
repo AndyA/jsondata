@@ -21,3 +21,6 @@ jdtest_LDADD = libjsondata.la
 
 test: all
 	cd t && $(MAKE) test
+
+benchmark: all
+	cd bm && $(MAKE) benchmark

@@ -1,0 +1,7 @@
+===
+date: 2013/04/01 23:29:47
+uname: Linux igloo 3.2.0-4-amd64 #1 SMP Debian 3.2.39-2 x86_64 GNU/Linux
+rev: 79eecfe2bf6b8afbd0c24f18bd269269ff832221
++++
+jsonpath: 1116990 operations, 10.010 seconds, 111588.694 op/s, 8.961 us/op
+---
