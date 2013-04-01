@@ -220,7 +220,7 @@ static void test_version(void) {
   scope {
     JD_VAR(v);
     jd_version(v);
-    jdt_diag("Testing libjsondata %V (%V)", jd_rv(v, "$.version"), jd_rv(v, "$.date"));
+    jdt_diag("Testing libjsondata %V", jd_rv(v, "$.version"));
   }
 }
 

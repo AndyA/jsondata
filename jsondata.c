@@ -6,7 +6,6 @@
 
 #include "jd_private.h"
 #include "jsondata.h"
-#include "version.h"
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -638,9 +637,7 @@ void *jd_ptr(jd_var *v) {
 
 jd_var *jd_version(jd_var *out) {
   jd_set_hash(out, 3);
-  jd_set_string(jd_get_ks(out, "version", 1), V_VERSION);
-  jd_set_string(jd_get_ks(out, "date", 1), V_DATE);
-  jd_set_string(jd_get_ks(out, "git_hash", 1), V_GIT_HASH);
+  jd_set_string(jd_get_ks(out, "version", 1), VERSION);
   return out;
 }
 
