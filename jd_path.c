@@ -372,6 +372,7 @@ jd_var *jd__traverse_path(jd_var *v, jd_var *path, int vivify) {
 static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   scope {
+    jd_var *nv = jd_nv();
     jd_var *ctx = jd_get_idx(context, 0); /* array */
     jd_var *path = ctx++;
     jd_var *iter_stk = ctx++;
@@ -390,25 +391,21 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
         slot_stk[ipos], jd_get_idx(path_stk, ipos), vivify);
 
     while (jd_count(path_stk) < jd_count(path)) {
-      jd_var nv = JD_INIT;
-
       if (jd_count(iter_stk) < jd_count(path_stk)) jd_die("Oops!");
       if (ipos = jd_count(iter_stk), ipos == jd_count(path_stk))
         jd_eval(jd_get_idx(path, ipos), jd_push(iter_stk, 1), slot_stk[ipos]);
 
-      jd_eval(jd_get_idx(iter_stk, -1), &nv, NULL);
+      jd_eval(jd_get_idx(iter_stk, -1), nv, NULL);
 
-      if (nv.type != VOID) {
+      if (nv->type != VOID) {
         ipos = jd_count(path_stk);
-        slot_stk[ipos + 1] = jd__traverse_path(slot_stk[ipos], &nv, vivify);
+        slot_stk[ipos + 1] = jd__traverse_path(slot_stk[ipos], nv, vivify);
         if (slot_stk[ipos + 1]) {
-          jd_assign(jd_push(path_stk, 1), &nv);
-          jd_release(&nv);
+          jd_assign(jd_push(path_stk, 1), nv);
           continue;
         }
       }
 
-      jd_release(&nv);
       if (jd_count(path_stk) == 0) JD_RETURN(1);
       jd_pop(path_stk, 1, NULL);
       jd_pop(iter_stk, 1, NULL);
