@@ -460,10 +460,8 @@ jd_var *jd_path_next(jd_var *iter, jd_var *path, jd_var *captures) {
   return rs;
 }
 
-jd_var *jd_get_context(jd_var *root, jd_var *path,
-                       jd_path_context *ctx, int vivify) {
+jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify) {
   jd_var *ptr = NULL;
-  (void) ctx;
 
   scope {
     JD_2VARS(part, elt);
@@ -513,7 +511,7 @@ static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   scope {
     JD_VAR(pv);
     jd_vprintf(pv, path, ap);
-    rv = jd_get_context(root, pv, NULL, vivify);
+    rv = jd_get_context(root, pv, vivify);
   }
   return rv;
 }

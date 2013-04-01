@@ -94,7 +94,7 @@ static void throw_bad_path2(void *ctx) {
   scope {
     JD_VAR(x);
     JD_AV(path, 1); /* empty */
-    jd_get_context(x, path, NULL, 1);
+    jd_get_context(x, path, 1);
     jdt_diag("Exception not thrown, x=%lJ", x);
   }
 }
@@ -122,16 +122,16 @@ static void test_context(void) {
     JD_JV(pa, "[\"$\",\"one\",\"0\"]");
     JD_JV(pn, "[\"$\",\"one\",0]");
 
-    ok(nneq(jd_get_context(obj, ps, NULL, 0), jd_get_context(obj, pa, NULL, 0)),
+    ok(nneq(jd_get_context(obj, ps, 0), jd_get_context(obj, pa, 0)),
     "array path");
-    ok(nneq(jd_get_context(obj, ps, NULL, 0), jd_get_context(obj, pn, NULL, 0)),
+    ok(nneq(jd_get_context(obj, ps, 0), jd_get_context(obj, pn, 0)),
     "array path (numeric)");
   }
 
   scope {
     JD_VAR(obj);
     JD_JV(path, "[\"$\",0]");
-    ok(!!jd_get_context(obj, path, NULL, 1), "vivify path");
+    ok(!!jd_get_context(obj, path, 1), "vivify path");
     jdt_is_json(obj, "[null]", "created array");
   }
 }

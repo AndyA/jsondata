@@ -104,10 +104,6 @@ struct _jd_hash_bucket {
   struct _jd_hash_bucket *next;
 };
 
-typedef struct {
-  /* TODO */
-} jd_path_context;
-
 #define JD_INIT { .type = VOID }
 
 struct _jd_dvar {
@@ -241,8 +237,7 @@ jd_var *jd_ltrim(jd_var *out, jd_var *v);
 jd_var *jd_rtrim(jd_var *out, jd_var *v);
 jd_var *jd_trim(jd_var *out, jd_var *v);
 
-jd_var *jd_get_context(jd_var *root, jd_var *path,
-                       jd_path_context *ctx, int vivify);
+jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path, ...);
 jd_var *jd_rv(jd_var *root, const char *path, ...);
 jd_var *jd_path_iter(jd_var *iter, jd_var *v, jd_var *path, int vivify);
