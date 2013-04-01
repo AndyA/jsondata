@@ -5,3 +5,10 @@ rev: 79eecfe2bf6b8afbd0c24f18bd269269ff832221
 +++
 jsonpath: 1116990 operations, 10.010 seconds, 111588.694 op/s, 8.961 us/op
 ---
+===
+date: 2013/04/01 23:33:29
+uname: Darwin kumina.fenkle 12.3.0 Darwin Kernel Version 12.3.0: Sun Jan  6 22:37:10 PST 2013; root:xnu-2050.22.13~1/RELEASE_X86_64 x86_64
+rev: d4088d8504fd6ed39ce5c056ad0975b32cd0a8fa
++++
+jsonpath: 515970 operations, 10.016 seconds, 51513.842 op/s, 19.412 us/op
+---
