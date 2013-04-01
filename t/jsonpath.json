@@ -3,7 +3,7 @@
       "in" : {
          "data" : {},
          "path" : "$.foo",
-         "vivify" : 1
+         "vivify" : true
       },
       "out" : {
          "data" : {
@@ -18,7 +18,7 @@
       "in" : {
          "data" : {},
          "path" : "$.foo[bar,baz]",
-         "vivify" : 1
+         "vivify" : true
       },
       "out" : {
          "data" : {
@@ -37,7 +37,7 @@
       "in" : {
          "data" : {},
          "path" : "$[bar,baz].foo",
-         "vivify" : 1
+         "vivify" : true
       },
       "out" : {
          "data" : {
@@ -58,7 +58,7 @@
       "in" : {
          "data" : {},
          "path" : "$.foo[0:3]",
-         "vivify" : 1
+         "vivify" : true
       },
       "out" : {
          "data" : {
@@ -79,7 +79,7 @@
       "in" : {
          "data" : {},
          "path" : "$.foo[0:3]['bar','baz']",
-         "vivify" : 1
+         "vivify" : true
       },
       "out" : {
          "data" : {
@@ -112,7 +112,7 @@
       "in" : {
          "data" : {},
          "path" : "$.foo[0:3][0:10:5]",
-         "vivify" : 1
+         "vivify" : true
       },
       "out" : {
          "data" : {
