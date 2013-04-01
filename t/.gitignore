@@ -12,6 +12,7 @@
 /get
 /hash
 /json
+/jsonpath
 /magic
 /map
 /model
