@@ -215,27 +215,6 @@ static jd_var *array_with_args(jd_var *out, va_list ap) {
   return out;
 }
 
-static void check_iter(const char *json, const char *path, ...) {
-  JD_SV(pathv, path);
-  JD_AV(got, 10);
-  JD_JV(v, json);
-  JD_3VARS(iter, i, want);
-
-  va_list ap;
-  va_start(ap, path);
-  array_with_args(want, ap);
-  va_end(ap);
-
-  jd_path_iter(iter, v, pathv, 1);
-  for (;;) {
-    jd_eval(iter, i, NULL);
-    if (i->type == VOID) break;
-    /* i is [ slot, path, captures ] */
-    jd_assign(jd_push(got, 1), jd_get_idx(i, 1));
-  }
-  jdt_is(got, want, "iterated %s", path);
-}
-
 static void test_traverse(void) {
   scope {
     JD_JV(data, "{\"id\":[1,2,3]}");
@@ -284,23 +263,62 @@ static void test_traverse(void) {
   }
 }
 
+static jd_var *check_iter(const char *json, const char *path, int vivify,
+                          const char *expect, ...) {
+  JD_SV(pathv, path);
+  JD_AV(got, 10);
+  JD_JV(v, json);
+  JD_3VARS(iter, i, want);
+
+  va_list ap;
+  va_start(ap, expect);
+  array_with_args(want, ap);
+  va_end(ap);
+
+  jd_path_iter(iter, v, pathv, vivify);
+  for (;;) {
+    jd_eval(iter, i, NULL);
+    if (i->type == VOID) break;
+    /* i is [ slot, path, captures ] */
+    jd_assign(jd_push(got, 1), jd_get_idx(i, 1));
+  }
+  jdt_is(got, want, "iterated %s", path);
+  jdt_is_json(v, expect, "data structure vivified");
+  return v;
+}
+
 static void test_iter(void) {
   scope {
-    check_iter("[]", "$.foo", "$.foo", NULL);
-    check_iter("[]", "$.foo[bar,baz]", "$.foo.bar", "$.foo.baz", NULL);
-    check_iter("[]", "$[bar,baz].foo", "$.bar.foo", "$.baz.foo", NULL);
-    check_iter("[]", "$.foo[0:3]",
+    check_iter("{}", "$.foo", 1,
+    "{\"foo\":null}",
+    "$.foo", NULL);
+    check_iter("{}", "$.foo[bar,baz]", 1,
+    "{\"foo\":{\"bar\":null,\"baz\":null}}",
+    "$.foo.bar", "$.foo.baz", NULL);
+    check_iter("{}", "$[bar,baz].foo", 1,
+    "{\"bar\":{\"foo\":null},\"baz\":{\"foo\":null}}",
+    "$.bar.foo", "$.baz.foo", NULL);
+    check_iter("{}", "$.foo[0:3]", 1,
+    "{\"foo\":[null,null,null]}",
     "$.foo.0",
     "$.foo.1",
     "$.foo.2",
     NULL);
-    check_iter("[]", "$.foo[0:3,'x']",
-    "$.foo.0",
-    "$.foo.1",
-    "$.foo.2",
-    "$.foo.x",
+    check_iter("{}", "$.foo[0:3]['bar','baz']", 1,
+    "{\"foo\":[{\"bar\":null,\"baz\":null},"
+    "{\"bar\":null,\"baz\":null},"
+    "{\"bar\":null,\"baz\":null}]}",
+    "$.foo.0.bar",
+    "$.foo.0.baz",
+    "$.foo.1.bar",
+    "$.foo.1.baz",
+    "$.foo.2.bar",
+    "$.foo.2.baz",
     NULL);
-    check_iter("[]", "$.foo[0:3][0:10:5]",
+    check_iter("{}", "$.foo[0:3][0:10:5]", 1,
+    "{\"foo\":[[null,null,null,null,null,null],"
+    "[null,null,null,null,null,null],"
+    "[null,null,null,null,null,null]]}",
     "$.foo.0.0",
     "$.foo.0.5",
     "$.foo.1.0",
