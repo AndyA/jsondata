@@ -334,6 +334,41 @@ jd_var *jd__path_compile(jd_var *path) {
   return magic;
 }
 
+static int is_positive_int(jd_var *v) {
+  jd_string *jds;
+  size_t sl;
+  unsigned i;
+
+  if (JD_IS_COMPLEX(v->type)) return 0;
+  if (v->type != STRING) return 1;
+  jds = jd__as_string(v);
+  sl = jd__string_length(jds);
+  if (sl == 0) return 0;
+  if (jds->data[0] == '0' && sl != 1) return 0;
+  for (i = 0; i < sl; i++)
+    if (!isdigit(jds->data[i])) return 0;
+  return 1;
+}
+
+jd_var *jd__traverse_path(jd_var *v, jd_var *path, int vivify) {
+  if (path->type == ARRAY) {
+    size_t cnt = jd_count(path);
+    for (unsigned i = 0; i < cnt && v; i++)
+      v = jd__traverse_path(v, jd_get_idx(path, i), vivify);
+    return v;
+  }
+
+  if (vivify && v->type == VOID) {
+    if (is_positive_int(path)) jd_set_array(v, 1);
+    else jd_set_hash(v, 1);
+  }
+
+  if (v->type != ARRAY && v->type != HASH)
+    return NULL;
+
+  return jd_get(v, path, vivify);
+}
+
 static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   scope {
@@ -395,21 +430,6 @@ jd_var *jd_path_iter(jd_var *out, jd_var *v, jd_var *path, int vivify) {
   jd_assign(jd_get_ks(jd_set_hash(jd_push(ctx_stk, 1), 1), "$", 1), v);
 
   return out;
-}
-
-static int is_positive_int(jd_var *v) {
-  jd_string *jds;
-  size_t sl;
-  unsigned i;
-
-  if (v->type != STRING) return 1;
-  jds = jd__as_string(v);
-  sl = jd__string_length(jds);
-  if (sl == 0) return 0;
-  if (jds->data[0] == '0' && sl != 1) return 0;
-  for (i = 0; i < sl; i++)
-    if (!isdigit(jds->data[i])) return 0;
-  return 1;
 }
 
 jd_var *jd_get_context(jd_var *root, jd_var *path,

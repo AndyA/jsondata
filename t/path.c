@@ -236,6 +236,54 @@ static void check_iter(const char *json, const char *path, ...) {
   jdt_is(got, want, "iterated %s", path);
 }
 
+static void test_traverse(void) {
+  scope {
+    JD_JV(data, "{\"id\":[1,2,3]}");
+    jdt_is_json(jd__traverse_path(data, jd_nsv("id"), 0), "[1,2,3]", "traverse hash");
+  }
+  scope {
+    JD_JV(data, "[1,2,3]");
+    jdt_is_json(jd__traverse_path(data, jd_niv(1), 0), "2", "traverse array");
+  }
+  scope {
+    JD_VAR(data);
+    jd_assign(jd__traverse_path(data, jd_nsv("id"), 1), jd_nsv("Bongo"));
+    jdt_is_json(data, "{\"id\":\"Bongo\"}", "vivify hash");
+  }
+  scope {
+    JD_VAR(data);
+    jd_assign(jd__traverse_path(data, jd_niv(3), 1), jd_nsv("Bongo"));
+    jdt_is_json(data, "[null,null,null,\"Bongo\"]", "vivify array");
+  }
+  scope {
+    JD_VAR(data);
+    jd_assign(jd__traverse_path(data, jd_nsv("1"), 1), jd_nsv("Bongo"));
+    jdt_is_json(data, "[null,\"Bongo\"]", "vivify array, string key");
+  }
+  scope {
+    JD_JV(data, "{\"id\":[1,2,3]}");
+    JD_JV(path, "[\"id\",1]");
+    jdt_is_json(jd__traverse_path(data, path, 0), "2", "traverse hash path");
+  }
+  scope {
+    JD_JV(data, "{\"id\":[1,2,3]}");
+    JD_JV(path, "[\"id\",\"1\"]");
+    jdt_is_json(jd__traverse_path(data, path, 0), "2", "traverse hash path, string key");
+  }
+  scope {
+    JD_VAR(data);
+    JD_JV(path, "[\"id\",1]");
+    jd_assign(jd__traverse_path(data, path, 1), jd_nsv("Boo!"));
+    jdt_is_json(data, "{\"id\":[null,\"Boo!\"]}", "vivify path");
+  }
+  scope {
+    JD_VAR(data);
+    JD_JV(path, "[\"id\",\"1\"]");
+    jd_assign(jd__traverse_path(data, path, 1), jd_nsv("Boo!"));
+    jdt_is_json(data, "{\"id\":[null,\"Boo!\"]}", "vivify path, string key");
+  }
+}
+
 static void test_iter(void) {
   scope {
     check_iter("[]", "$.foo", "$.foo", NULL);
@@ -267,6 +315,7 @@ void test_main(void) {
   test_toker();
   test_parser();
   test_compile();
+  test_traverse();
   test_iter();
   test_exceptions();
   test_path();
