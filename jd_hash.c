@@ -136,19 +136,16 @@ jd_var *jd__hash_keys(jd_hash *jdh, jd_var *keys) {
 }
 
 jd_var *jd__hash_merge(jd_var *out, jd_hash *jdh, int deep) {
-  JD_SCOPE {
-    unsigned i;
-    size_t count = jd__hash_count(jdh);
-    JD_VAR(keys);
-
-    jd__hash_keys(jdh, keys);
-    for (i = 0; i < count; i++) {
-      jd_var *k = jd_get_idx(keys, i);
-      if (deep) jd_clone(jd_get_key(out, k, 1), jd__hash_get(jdh, k, 0), 1);
-      else jd_assign(jd_get_key(out, k, 1), jd__hash_get(jdh, k, 0));
-    }
-
+  unsigned i;
+  size_t count = jd__hash_count(jdh);
+  jd_var keys = JD_INIT;
+  jd__hash_keys(jdh, &keys);
+  for (i = 0; i < count; i++) {
+    jd_var *k = jd_get_idx(&keys, i);
+    if (deep) jd_clone(jd_get_key(out, k, 1), jd__hash_get(jdh, k, 0), 1);
+    else jd_assign(jd_get_key(out, k, 1), jd__hash_get(jdh, k, 0));
   }
+  jd_release(&keys);
   return out;
 }
 
