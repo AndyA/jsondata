@@ -210,6 +210,7 @@ jd_var *jd_push(jd_var *v, size_t count);
 size_t jd_pop(jd_var *v, size_t count, jd_var *slot);
 jd_var *jd_unshift(jd_var *v, size_t count);
 size_t jd_shift(jd_var *v, size_t count, jd_var *slot);
+jd_var *jd_get(jd_var *v, jd_var *key, int vivify);
 jd_var *jd_get_idx(jd_var *v, int idx);
 jd_var *jd_get_key(jd_var *v, jd_var *key, int vivify);
 jd_var *jd_get_ks(jd_var *v, const char *key, int vivify);

@@ -343,6 +343,24 @@ jd_var *jd_get_ks(jd_var *v, const char *key, int vivify) {
   return rv;
 }
 
+jd_var *jd_get(jd_var *v, jd_var *key, int vivify) {
+  switch (v->type) {
+  case HASH:
+    return jd_get_key(v, key, vivify);
+  case ARRAY:
+    if (vivify) {
+      jd_int idx = jd_get_int(key);
+      jd_int diff = idx - (jd_int) jd_count(v);
+      return diff >= 0 ? jd_push(v, diff + 1) + diff : jd_get_idx(v, idx);
+    }
+    else {
+      return jd_get_idx(v, jd_get_int(key));
+    }
+  default:
+    jd_throw("Bad type for get"); /* TODO typename in error messages */
+  }
+}
+
 int jd_delete_key(jd_var *v, jd_var *key, jd_var *slot) {
   return jd__hash_delete(jd__as_hash(v), key, slot);
 }

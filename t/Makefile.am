@@ -1,5 +1,5 @@
-TESTBIN = 00misc array clone closure compare exception exit hash \
-	json magic map model object path string thread
+TESTBIN = 00misc array clone closure compare exception exit get \
+	  hash json magic map model object path string thread
 
 EXTRA_DIST = model.json
 
