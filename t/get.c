@@ -18,6 +18,7 @@ static void test_get(void) {
   scope {
     JD_JV(data, "[1,2,3]");
     jdt_is_json(jd_get(data, jd_niv(1), 0), "2", "get array");
+    ok(NULL == jd_get(data, jd_niv(3), 0), "no vivify, no error");
   }
   scope {
     JD_JV(data, "[]");

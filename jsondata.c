@@ -354,7 +354,8 @@ jd_var *jd_get(jd_var *v, jd_var *key, int vivify) {
       return diff >= 0 ? jd_push(v, diff + 1) + diff : jd_get_idx(v, idx);
     }
     else {
-      return jd_get_idx(v, jd_get_int(key));
+      jd_int idx = jd_get_int(key);
+      return idx < (jd_int) jd_count(v) ? jd_get_idx(v, idx) : NULL;
     }
   default:
     jd_throw("Bad type for get"); /* TODO typename in error messages */
