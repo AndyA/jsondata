@@ -1,0 +1,1519 @@
+{
+   "config" : {
+      "deployers" : {
+         "s3" : {
+            "live" : {
+               "bucket" : "thespace-media-live",
+               "config" : "/home/andy/.s3/the-space-live.ini",
+               "profile" : "default"
+            },
+            "test" : {}
+         }
+      },
+      "packagers" : {
+         "default" : {
+            "webroot" : "webroot/live/hls"
+         }
+      },
+      "paths" : {
+         "tmp" : "/opt/newstream/tmp"
+      },
+      "profiles" : {
+         "config" : {
+            "pc" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p50",
+                  "p30",
+                  "p40",
+                  "p60",
+                  "p70"
+               ]
+            },
+            "pc_hd" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p50",
+                  "p30",
+                  "p40",
+                  "p60",
+                  "p70",
+                  "p80"
+               ]
+            },
+            "pc_hd_lite" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p60",
+                  "p40",
+                  "p80"
+               ]
+            },
+            "pc_lite" : {
+               "dog" : "/opt/newstream/art/thespace-dog.png",
+               "encodes" : [
+                  "p50",
+                  "p30",
+                  "p70"
+               ]
+            },
+            "thumbnail" : {
+               "encodes" : [
+                  "t10"
+               ]
+            }
+         },
+         "encodes" : {
+            "p10" : {
+               "a" : {
+                  "bitrate" : 24000,
+                  "profile" : "aac_he",
+                  "rate" : 22050
+               },
+               "v" : {
+                  "bitrate" : 32000,
+                  "height" : 126,
+                  "profile" : "baseline",
+                  "rate" : 5,
+                  "width" : 224
+               }
+            },
+            "p20" : {
+               "a" : {
+                  "bitrate" : 48000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 128000,
+                  "height" : 224,
+                  "level" : 3,
+                  "profile" : "baseline",
+                  "rate" : 12.5,
+                  "width" : 400
+               }
+            },
+            "p30" : {
+               "a" : {
+                  "bitrate" : 64000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 304000,
+                  "height" : 224,
+                  "level" : 3,
+                  "profile" : "baseline",
+                  "rate" : 25,
+                  "width" : 400
+               }
+            },
+            "p40" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 400000,
+                  "height" : 288,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 512
+               }
+            },
+            "p50" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 700000,
+                  "height" : 360,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 640
+               }
+            },
+            "p60" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 1200000,
+                  "height" : 396,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 704
+               }
+            },
+            "p70" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 2016000,
+                  "height" : 576,
+                  "level" : 3.1,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 1024
+               }
+            },
+            "p80" : {
+               "a" : {
+                  "bitrate" : 128000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 3372000,
+                  "height" : 720,
+                  "level" : 4,
+                  "profile" : "high",
+                  "rate" : 25,
+                  "width" : 1280
+               }
+            },
+            "p90" : {
+               "a" : {
+                  "bitrate" : 192000,
+                  "profile" : "aac_lc",
+                  "rate" : 48000
+               },
+               "v" : {
+                  "bitrate" : 5100000,
+                  "height" : 1080,
+                  "level" : 4,
+                  "profile" : "high",
+                  "rate" : 25,
+                  "width" : 1920
+               }
+            },
+            "t10" : {
+               "a" : {
+                  "bitrate" : 96000,
+                  "profile" : "aac_he",
+                  "rate" : 22050
+               },
+               "v" : {
+                  "bitrate" : 200000,
+                  "height" : 126,
+                  "level" : 3,
+                  "profile" : "main",
+                  "rate" : 25,
+                  "width" : 224
+               }
+            }
+         }
+      },
+      "uri" : {
+         "crtmpserver" : "http://localhost:6502",
+         "home" : "http://thespace.org",
+         "rtmp_stream" : "rtmp://newstream.fenkle/live/%s",
+         "rtsp_stream" : "rtsp://newstream.fenkle:5544/%s"
+      }
+   },
+   "diffpatch" : [
+      {
+         "a" : {
+            "bar" : "two",
+            "foo" : 1
+         },
+         "b" : {
+            "bar" : [
+               1,
+               2,
+               3
+            ],
+            "foo" : 1
+         },
+         "diff" : [
+            {
+               "op" : "remove",
+               "path" : "$.bar"
+            },
+            {
+               "element" : "bar",
+               "op" : "add",
+               "path" : "$",
+               "value" : [
+                  1,
+                  2,
+                  3
+               ]
+            }
+         ],
+         "name" : "Type change/hash"
+      },
+      {
+         "a" : {
+            "bar" : "two",
+            "foo" : 1
+         },
+         "b" : {
+            "bar" : "three",
+            "foo" : 1
+         },
+         "diff" : [
+            {
+               "op" : "remove",
+               "path" : "$.bar"
+            },
+            {
+               "element" : "bar",
+               "op" : "add",
+               "path" : "$",
+               "value" : "three"
+            }
+         ],
+         "name" : "Hash"
+      },
+      {
+         "a" : [
+            1,
+            2,
+            3
+         ],
+         "b" : [
+            1,
+            3,
+            2
+         ],
+         "diff" : [
+            {
+               "op" : "remove",
+               "path" : "$.1"
+            },
+            {
+               "element" : 1,
+               "op" : "add",
+               "path" : "$",
+               "value" : 3
+            },
+            {
+               "op" : "remove",
+               "path" : "$.2"
+            },
+            {
+               "element" : 2,
+               "op" : "add",
+               "path" : "$",
+               "value" : 2
+            }
+         ],
+         "name" : "Array"
+      },
+      {
+         "a" : "One",
+         "b" : 2,
+         "diff" : [
+            {
+               "op" : "remove",
+               "path" : "$"
+            },
+            {
+               "element" : "$",
+               "op" : "add",
+               "value" : 2
+            }
+         ],
+         "disabled" : true,
+         "name" : "Root scalar"
+      },
+      {
+         "a" : {},
+         "b" : {
+            "args" : [
+               "Snoofus?"
+            ]
+         },
+         "diff" : [
+            {
+               "element" : "args",
+               "op" : "add",
+               "path" : "$",
+               "value" : [
+                  "Snoofus?"
+               ]
+            }
+         ],
+         "name" : "Add key"
+      },
+      {
+         "a" : [],
+         "b" : [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+         ],
+         "diff" : [
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 1
+            },
+            {
+               "element" : 1,
+               "op" : "add",
+               "path" : "$",
+               "value" : 2
+            },
+            {
+               "element" : 2,
+               "op" : "add",
+               "path" : "$",
+               "value" : 3
+            },
+            {
+               "element" : 3,
+               "op" : "add",
+               "path" : "$",
+               "value" : 4
+            },
+            {
+               "element" : 4,
+               "op" : "add",
+               "path" : "$",
+               "value" : 5
+            },
+            {
+               "element" : 5,
+               "op" : "add",
+               "path" : "$",
+               "value" : 6
+            },
+            {
+               "element" : 6,
+               "op" : "add",
+               "path" : "$",
+               "value" : 7
+            },
+            {
+               "element" : 7,
+               "op" : "add",
+               "path" : "$",
+               "value" : 8
+            }
+         ],
+         "name" : "Populate array (push)"
+      },
+      {
+         "a" : [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+         ],
+         "b" : [],
+         "diff" : [
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            }
+         ],
+         "name" : "Empty array (shift)"
+      },
+      {
+         "a" : {
+            "args" : [
+               "Hello",
+               "World"
+            ]
+         },
+         "b" : {
+            "args" : []
+         },
+         "diff" : [
+            {
+               "op" : "remove",
+               "path" : "$.args.0"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.args.0"
+            }
+         ],
+         "name" : "Empty array"
+      }
+   ],
+   "fragments" : {
+      "web" : {}
+   },
+   "hls" : {
+      "web" : {}
+   },
+   "patchonly" : [
+      {
+         "a" : [],
+         "b" : [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+         ],
+         "diff" : [
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 8
+            },
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 7
+            },
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 6
+            },
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 5
+            },
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 4
+            },
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 3
+            },
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 2
+            },
+            {
+               "element" : 0,
+               "op" : "add",
+               "path" : "$",
+               "value" : 1
+            }
+         ],
+         "name" : "Populate array (unshift)"
+      },
+      {
+         "a" : [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+         ],
+         "b" : [],
+         "diff" : [
+            {
+               "op" : "remove",
+               "path" : "$.7"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.6"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.5"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.4"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.3"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.2"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.1"
+            },
+            {
+               "op" : "remove",
+               "path" : "$.0"
+            }
+         ],
+         "name" : "Empty array (pop)"
+      }
+   ],
+   "path" : {
+      "capture" : [
+         {
+            "abstract" : "$.foo",
+            "concrete" : "$.foo",
+            "name" : "Empty",
+            "want" : []
+         },
+         {
+            "abstract" : "$.*",
+            "concrete" : "$.foo",
+            "name" : "Wild",
+            "want" : [
+               "foo"
+            ]
+         },
+         {
+            "abstract" : "$.*.box['a','b','c'].name[0:10]",
+            "concrete" : "$.foo.box.c.name.3",
+            "name" : "Wild",
+            "want" : [
+               "foo",
+               "c",
+               "3"
+            ]
+         }
+      ],
+      "each" : [
+         {
+            "in" : {
+               "name" : "sequence",
+               "seq" : [
+                  "first",
+                  {
+                     "index" : 2
+                  },
+                  3
+               ]
+            },
+            "name" : "Simple concrete path",
+            "path" : "$.seq.0",
+            "want" : [
+               "$.seq.0"
+            ]
+         },
+         {
+            "in" : {
+               "name" : "sequence",
+               "seq" : [
+                  "first",
+                  {
+                     "index" : 2
+                  },
+                  3
+               ]
+            },
+            "name" : "Complex concrete path",
+            "path" : "$['seq'][0]",
+            "want" : [
+               "$.seq.0"
+            ]
+         }
+      ],
+      "iter" : [
+         {
+            "data" : {},
+            "name" : "Root only",
+            "path" : "$",
+            "want" : [
+               "$"
+            ]
+         },
+         {
+            "data" : [],
+            "name" : "Slice",
+            "path" : "$[0:3]",
+            "want" : [
+               "$.0",
+               "$.1",
+               "$.2"
+            ]
+         },
+         {
+            "data" : {
+               "bar" : 2,
+               "baz" : 3,
+               "foo" : 1
+            },
+            "name" : "Wildcard",
+            "path" : "$[*]",
+            "want" : [
+               "$.bar",
+               "$.baz",
+               "$.foo"
+            ]
+         },
+         {
+            "data" : {
+               "bar" : [],
+               "baz" : [],
+               "foo" : []
+            },
+            "name" : "Wildcard, slice, sequence",
+            "path" : "$[*][0:4,10:20:2,99]",
+            "want" : [
+               "$.bar.0",
+               "$.bar.1",
+               "$.bar.2",
+               "$.bar.3",
+               "$.bar.10",
+               "$.bar.12",
+               "$.bar.14",
+               "$.bar.16",
+               "$.bar.18",
+               "$.bar.99",
+               "$.baz.0",
+               "$.baz.1",
+               "$.baz.2",
+               "$.baz.3",
+               "$.baz.10",
+               "$.baz.12",
+               "$.baz.14",
+               "$.baz.16",
+               "$.baz.18",
+               "$.baz.99",
+               "$.foo.0",
+               "$.foo.1",
+               "$.foo.2",
+               "$.foo.3",
+               "$.foo.10",
+               "$.foo.12",
+               "$.foo.14",
+               "$.foo.16",
+               "$.foo.18",
+               "$.foo.99"
+            ]
+         },
+         {
+            "data" : {
+               "foo" : 1
+            },
+            "name" : "Missing key",
+            "path" : "$.bar",
+            "want" : [
+               "$.bar"
+            ]
+         },
+         {
+            "data" : {},
+            "name" : "Deeply missing",
+            "path" : "$.foo.bar",
+            "want" : []
+         }
+      ],
+      "match" : [
+         {
+            "name" : "Exact",
+            "path" : "$.a.b",
+            "test" : "$.a.b",
+            "want" : []
+         },
+         {
+            "name" : "Submatch",
+            "path" : "$.a.b",
+            "test" : "$.a.b.c",
+            "want" : [
+               "c"
+            ]
+         },
+         {
+            "name" : "Slice",
+            "path" : "$[4:12:3]",
+            "test" : "$.7",
+            "want" : []
+         },
+         {
+            "name" : "Slice miss",
+            "path" : "$[4:12:3]",
+            "test" : "$.6",
+            "want" : null
+         },
+         {
+            "name" : "Slice outside range",
+            "path" : "$[4:12:3]",
+            "test" : "$.13",
+            "want" : null
+         },
+         {
+            "name" : "Alternation",
+            "path" : "$[\"foo\",\"bar\"]",
+            "test" : "$.bar",
+            "want" : []
+         }
+      ],
+      "set" : [
+         {
+            "data" : {},
+            "name" : "simple",
+            "path" : "$.foo.0",
+            "value" : "Hello!",
+            "want" : {
+               "foo" : [
+                  "Hello!"
+               ]
+            }
+         },
+         {
+            "data" : {},
+            "name" : "alternation",
+            "path" : "$[foo,bar,baz].b0rk[a,b,c]",
+            "value" : "Hello!",
+            "want" : {
+               "bar" : {
+                  "b0rk" : {
+                     "a" : "Hello!",
+                     "b" : "Hello!",
+                     "c" : "Hello!"
+                  }
+               },
+               "baz" : {
+                  "b0rk" : {
+                     "a" : "Hello!",
+                     "b" : "Hello!",
+                     "c" : "Hello!"
+                  }
+               },
+               "foo" : {
+                  "b0rk" : {
+                     "a" : "Hello!",
+                     "b" : "Hello!",
+                     "c" : "Hello!"
+                  }
+               }
+            }
+         },
+         {
+            "data" : {},
+            "name" : "slice",
+            "path" : "$.sparse[0:4].0",
+            "value" : "Bang!",
+            "want" : {
+               "sparse" : [
+                  [
+                     "Bang!"
+                  ],
+                  [
+                     "Bang!"
+                  ],
+                  [
+                     "Bang!"
+                  ],
+                  [
+                     "Bang!"
+                  ]
+               ]
+            }
+         }
+      ],
+      "toker" : [
+         {
+            "path" : "$",
+            "want" : [
+               {
+                  "m" : [
+                     "$",
+                     "$"
+                  ],
+                  "t" : "lit"
+               }
+            ]
+         },
+         {
+            "path" : "foo",
+            "want" : [
+               {
+                  "m" : [
+                     "foo",
+                     "foo"
+                  ],
+                  "t" : "lit"
+               }
+            ]
+         },
+         {
+            "path" : "$.foo",
+            "want" : [
+               {
+                  "m" : [
+                     "$",
+                     "$"
+                  ],
+                  "t" : "lit"
+               },
+               {
+                  "m" : [
+                     "."
+                  ],
+                  "t" : "dot"
+               },
+               {
+                  "m" : [
+                     "foo",
+                     "foo"
+                  ],
+                  "t" : "lit"
+               }
+            ]
+         },
+         {
+            "path" : "$['root'][0][\"leaf\"]",
+            "want" : [
+               {
+                  "m" : [
+                     "$",
+                     "$"
+                  ],
+                  "t" : "lit"
+               },
+               {
+                  "m" : [
+                     "["
+                  ],
+                  "t" : "lb"
+               },
+               {
+                  "m" : [
+                     "'root'",
+                     "root"
+                  ],
+                  "t" : "str"
+               },
+               {
+                  "m" : [
+                     "]"
+                  ],
+                  "t" : "rb"
+               },
+               {
+                  "m" : [
+                     "["
+                  ],
+                  "t" : "lb"
+               },
+               {
+                  "m" : [
+                     "0",
+                     "0"
+                  ],
+                  "t" : "lit"
+               },
+               {
+                  "m" : [
+                     "]"
+                  ],
+                  "t" : "rb"
+               },
+               {
+                  "m" : [
+                     "["
+                  ],
+                  "t" : "lb"
+               },
+               {
+                  "m" : [
+                     "\"leaf\"",
+                     "leaf"
+                  ],
+                  "t" : "str"
+               },
+               {
+                  "m" : [
+                     "]"
+                  ],
+                  "t" : "rb"
+               }
+            ]
+         },
+         {
+            "path" : "''",
+            "want" : [
+               {
+                  "m" : [
+                     "''",
+                     ""
+                  ],
+                  "t" : "str"
+               }
+            ]
+         },
+         {
+            "path" : "'\\n\\x41\\101'",
+            "want" : [
+               {
+                  "m" : [
+                     "'\\n\\x41\\101'",
+                     "\nAA"
+                  ],
+                  "t" : "str"
+               }
+            ]
+         },
+         {
+            "path" : "^",
+            "want" : [
+               {
+                  "m" : [
+                     "^"
+                  ],
+                  "t" : "unknown"
+               }
+            ]
+         },
+         {
+            "path" : "10:100",
+            "want" : [
+               {
+                  "m" : [
+                     "10:100",
+                     10,
+                     100
+                  ],
+                  "t" : "slice"
+               }
+            ]
+         },
+         {
+            "path" : "10:100:2",
+            "want" : [
+               {
+                  "m" : [
+                     "10:100:2",
+                     10,
+                     100,
+                     2
+                  ],
+                  "t" : "slice"
+               }
+            ]
+         },
+         {
+            "path" : "'foo','bar'",
+            "want" : [
+               {
+                  "m" : [
+                     "'foo'",
+                     "foo"
+                  ],
+                  "t" : "str"
+               },
+               {
+                  "m" : [
+                     ","
+                  ],
+                  "t" : "comma"
+               },
+               {
+                  "m" : [
+                     "'bar'",
+                     "bar"
+                  ],
+                  "t" : "str"
+               }
+            ]
+         }
+      ],
+      "vivify" : [
+         {
+            "data" : {},
+            "name" : "simple",
+            "path" : "$.foo.0",
+            "want" : {
+               "foo" : []
+            }
+         },
+         {
+            "data" : {},
+            "name" : "root array",
+            "path" : "$.0",
+            "want" : []
+         },
+         {
+            "data" : {},
+            "name" : "alternation",
+            "path" : "$[foo,bar,baz].b0rk[a,b,c]",
+            "want" : {
+               "bar" : {
+                  "b0rk" : {}
+               },
+               "baz" : {
+                  "b0rk" : {}
+               },
+               "foo" : {
+                  "b0rk" : {}
+               }
+            }
+         },
+         {
+            "data" : {},
+            "name" : "slice",
+            "path" : "$.sparse[0:4].0",
+            "want" : {
+               "sparse" : [
+                  [],
+                  [],
+                  [],
+                  []
+               ]
+            }
+         }
+      ]
+   },
+   "streams" : {},
+   "trigger" : {
+      "changeSet" : [
+         {
+            "data" : {},
+            "list" : {},
+            "name" : "Empty",
+            "patch" : []
+         },
+         {
+            "data" : {},
+            "list" : {
+               "foo" : [
+                  2,
+                  2
+               ]
+            },
+            "name" : "Add",
+            "patch" : [
+               {
+                  "element" : 0,
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : "Zero"
+               },
+               {
+                  "element" : 1,
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : "One"
+               }
+            ]
+         },
+         {
+            "data" : {
+               "foo" : {
+                  "one" : "One",
+                  "zero" : "Zero"
+               }
+            },
+            "list" : {
+               "foo" : {
+                  "one" : 1,
+                  "zero" : 1
+               }
+            },
+            "name" : "Remove",
+            "patch" : [
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.one"
+               },
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.zero"
+               }
+            ]
+         },
+         {
+            "data" : {
+               "foo" : {
+                  "one" : "One",
+                  "zero" : "Zero"
+               }
+            },
+            "list" : {
+               "foo" : {
+                  "one" : 1,
+                  "zero" : 3
+               }
+            },
+            "name" : "Remove/Add",
+            "patch" : [
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.one"
+               },
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.zero"
+               },
+               {
+                  "element" : "zero",
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : 0
+               }
+            ]
+         },
+         {
+            "data" : {},
+            "list" : {
+               "streams" : 2
+            },
+            "name" : "Add empty",
+            "patch" : [
+               {
+                  "element" : "streams",
+                  "op" : "add",
+                  "path" : "$",
+                  "value" : {}
+               }
+            ]
+         },
+         {
+            "data" : {
+               "bar" : [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+               ],
+               "foo" : {
+                  "desc" : "An object"
+               }
+            },
+            "list" : {
+               "bar" : [
+                  2
+               ],
+               "foo" : {
+                  "desc" : 3,
+                  "state" : 2
+               }
+            },
+            "name" : "multi match",
+            "patch" : [
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.desc"
+               },
+               {
+                  "element" : "desc",
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : "Or maybe not"
+               },
+               {
+                  "element" : "state",
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : "uncertain"
+               },
+               {
+                  "element" : 0,
+                  "op" : "add",
+                  "path" : "$.bar",
+                  "value" : "zero"
+               }
+            ]
+         }
+      ],
+      "model" : [
+         {
+            "data" : {
+               "bar" : "Hello Again!",
+               "foo" : [
+                  1,
+                  2,
+                  3
+               ]
+            },
+            "name" : "Replace data",
+            "newdata" : {
+               "bar" : "Hello!",
+               "foo" : [
+                  1,
+                  2,
+                  3
+               ]
+            },
+            "on" : [
+               "$.foo",
+               "$.bar"
+            ],
+            "want" : [
+               [
+                  "$.bar",
+                  "Hello Again!",
+                  "Hello!"
+               ]
+            ]
+         },
+         {
+            "data" : {
+               "bar" : "Hello Again!",
+               "foo" : {
+                  "a" : 1,
+                  "b" : 2,
+                  "c" : 3
+               }
+            },
+            "name" : "Patch data",
+            "on" : [
+               "$.foo",
+               "$.bar",
+               "-$.foo.a"
+            ],
+            "patch" : [
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.a"
+               },
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.b"
+               },
+               {
+                  "element" : "d",
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : 4
+               }
+            ],
+            "want" : [
+               [
+                  "$.foo",
+                  {
+                     "a" : 1,
+                     "b" : 2,
+                     "c" : 3
+                  },
+                  {
+                     "c" : 3,
+                     "d" : 4
+                  }
+               ],
+               [
+                  "$.foo.a",
+                  1,
+                  null
+               ]
+            ]
+         }
+      ],
+      "trigger" : [
+         {
+            "data" : {
+               "foo" : 1
+            },
+            "name" : "simple",
+            "on" : [
+               "$.foo"
+            ],
+            "patch" : [
+               {
+                  "op" : "remove",
+                  "path" : "$.foo"
+               },
+               {
+                  "element" : "foo",
+                  "op" : "add",
+                  "path" : "$",
+                  "value" : 2
+               }
+            ],
+            "want" : [
+               [
+                  "$.foo",
+                  1,
+                  2
+               ]
+            ]
+         },
+         {
+            "data" : {
+               "bar" : [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+               ],
+               "foo" : {
+                  "desc" : "An object"
+               }
+            },
+            "name" : "multi match",
+            "on" : [
+               "$.foo",
+               "$.bar"
+            ],
+            "patch" : [
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.desc"
+               },
+               {
+                  "element" : "desc",
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : "Or maybe not"
+               },
+               {
+                  "element" : "state",
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : "uncertain"
+               },
+               {
+                  "element" : 0,
+                  "op" : "add",
+                  "path" : "$.bar",
+                  "value" : "zero"
+               }
+            ],
+            "want" : [
+               [
+                  "$.foo",
+                  {
+                     "desc" : "An object"
+                  },
+                  {
+                     "desc" : "Or maybe not",
+                     "state" : "uncertain"
+                  }
+               ],
+               [
+                  "$.bar",
+                  [
+                     1,
+                     2,
+                     3,
+                     4,
+                     5
+                  ],
+                  [
+                     "zero",
+                     1,
+                     2,
+                     3,
+                     4,
+                     5
+                  ]
+               ]
+            ]
+         },
+         {
+            "data" : {
+               "foo" : {
+                  "r1" : {
+                     "a" : 1,
+                     "b" : 2
+                  },
+                  "r2" : {
+                     "c" : 3,
+                     "d" : 4
+                  }
+               }
+            },
+            "name" : "wildcard match",
+            "on" : [
+               "$.foo.*"
+            ],
+            "patch" : [
+               {
+                  "op" : "remove",
+                  "path" : "$.foo.r1.a"
+               },
+               {
+                  "element" : "a",
+                  "op" : "add",
+                  "path" : "$.foo.r1",
+                  "value" : "Or maybe not"
+               },
+               {
+                  "element" : "r3",
+                  "op" : "add",
+                  "path" : "$.foo",
+                  "value" : {
+                     "e" : 5,
+                     "f" : 6
+                  }
+               }
+            ],
+            "want" : [
+               [
+                  "$.foo.r1",
+                  {
+                     "a" : 1,
+                     "b" : 2
+                  },
+                  {
+                     "a" : "Or maybe not",
+                     "b" : 2
+                  },
+                  "r1"
+               ],
+               [
+                  "$.foo.r3",
+                  null,
+                  {
+                     "e" : 5,
+                     "f" : 6
+                  },
+                  "r3"
+               ]
+            ]
+         }
+      ]
+   }
+}
