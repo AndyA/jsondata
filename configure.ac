@@ -25,6 +25,7 @@ AC_SUBST([AM_CPPFLAGS])
 
 AC_CONFIG_FILES([
 Makefile
+bm/Makefile
 t/Makefile
 m4/Makefile
 ])

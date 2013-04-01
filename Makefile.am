@@ -1,6 +1,6 @@
-DIST_SUBDIRS = t m4
+DIST_SUBDIRS = bm t m4
 
-SUBDIRS = . t
+SUBDIRS = . bm t
 
 ACLOCAL_AMFLAGS = -I m4
 
