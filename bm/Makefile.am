@@ -12,4 +12,4 @@ libbm_support_la_LDFLAGS = -static
 LDADD = libbm-support.la ../libjsondata.la
 
 benchmark: $(noinst_PROGRAMS)
-	sh benchmark.sh $(noinst_PROGRAMS)
+	bash benchmark.sh $(noinst_PROGRAMS)
