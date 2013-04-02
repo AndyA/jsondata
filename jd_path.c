@@ -160,7 +160,9 @@ static int pf_wild(jd_var *result, jd_var *context, jd_var *args) {
   (void) context;
   if (args && args->type == HASH) {
     jd_var keys = JD_INIT;
-    list_iter(result, jd_keys(&keys, args));
+    jd_keys(&keys, args);
+    jd_sort(&keys);
+    list_iter(result, &keys);
     jd_release(&keys);
     return 1;
   }
