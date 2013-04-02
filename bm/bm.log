@@ -58,3 +58,11 @@ rev: 847067a065254ffef9b9acdb1a910b9f63ed049d
 jsonpath: 300510 operations, 10.022 seconds, 29986.275 op/s, 33.349 us/op
 jsonpath-cache-compile: 1043280 operations, 10.001 seconds, 104320.322 op/s, 9.586 us/op
 ---
+===
+date: 2013/04/02 16:39:51
+uname: Darwin kumina.fenkle 12.3.0 Darwin Kernel Version 12.3.0: Sun Jan  6 22:37:10 PST 2013; root:xnu-2050.22.13~1/RELEASE_X86_64 x86_64
+rev: 4d043d345517acfa96ce08ce8ce1ef4deb9c2c05
++++
+jsonpath: 184842 operations, 10.032 seconds, 18425.920 op/s, 54.271 us/op
+jsonpath-cache-compile: 810810 operations, 10.007 seconds, 81027.044 op/s, 12.342 us/op
+---
