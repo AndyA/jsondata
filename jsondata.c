@@ -623,6 +623,14 @@ void jd_call(jd_var *cl, jd_var *arg) {
   }
 }
 
+jd_var *jd_promise(jd_var *out, jd_var *v, jd_var *args) {
+  if (v->type == CLOSURE)
+    jd_eval(v, out, args);
+  else
+    jd_assign(out, v);
+  return out;
+}
+
 void *jd_ptr(jd_var *v) {
   return jd__as_object(v)->o;
 }

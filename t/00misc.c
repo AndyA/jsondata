@@ -247,6 +247,22 @@ static void test_constructors(void) {
   }
 }
 
+static int promise_f(jd_var *result, jd_var *context, jd_var *arg) {
+  (void) arg;
+  jd_assign(result, context);
+  return 1;
+}
+
+static void test_promise(void) {
+  scope {
+    jd_var *str = jd_nsv("Just a string");
+    jdt_is_json(jd_promise(jd_nv(), str, NULL), "\"Just a string\"", "plain promise");
+    jd_var *cl = jd_ncv(promise_f);
+    jd_assign(jd_context(cl), jd_nsv("Promised"));
+    jdt_is_json(jd_promise(jd_nv(), cl, NULL), "\"Promised\"", "closure promise");
+  }
+}
+
 void test_main(void) {
   test_version();
   test_retain_release();
@@ -256,6 +272,7 @@ void test_main(void) {
   test_exceptions();
   test_object();
   test_constructors();
+  test_promise();
 }
 
 

@@ -257,6 +257,7 @@ jd_var *jd_printf(jd_var *v, const char *fmt, ...);
 jd_var *jd_context(jd_var *v);
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg);
 void jd_call(jd_var *cl, jd_var *arg);
+jd_var *jd_promise(jd_var *out, jd_var *v, jd_var *args);
 void *jd_ptr(jd_var *v);
 
 jd_activation *jd_ar_push(int line, const char *file);
