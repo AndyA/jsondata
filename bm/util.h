@@ -12,6 +12,8 @@ void test(void);
 void teardown(void);
 
 void count_ops(unsigned long n);
+jd_var *load_string(jd_var *out, const char *filename);
+jd_var *load_json(jd_var *out, const char *filename);
 
 #endif
 

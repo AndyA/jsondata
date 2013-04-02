@@ -7,8 +7,31 @@
 #include <time.h>
 
 #include "util.h"
+#include "jd_pretty.h"
 
 static unsigned long test_ops = 0;
+
+jd_var *load_string(jd_var *out, const char *filename) {
+  FILE *f;
+  char buf[512];
+  size_t got;
+
+  if (f = fopen(filename, "r"), !f) jd_die("Can't read %s", filename);
+  jd_set_empty_string(out, 100);
+  while (got = fread(buf, 1, sizeof(buf), f), got) {
+    jd_append_bytes(out, buf, got);
+  }
+  fclose(f);
+  return out;
+}
+
+jd_var *load_json(jd_var *out, const char *filename) {
+  jd_var json = JD_INIT;
+  jd_from_json(out, load_string(&json, filename));
+  jd_release(&json);
+  return out;
+}
+
 
 static double now(void) {
   struct timeval tv;
