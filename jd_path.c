@@ -46,6 +46,9 @@ void jd__path_init_parser(jd__path_parser *p, jd_var *path) {
 
 static const char *single = "$@.*|,?[]()";
 
+#define issymhead(c) ((c) == '_' || isalpha(c))
+#define issymbody(c) ((c) == '_' || isalnum(c))
+
 jd_var *jd__path_token(jd__path_parser *p) {
   if (p->cp == p->ep) return NULL;
 
@@ -83,17 +86,17 @@ jd_var *jd__path_token(jd__path_parser *p) {
     }
   }
 
-  if (isalpha(*(p->cp))) {
+  if (issymhead(*(p->cp))) {
     JD_VAR(key);
     const char *sp = (p->cp)++;
-    while (p->cp != p->ep && isalnum(*(p->cp)))
+    while (p->cp != p->ep && issymbody(*(p->cp)))
       (p->cp)++;
     return jd_set_array_with(jd_nv(), jd_niv(JP_KEY),
                              jd_substr(key, p->path, sp - p->sp, p->cp - sp),
                              NULL);
   }
 
-  jd_throw("Syntax error in path");
+  jd_throw("Syntax error in path: %V", p->path);
   return NULL;
 }
 
