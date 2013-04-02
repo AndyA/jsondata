@@ -398,5 +398,45 @@
             "$.6.name"
          ]
       }
+   },
+   {
+      "in" : {
+         "data" : {
+            "array" : [
+               1,
+               2,
+               3
+            ],
+            "hash" : {
+               "one" : 1,
+               "three" : 3,
+               "two" : 2
+            }
+         },
+         "path" : "$.*.*",
+         "vivify" : false
+      },
+      "out" : {
+         "data" : {
+            "array" : [
+               "$.array.0",
+               "$.array.1",
+               "$.array.2"
+            ],
+            "hash" : {
+               "one" : "$.hash.one",
+               "three" : "$.hash.three",
+               "two" : "$.hash.two"
+            }
+         },
+         "path" : [
+            "$.array.0",
+            "$.array.1",
+            "$.array.2",
+            "$.hash.one",
+            "$.hash.three",
+            "$.hash.two"
+         ]
+      }
    }
 ]
