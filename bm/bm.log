@@ -26,3 +26,11 @@ rev: 87eae3962c820d6fd6b50883c714df997dbff82e
 +++
 jsonpath: 40824 operations, 10.065 seconds, 4055.838 op/s, 246.558 us/op
 ---
+===
+date: 2013/04/02 03:57:42
+uname: Linux igloo 3.2.0-4-amd64 #1 SMP Debian 3.2.39-2 x86_64 GNU/Linux
+rev: 5d95c85aecb8d4c9d84be7c54d8069dc8fcbe2fc
+note: after switch to iterator, before optimisation
++++
+jsonpath: 230202 operations, 10.012 seconds, 22993.546 op/s, 43.490 us/op
+---
