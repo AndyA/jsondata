@@ -6,9 +6,8 @@
   echo -n 'uname: '; uname -a
   echo -n 'rev: ';   git rev-parse HEAD
   echo '+++'
-  export JD_BM_TIME=10
   for test in "$@"; do
-    ./$test
+    ./$test 1 >/dev/null 2>&1 && ./$test 10 || echo "$test failed: $?"
   done
   echo '---'
 } | tee -a bm.log
