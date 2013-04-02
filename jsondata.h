@@ -242,6 +242,7 @@ jd_var *jd_lv(jd_var *root, const char *path, ...);
 jd_var *jd_rv(jd_var *root, const char *path, ...);
 jd_var *jd_path_iter(jd_var *iter, jd_var *v, jd_var *path, int vivify);
 jd_var *jd_path_next(jd_var *iter, jd_var *path, jd_var *captures);
+jd_var *jd_path_object(jd_var *iter);
 
 jd_var *jd_to_json(jd_var *out, jd_var *v);
 jd_var *jd_to_json_pretty(jd_var *out, jd_var *v);
