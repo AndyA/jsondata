@@ -612,15 +612,7 @@ jd_var *jd_context(jd_var *v) {
 }
 
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg) {
-  if (!arg) {
-    JD_SCOPE {
-      JD_VAR(targ);
-      jd_eval(cl, rv, targ);
-    }
-  }
-  else {
-    jd__closure_call(jd__as_closure(cl), rv, arg);
-  }
+  jd__closure_call(jd__as_closure(cl), rv, arg);
   return rv;
 }
 
