@@ -34,3 +34,11 @@ note: after switch to iterator, before optimisation
 +++
 jsonpath: 230202 operations, 10.012 seconds, 22993.546 op/s, 43.490 us/op
 ---
+===
+date: 2013/04/02 12:43:49
+uname: Linux igloo 3.2.0-4-amd64 #1 SMP Debian 3.2.39-2 x86_64 GNU/Linux
+rev: 0248b48c9ad684f8b954bb9b43e7291c86287020
+note: fast return path when path, captures not requested
++++
+jsonpath: 298242 operations, 10.004 seconds, 29812.701 op/s, 33.543 us/op
+---

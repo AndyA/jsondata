@@ -399,7 +399,6 @@ static jd_var *path_to_string(jd_var *volatile out, jd_var *path) {
 }
 
 static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
   scope {
     jd_var *nv = jd_nv();
     jd_var *ctx = jd_get_idx(context, 0); /* array */
@@ -440,12 +439,16 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
       jd_pop(iter_stk, 1, NULL);
     }
 
-    /* return [ slot, path, captures ] */
-    jd_set_array(result, 3);
-    jd_var *rs = jd_push(result, 3);
-    jd_set_object(rs++, slot_stk[jd_count(path_stk)], NULL);
-    jd_join(rs++, jd_nsv("."), path_stk); /* path */
-    jd_set_array(rs++, 1); /* captures */
+    jd_set_object(result, slot_stk[jd_count(path_stk)], NULL);
+
+    if (args) {
+      /* return [ path, captures ] */
+      jd_set_array(args, 2);
+      jd_var *rs = jd_push(args, 2);
+      jd_join(rs++, jd_nsv("."), path_stk); /* path */
+      jd_set_array(rs++, 1); /* captures */
+    }
+
     jd_pop(path_stk, 1, NULL);
   }
 
@@ -470,22 +473,27 @@ jd_var *jd_path_iter(jd_var *iter, jd_var *v, jd_var *path, int vivify) {
 
 jd_var *jd_path_next(jd_var *iter, jd_var *path, jd_var *captures) {
   jd_var next = JD_INIT;
+  jd_var args = JD_INIT;
 
-  if (path) jd_set_void(path);
-  if (captures) jd_set_void(captures);
-
-  jd_eval(iter, &next, NULL);
-  if (next.type == VOID) {
-    jd_release(&next);
-    return NULL;
+  if (path || captures) {
+    if (path) jd_set_void(path);
+    if (captures) jd_set_void(captures);
+    jd_eval(iter, &next, &args);
+  }
+  else {
+    jd_eval(iter, &next, NULL);
   }
 
-  jd_var *rs = jd_ptr(jd_get_idx(&next, 0));
+  jd_var *rs = NULL;
 
-  if (path) jd_assign(path, jd_get_idx(&next, 1));
-  if (captures) jd_assign(captures, jd_get_idx(&next, 2));
+  if (next.type != VOID) {
+    rs = jd_ptr(&next);
+    if (path) jd_assign(path, jd_get_idx(&args, 0));
+    if (captures) jd_assign(captures, jd_get_idx(&args, 1));
+  }
 
   jd_release(&next);
+  jd_release(&args);
   return rs;
 }
 
