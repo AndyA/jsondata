@@ -195,5 +195,208 @@
             "$.4.info"
          ]
       }
+   },
+   {
+      "in" : {
+         "data" : {
+            "detail" : {
+               "name" : [
+                  "The",
+                  "Thing"
+               ]
+            },
+            "info" : {
+               "active" : true,
+               "name" : "Bibble"
+            },
+            "meta" : {
+               "name" : "Metadata"
+            }
+         },
+         "path" : "$.*.name",
+         "vivify" : false
+      },
+      "out" : {
+         "data" : {
+            "detail" : {
+               "name" : "$.detail.name"
+            },
+            "info" : {
+               "active" : true,
+               "name" : "$.info.name"
+            },
+            "meta" : {
+               "name" : "$.meta.name"
+            }
+         },
+         "path" : [
+            "$.detail.name",
+            "$.info.name",
+            "$.meta.name"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {
+            "l1" : [
+               "one",
+               "two"
+            ],
+            "l2" : [
+               "one",
+               "two",
+               "three",
+               "four"
+            ],
+            "l3" : [
+               "one",
+               "two",
+               "three",
+               "four",
+               "five",
+               "six",
+               "seven",
+               "eight"
+            ],
+            "l4" : [
+               "one",
+               "two",
+               "three",
+               "four",
+               "five",
+               "six",
+               "seven",
+               "eight",
+               "nine",
+               "ten",
+               "eleven",
+               "twelve",
+               "thirteen",
+               "fourteen",
+               "fifteen",
+               "sixteen"
+            ]
+         },
+         "path" : "$.*[0:10:2]",
+         "vivify" : false
+      },
+      "out" : {
+         "data" : {
+            "l1" : [
+               "$.l1.0",
+               "two"
+            ],
+            "l2" : [
+               "$.l2.0",
+               "two",
+               "$.l2.2",
+               "four"
+            ],
+            "l3" : [
+               "$.l3.0",
+               "two",
+               "$.l3.2",
+               "four",
+               "$.l3.4",
+               "six",
+               "$.l3.6",
+               "eight"
+            ],
+            "l4" : [
+               "$.l4.0",
+               "two",
+               "$.l4.2",
+               "four",
+               "$.l4.4",
+               "six",
+               "$.l4.6",
+               "eight",
+               "$.l4.8",
+               "ten",
+               "eleven",
+               "twelve",
+               "thirteen",
+               "fourteen",
+               "fifteen",
+               "sixteen"
+            ]
+         },
+         "path" : [
+            "$.l1.0",
+            "$.l2.0",
+            "$.l2.2",
+            "$.l3.0",
+            "$.l3.2",
+            "$.l3.4",
+            "$.l3.6",
+            "$.l4.0",
+            "$.l4.2",
+            "$.l4.4",
+            "$.l4.6",
+            "$.l4.8"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : [
+            {
+               "name" : "zero"
+            },
+            {
+               "name" : "one"
+            },
+            {
+               "error" : "no name"
+            },
+            {
+               "name" : "three"
+            },
+            {
+               "error" : "no name"
+            },
+            {
+               "name" : "five"
+            },
+            {
+               "name" : "six"
+            }
+         ],
+         "path" : "$[*].name",
+         "vivify" : false
+      },
+      "out" : {
+         "data" : [
+            {
+               "name" : "$.0.name"
+            },
+            {
+               "name" : "$.1.name"
+            },
+            {
+               "error" : "no name"
+            },
+            {
+               "name" : "$.3.name"
+            },
+            {
+               "error" : "no name"
+            },
+            {
+               "name" : "$.5.name"
+            },
+            {
+               "name" : "$.6.name"
+            }
+         ],
+         "path" : [
+            "$.0.name",
+            "$.1.name",
+            "$.3.name",
+            "$.5.name",
+            "$.6.name"
+         ]
+      }
    }
 ]
