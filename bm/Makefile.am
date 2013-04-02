@@ -1,4 +1,4 @@
-TESTBIN = jsonpath
+TESTBIN = jsonpath jsonpath-cache-compile
 
 EXTRA_DIST = model.json benchmark.sh
 

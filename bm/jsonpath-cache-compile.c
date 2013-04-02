@@ -1,10 +1,6 @@
 /* jsonpath.c */
 
-#include <stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <time.h>
 
 #include "util.h"
 #include "jd_pretty.h"
@@ -13,7 +9,7 @@ static jd_var data = JD_INIT;
 static jd_var data2 = JD_INIT;
 static jd_var paths = JD_INIT;
 
-const char *test_name = "jsonpath";
+const char *test_name = "jsonpath-cache-compile";
 
 static int path_iter_f(jd_var *result, jd_var *context, jd_var *arg) {
   jd_var *var = jd_get_idx(context, 0);
@@ -78,8 +74,8 @@ void test(void) {
   jd_set_void(&data2);
   for (i = 0; i < pcnt; i++) {
     jd_var *path = jd_get_idx(&paths, i);
-    const char *pstr = jd_bytes(path, NULL);
-    jd_assign(jd_lv(&data2, pstr), jd_rv(&data, pstr));
+    jd_assign(jd_get_context(&data2, path, 1),
+              jd_get_context(&data, path, 0));
     count_ops(1);
   }
 
