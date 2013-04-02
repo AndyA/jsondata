@@ -369,6 +369,13 @@ jd_var *jd__traverse_path(jd_var *v, jd_var *path, int vivify) {
   return jd_get(v, path, vivify);
 }
 
+static jd_var *path_to_string(jd_var *out, jd_var *path) {
+  if (path->type == STRING)
+    return jd_assign(out, path);
+  scope jd_join(out, jd_nsv("."), path);
+  return out;
+}
+
 static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   scope {
@@ -426,15 +433,17 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
 /* TODO think about the vivify-from-nothing case */
 
 jd_var *jd_path_iter(jd_var *iter, jd_var *v, jd_var *path, int vivify) {
+  jd_var flat_path = JD_INIT;
   jd_var *ctx = jd_set_array(jd_context(jd_set_closure(iter, iter_func)), 10);
   /* build context */
   jd_var *slot = jd_push(ctx, 5);
-  jd_assign(slot++, jd__path_compile(path));
+  jd_assign(slot++, jd__path_compile(path_to_string(&flat_path, path)));
   jd_set_array(slot++, 10); /* iter_stk */
   jd_set_array(slot++, 10); /* path_stk */
   /* push { "$": v } */
   jd_assign(jd_get_ks(jd_set_hash(slot++, 1), "$", 1), v); /* var */
   jd_set_bool(slot++, vivify);
+  jd_release(&flat_path);
 
   return iter;
 }
