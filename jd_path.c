@@ -388,7 +388,7 @@ jd_var *jd__traverse_path(jd_var *v, jd_var *path, int vivify) {
   return jd_get(v, path, vivify);
 }
 
-static jd_var *path_to_string(jd_var *out, jd_var *path) {
+static jd_var *path_to_string(jd_var *volatile out, jd_var *path) {
   if (path->type == STRING)
     return jd_assign(out, path);
   scope jd_join(out, jd_nsv("."), path);
@@ -491,7 +491,7 @@ jd_var *jd_path_object(jd_var *iter) {
 }
 
 jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify) {
-  jd_var *rv;
+  jd_var *rv = NULL;
   scope {
     jd_var *iter = jd_nv();
     jd_path_iter(iter, root, path, vivify);
