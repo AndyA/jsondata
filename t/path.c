@@ -37,8 +37,6 @@ static void test_path(void) {
     { "$", HASH }
   };
 
-  jd_set_hash(&m, 5);
-
   for (pp = path; *pp; pp++) {
     jd_set_string(jd_lv(&m, *pp), *pp);
   }
@@ -71,7 +69,7 @@ static void test_path(void) {
   jd_release(&m);
 }
 
-static void throw_unexpected(void *ctx) {
+static void throw_null(void *ctx) {
   (void) ctx;
   scope {
     JD_VAR(x);
@@ -80,7 +78,7 @@ static void throw_unexpected(void *ctx) {
   }
 }
 
-static void throw_bad_path(void *ctx) {
+static void throw_unhandled_token(void *ctx) {
   (void) ctx;
   scope {
     JD_VAR(x);
@@ -89,7 +87,7 @@ static void throw_bad_path(void *ctx) {
   }
 }
 
-static void throw_bad_path2(void *ctx) {
+static void throw_bad_path(void *ctx) {
   (void) ctx;
   scope {
     JD_VAR(x);
@@ -100,13 +98,13 @@ static void throw_bad_path2(void *ctx) {
 }
 
 static void test_exceptions(void) {
-  jdt_throws(throw_unexpected, NULL,
-             "Unexpected element in structure",
-             "unexpected element in structure exception");
+  jdt_throws(throw_null, NULL,
+             "Null pointer",
+             "null pointer exception");
+  jdt_throws(throw_unhandled_token, NULL,
+             "Unhandled token: [64]",
+             "unhandled token exception");
   jdt_throws(throw_bad_path, NULL,
-             "Bad path",
-             "bad path exception");
-  jdt_throws(throw_bad_path2, NULL,
              "Bad path",
              "bad path exception");
 }

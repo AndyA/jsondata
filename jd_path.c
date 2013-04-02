@@ -278,43 +278,62 @@ static void parse_index(jd_var *alt, jd__path_parser *p) {
   }
 }
 
+enum {
+  S_INIT,
+  S_REGULAR
+};
+
 /* Returns an array of closures. During iteration each closure will be called
  * with a pointer to part of a structure that is being iterated and will return
  * another closure: an iterator for all the keys, indexes or, in the case of '..',
  * sub-paths that match at the current location.
  */
 static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
+  unsigned state = S_INIT;
   JD_2VARS(tok, alt);
   jd_set_array(out, 10);
   while (tok = jd__path_token(p), tok) {
+    jd_int tokv = jd_get_int(jd_get_idx(tok, 0));
     jd_set_array(alt, 10);
-    switch (jd_get_int(jd_get_idx(tok, 0))) {
-    case '@':
-    case '.':
+    switch (state) {
+    case S_INIT:
+      switch (tokv) {
+      case '$':
+        jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
+                  jd_nsv("$"));
+        state = S_REGULAR;
+        break;
+      default:
+        jd_throw("Unhandled token: %J", tok);
+      }
       break;
-    case '$':
-      jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
-                jd_nsv("$"));
+    case S_REGULAR:
+      switch (tokv) {
+      case '.':
+        break;
+      case '[':
+        parse_index(alt, p);
+        break;
+      case JP_KEY:
+        jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
+                  jd_get_idx(tok, 1));
+        break;
+      case JP_SLICE:
+        slice_iter(jd_push(alt, 1), tok);
+        break;
+      case '*':
+        jd_set_closure(jd_push(alt, 1), pf_wild);
+        break;
+      default:
+        jd_throw("Unhandled token: %J", tok);
+      }
       break;
-    case '[':
-      parse_index(alt, p);
-      break;
-    case JP_KEY:
-      jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
-                jd_get_idx(tok, 1));
-      break;
-    case JP_SLICE:
-      slice_iter(jd_push(alt, 1), tok);
-      break;
-    case '*':
-      jd_set_closure(jd_push(alt, 1), pf_wild);
-      break;
-    default:
-      jd_throw("Unhandled token: %J", tok);
     }
     if (jd_count(alt) != 0)
       jd__make_append_factory(jd_push(out, 1), alt);
   }
+  if (state == S_INIT)
+    jd_throw("Bad path");
   return out;
 }
 
@@ -430,20 +449,18 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
   return 1;
 }
 
-/* TODO think about the vivify-from-nothing case */
-
 jd_var *jd_path_iter(jd_var *iter, jd_var *v, jd_var *path, int vivify) {
-  jd_var flat_path = JD_INIT;
-  jd_var *ctx = jd_set_array(jd_context(jd_set_closure(iter, iter_func)), 10);
-  /* build context */
-  jd_var *slot = jd_push(ctx, 5);
-  jd_assign(slot++, jd__path_compile(path_to_string(&flat_path, path)));
-  jd_set_array(slot++, 10); /* iter_stk */
-  jd_set_array(slot++, 10); /* path_stk */
-  /* push { "$": v } */
-  jd_assign(jd_get_ks(jd_set_hash(slot++, 1), "$", 1), v); /* var */
-  jd_set_bool(slot++, vivify);
-  jd_release(&flat_path);
+  scope {
+    jd_var *ctx = jd_set_array(jd_context(jd_set_closure(iter, iter_func)), 10);
+    /* build context */
+    jd_var *slot = jd_push(ctx, 5);
+    jd_assign(slot++, jd__path_compile(path_to_string(jd_nv(), path)));
+    jd_set_array(slot++, 10); /* iter_stk */
+    jd_set_array(slot++, 10); /* path_stk */
+    /* push { "$": v } */
+    jd_assign(jd_get_ks(jd_set_hash(slot++, 1), "$", 1), v); /* var */
+    jd_set_bool(slot++, vivify);
+  }
 
   return iter;
 }
@@ -473,67 +490,18 @@ jd_var *jd_path_object(jd_var *iter) {
   return jd_get_ks(jd_get_idx(jd_context(iter), 3), "$", 0);
 }
 
-#if 0
-
 jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify) {
-  jd_var *ptr = NULL;
-
+  jd_var *rv;
   scope {
-    JD_2VARS(part, elt);
-
-    if (path->type == ARRAY)
-      jd_clone(part, path, 0);
-    else
-      jd_split(part, path, jd_nsv("."));
-
-    if (!jd_shift(part, 1, elt) || jd_compare(elt, jd_nsv("$")))
-      jd_throw("Bad path");
-
-    for (ptr = root; ptr && jd_shift(part, 1, elt);) {
-      if (ptr->type == VOID) {
-        /* empty slot: type depends on key format */
-        if (is_positive_int(elt))
-          jd_set_array(ptr, 1);
-        else
-          jd_set_hash(ptr, 1);
-      }
-
-      if (ptr->type == ARRAY) {
-        int  ac = (int) jd_count(ptr);
-        jd_int ix = jd_get_int(elt);
-        if (ix == ac && vivify)
-          ptr = jd_push(ptr, 1);
-        else if (ix < ac)
-          ptr = jd_get_idx(ptr, ix);
-        else {
-          ptr = NULL;
-        }
-      }
-      else if (ptr->type == HASH) {
-        ptr = jd_get_key(ptr, elt, vivify);
-      }
-      else {
-        jd_throw("Unexpected element in structure");
-      }
-    }
+    jd_var *iter = jd_nv();
+    jd_path_iter(iter, root, path, vivify);
+    rv = jd_path_next(iter, NULL, NULL);
+    jd_var *po = jd_path_object(iter);
+    if (rv == po) rv = root;
+    if (vivify) jd_assign(root, po);
   }
-
-  return ptr;
+  return rv;
 }
-
-#else
-
-jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify) {
-  jd_var iter = JD_INIT;
-  jd_path_iter(&iter, root, path, vivify);
-  jd_var *rv = jd_path_next(&iter, NULL, NULL);
-  jd_var *po = jd_path_object(&iter);
-  if (vivify) jd_assign(root, po);
-  jd_release(&iter);
-  return rv == po ? root : rv;
-}
-
-#endif
 
 static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   jd_var *rv = NULL;
