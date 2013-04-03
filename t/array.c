@@ -177,6 +177,16 @@ static void test_no_scope(void) {
   jd_release(&val);
 }
 
+static void test_flatten(void) {
+  scope {
+    jd_var *tmp = jd_nv();
+    jdt_is_json(jd_flatten(tmp, jd_njv("[]")), "[]", "flatten empty");
+    jdt_is_json(jd_flatten(tmp, jd_nsv("foo")), "\"foo\"", "flatten non-array");
+    jdt_is_json(jd_flatten(tmp, jd_njv("[[[]]]")), "[]", "flatten deep empty");
+    jdt_is_json(jd_flatten(tmp, jd_njv("[[[1]],2]")), "[1,2]", "flatten");
+  }
+}
+
 void test_main(void) {
   test_basic();
   test_join();
@@ -184,6 +194,7 @@ void test_main(void) {
   test_exceptions();
   test_array_with();
   test_no_scope();
+  test_flatten();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

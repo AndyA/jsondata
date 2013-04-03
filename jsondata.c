@@ -640,5 +640,22 @@ jd_var *jd_version(jd_var *out) {
   return out;
 }
 
+jd_var *jd_flatten(jd_var *out, jd_var *v) {
+  if (v->type != ARRAY) return jd_assign(out, v);
+
+  size_t sz = jd_count(v);
+  jd_var tmp = JD_INIT;
+  jd_set_array(out, sz);
+  for (unsigned i = 0; i < sz; i++) {
+    jd_flatten(&tmp, jd_get_idx(v, i));
+    if (tmp.type == ARRAY)
+      jd_append(out, &tmp);
+    else
+      jd_assign(jd_push(out, 1), &tmp);
+  }
+  jd_release(&tmp);
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
