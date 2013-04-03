@@ -234,7 +234,6 @@ jd_var *jd_set_bool(jd_var *v, int b) {
 
 jd_var *jd_set_void(jd_var *v) {
   jd_release(v);
-  v->type = VOID;
   return v;
 }
 
