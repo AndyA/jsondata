@@ -82,3 +82,11 @@ rev: 814aa74e20100ba790066b55c31ea05425274c05
 jsonpath: 322056 operations, 10.016 seconds, 32154.802 op/s, 31.100 us/op
 jsonpath-cache-compile: 1266678 operations, 10.009 seconds, 126555.709 op/s, 7.902 us/op
 ---
+===
+date: 2013/04/03 23:22:30
+uname: Linux igloo 3.2.0-4-amd64 #1 SMP Debian 3.2.39-2 x86_64 GNU/Linux
+rev: abf850061e3d45b720087725d05f3da470d7b225
++++
+jsonpath: 319788 operations, 10.033 seconds, 31872.242 op/s, 31.375 us/op
+jsonpath-cache-compile: 1284822 operations, 10.007 seconds, 128395.672 op/s, 7.788 us/op
+---
