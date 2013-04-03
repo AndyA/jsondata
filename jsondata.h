@@ -3,6 +3,7 @@
 #ifndef JSONDATA_H_
 #define JSONDATA_H_
 
+#include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
 #include <setjmp.h>
@@ -253,6 +254,16 @@ jd_var *jd_vsprintvf(jd_var *out, jd_var *fmt, va_list ap);
 jd_var *jd_vsprintf(jd_var *out, const char *fmt, va_list ap);
 jd_var *jd_sprintvf(jd_var *out, jd_var *fmt, ...);
 jd_var *jd_sprintf(jd_var *v, const char *fmt, ...);
+
+int jd_vfprintvf(FILE *f, jd_var *fmt, va_list ap);
+int jd_vfprintf(FILE *f, const char *fmt, va_list ap);
+int jd_fprintvf(FILE *f, jd_var *fmt, ...);
+int jd_fprintf(FILE *f, const char *fmt, ...);
+
+int jd_vprintvf(jd_var *fmt, va_list ap);
+int jd_vprintf(const char *fmt, va_list ap);
+int jd_printvf(jd_var *fmt, ...);
+int jd_printf(const char *fmt, ...);
 
 jd_var *jd_context(jd_var *v);
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg);

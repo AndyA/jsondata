@@ -5,7 +5,7 @@
 #endif
 
 #include "jd_private.h"
-#include "jd_petty.h"
+#include "jd_pretty.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -211,11 +211,20 @@ jd_var *jd_vsprintvf(jd_var *out, jd_var *fmt, va_list ap) {
 }
 
 jd_var *jd_vsprintf(jd_var *out, const char *fmt, va_list ap) {
-  scope {
-    JD_SV(vfmt, fmt);
-    jd_vsprintvf(out, vfmt, ap);
-  }
+  scope jd_vsprintvf(out, jd_nsv(fmt), ap);
   return out;
+}
+
+int jd_vfprintvf(FILE *f, jd_var *fmt, va_list ap) {
+  int rc = 0;
+  scope rc = fprintf(f, "%s", jd_bytes(jd_vsprintvf(jd_nv(), fmt, ap), NULL));
+  return rc;
+}
+
+int jd_vfprintf(FILE *f, const char *fmt, va_list ap) {
+  int rc = 0;
+  scope fprintf(f, "%s", jd_bytes(jd_vsprintvf(jd_nv(), jd_nsv(fmt), ap), NULL));
+  return rc;
 }
 
 jd_var *jd_sprintf(jd_var *out, const char *fmt, ...) {
@@ -232,6 +241,47 @@ jd_var *jd_sprintvf(jd_var *out, jd_var *fmt, ...) {
   jd_vsprintvf(out, fmt, ap);
   va_end(ap);
   return out;
+}
+
+int jd_fprintvf(FILE *f, jd_var *fmt, ...) {
+  va_list ap;
+  int rc;
+  va_start(ap, fmt);
+  rc = jd_vfprintvf(f, fmt, ap);
+  va_end(ap);
+  return rc;
+}
+
+int jd_fprintf(FILE *f, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  int rc = jd_vfprintf(f, fmt, ap);
+  va_end(ap);
+  return rc;
+}
+
+int jd_vprintvf(jd_var *fmt, va_list ap) {
+  return jd_vfprintvf(stdout, fmt, ap);
+}
+
+int jd_vprintf(const char *fmt, va_list ap) {
+  return jd_vfprintf(stdout, fmt, ap);
+}
+
+int jd_printvf(jd_var *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  int rc = jd_vprintvf(fmt, ap);
+  va_end(ap);
+  return rc;
+}
+
+int jd_printf(const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  int rc = jd_vprintf(fmt, ap);
+  va_end(ap);
+  return rc;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
