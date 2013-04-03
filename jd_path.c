@@ -160,6 +160,26 @@ static jd_var *make_slice_factory(jd_var *out, jd_var *tok) {
   return out;
 }
 
+/* = A tree walk (..) = */
+
+static int iterate_walk(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  (void) context;
+  jd_set_void(result);
+  return 1;
+}
+
+static int spawn_walk(jd_var *result, jd_var *context, jd_var *args) {
+  (void) context;
+  jd_assign(jd_context(jd_set_closure(result, iterate_walk)), args);
+  return 1;
+}
+
+static jd_var *make_walk_factory(jd_var *out) {
+  jd_set_closure(out, spawn_walk);
+  return out;
+}
+
 /* == Plumbing == */
 
 /* = Append multiple iterators = */
