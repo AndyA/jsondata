@@ -39,6 +39,92 @@
    {
       "in" : {
          "data" : {
+            "extra" : {
+               "extra" : {
+                  "foo" : {
+                     "info" : {
+                        "name" : "Foo!"
+                     }
+                  }
+               },
+               "foo" : {
+                  "info" : {
+                     "name" : "Foo!"
+                  }
+               }
+            },
+            "foo" : {
+               "info" : {
+                  "name" : "Foo!"
+               }
+            }
+         },
+         "path" : "$..extra..name",
+         "vivify" : false
+      },
+      "out" : {
+         "path" : [
+            "$.extra.extra.foo.info.name",
+            "$.extra.foo.info.name",
+            "$.extra.extra.foo.info.name"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {
+            "extra" : {
+               "foo" : {
+                  "info" : {
+                     "name" : "Foo!"
+                  }
+               },
+               "more" : {
+                  "foo" : {
+                     "info" : {
+                        "name" : "Foo!"
+                     }
+                  }
+               }
+            },
+            "foo" : {
+               "extra" : {
+                  "foo" : {
+                     "info" : {
+                        "name" : "Foo!"
+                     }
+                  },
+                  "more" : {
+                     "foo" : {
+                        "info" : {
+                           "name" : "Foo!"
+                        }
+                     }
+                  }
+               },
+               "info" : {
+                  "name" : "Foo!"
+               }
+            }
+         },
+         "path" : "$..foo..name",
+         "vivify" : false
+      },
+      "out" : {
+         "path" : [
+            "$.foo.extra.foo.info.name",
+            "$.foo.extra.more.foo.info.name",
+            "$.foo.info.name",
+            "$.extra.foo.info.name",
+            "$.extra.more.foo.info.name",
+            "$.foo.extra.foo.info.name",
+            "$.foo.extra.more.foo.info.name"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {
             "array" : [
                {
                   "info" : "has name",
