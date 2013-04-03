@@ -382,7 +382,12 @@ enum {
 static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
   unsigned state = S_INIT;
   JD_2VARS(tok, alt);
-  jd_set_array(out, 10);
+
+  jd_set_array(out, 2);
+  jd_var *path = jd_set_array(jd_push(out, 2), 10);
+  jd_var *capture = jd_set_array(path + 1, 10);
+  (void) capture;
+
   while (tok = jd__path_token(p), tok) {
     jd_int tokv = jd_get_int(jd_get_idx(tok, 0));
     jd_set_array(alt, 10);
@@ -409,7 +414,7 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       break;
     }
     if (jd_count(alt) != 0)
-      make_append_factory(jd_push(out, 1), alt);
+      make_append_factory(jd_push(path, 1), alt);
   }
   if (state == S_INIT)
     jd_throw("Bad path");
@@ -482,11 +487,14 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
   scope {
     jd_var *nv = jd_nv();
     jd_var *ctx = jd_get_idx(context, 0); /* array */
-    jd_var *path = ctx++;
+    jd_var *path = jd_get_idx(ctx++, 0);
+    jd_var *capture = path + 1;
     jd_var *iter_stk = ctx++;
     jd_var *path_stk = ctx++;
     jd_var *var = ctx++;
     jd_int vivify = jd_get_int(ctx++);
+
+    (void) capture;
 
     unsigned ipos;
     jd_var *slot_stk[ jd_count(path) + 1 ];

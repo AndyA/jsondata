@@ -76,12 +76,12 @@ static void test_compile(void) {
 
 static void test_parser(void) {
   scope {
-    JD_3VARS(comp, cl, tmp);
-    JD_SV(path, "$.foo.*.12");
-    JD_JV(want, "[ [\"$\"], [\"foo\"], [\"that\", \"this\"], [12] ]");
-    JD_JV(hash, "{\"this\":12,\"that\":true}");
-    JD_AV(got, 10);
-    comp = jd__path_compile(path);
+    jd_var *path = jd_nsv("$.foo.*.12");
+    jd_var *want = jd_njv("[ [\"$\"], [\"foo\"], [\"that\", \"this\"], [12] ]");
+    jd_var *hash = jd_njv("{\"this\":12,\"that\":true}");
+    jd_var *got = jd_nav(10);
+    jd_var *comp = jd_get_idx(jd__path_compile(path), 0);
+    jd_var *cl = jd_nv(), *tmp = jd_nv();
     size_t cnt = jd_count(comp);
     for (unsigned i = 0; i < cnt; i++) {
       JD_AV(alt, 10);
