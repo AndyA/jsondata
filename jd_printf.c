@@ -5,7 +5,7 @@
 #endif
 
 #include "jd_private.h"
-#include "jsondata.h"
+#include "jd_petty.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -69,7 +69,7 @@ static void fstash_common(jd_var *out, char *bp, char *pc) {
 }
 
 static void fstash(jd_var *out, char **bp, char *pc, char *ep, ...) {
-  JD_SCOPE {
+  scope {
     char tmp;
     va_list ap;
     JD_VAR(frag);
@@ -110,7 +110,7 @@ static void fstash_json_pretty(jd_var *out, char **bp, char *pc, char *ep, jd_va
 }
 
 jd_var *jd_vsprintvf(jd_var *out, jd_var *fmt, va_list ap) {
-  JD_SCOPE {
+  scope {
     JD_VAR(tmp);
     size_t len;
     char *fbuf = (char *) jd_bytes(fmt, &len);
@@ -211,7 +211,7 @@ jd_var *jd_vsprintvf(jd_var *out, jd_var *fmt, va_list ap) {
 }
 
 jd_var *jd_vsprintf(jd_var *out, const char *fmt, va_list ap) {
-  JD_SCOPE {
+  scope {
     JD_SV(vfmt, fmt);
     jd_vsprintvf(out, vfmt, ap);
   }
