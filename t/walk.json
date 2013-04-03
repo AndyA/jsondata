@@ -1,0 +1,71 @@
+[
+   {
+      "in" : {
+         "data" : {
+            "foo" : [
+               0,
+               "one",
+               {
+                  "name" : "two"
+               }
+            ]
+         },
+         "path" : "$..",
+         "vivify" : false
+      },
+      "out" : {
+         "path" : [
+            "$",
+            "$.foo",
+            "$.foo.0",
+            "$.foo.1",
+            "$.foo.2",
+            "$.foo.2.name"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {},
+         "path" : "$..",
+         "vivify" : false
+      },
+      "out" : {
+         "path" : [
+            "$"
+         ]
+      }
+   },
+   {
+      "in" : {
+         "data" : {
+            "array" : [
+               {
+                  "info" : "has name",
+                  "name" : "bar"
+               },
+               {
+                  "info" : "no name"
+               }
+            ],
+            "hash" : {
+               "bar" : {
+                  "info" : "has name",
+                  "name" : "bar"
+               },
+               "foo" : {
+                  "info" : "no name"
+               }
+            }
+         },
+         "path" : "$..name",
+         "vivify" : false
+      },
+      "out" : {
+         "path" : [
+            "$.array.0.name",
+            "$.hash.bar.name"
+         ]
+      }
+   }
+]

@@ -9,8 +9,6 @@
 #include "jd_pretty.h"
 #include "jd_path.h"
 
-const char *MODEL = "jsonpath.json";
-
 static jd_var *load_string(jd_var *out, const char *filename) {
   FILE *f;
   char buf[512];
@@ -191,13 +189,47 @@ static void test_iter(const char *specfile) {
   }
 }
 
+static void test_walk(const char *specfile) {
+  scope {
+    JD_4VARS(model, data, iter, cpath);
+    JD_VAR(got);
+    unsigned i;
+
+    subtest(specfile) {
+      load_json(model, specfile);
+
+      for (i = 0; i < jd_count(model); i++) {
+        jd_var *tc = jd_get_idx(model, i);
+
+        jd_var *in = jd_get_ks(tc, "in", 0);
+        jd_var *out = jd_get_ks(tc, "out", 0);
+
+        jd_var *path = jd_get_ks(in, "path", 0);
+        jd_clone(data, jd_get_ks(in, "data", 0), 1);
+
+        subtest(jd_bytes(path, NULL)) {
+          jd_path_iter(iter, data, path, jd_test(jd_get_ks(in, "vivify", 0)));
+
+          jd_set_array(got, 1);
+          jd_var *slot;
+          while (slot = jd_path_next(iter, cpath, NULL), slot) {
+            jd_assign(jd_push(got, 1), cpath);
+          }
+          jdt_is(got, jd_get_ks(out, "path", 0), "iterated");
+        }
+      }
+    }
+  }
+}
+
 void test_main(void) {
   test_toker();
   test_parser();
   test_compile();
   test_traverse();
   test_traverse_array();
-  test_iter(MODEL);
+  test_iter("jsonpath.json");
+  test_walk("walk.json");
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
