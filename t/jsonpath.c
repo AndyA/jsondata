@@ -102,48 +102,57 @@ static void test_parser(void) {
 static void test_traverse(void) {
   scope {
     JD_JV(data, "{\"id\":[1,2,3]}");
-    jdt_is_json(jd__traverse_path(data, jd_nsv("id"), 0), "[1,2,3]", "traverse hash");
+    jdt_is_json(jd_traverse_path(data, jd_nsv("id"), 0), "[1,2,3]", "traverse hash");
   }
   scope {
     JD_JV(data, "[1,2,3]");
-    jdt_is_json(jd__traverse_path(data, jd_niv(1), 0), "2", "traverse array");
+    jdt_is_json(jd_traverse_path(data, jd_niv(1), 0), "2", "traverse array");
   }
   scope {
     JD_VAR(data);
-    jd_assign(jd__traverse_path(data, jd_nsv("id"), 1), jd_nsv("Bongo"));
+    jd_assign(jd_traverse_path(data, jd_nsv("id"), 1), jd_nsv("Bongo"));
     jdt_is_json(data, "{\"id\":\"Bongo\"}", "vivify hash");
   }
   scope {
     JD_VAR(data);
-    jd_assign(jd__traverse_path(data, jd_niv(3), 1), jd_nsv("Bongo"));
+    jd_assign(jd_traverse_path(data, jd_niv(3), 1), jd_nsv("Bongo"));
     jdt_is_json(data, "[null,null,null,\"Bongo\"]", "vivify array");
   }
   scope {
     JD_VAR(data);
-    jd_assign(jd__traverse_path(data, jd_nsv("1"), 1), jd_nsv("Bongo"));
+    jd_assign(jd_traverse_path(data, jd_nsv("1"), 1), jd_nsv("Bongo"));
     jdt_is_json(data, "[null,\"Bongo\"]", "vivify array, string key");
   }
   scope {
     JD_JV(data, "{\"id\":[1,2,3]}");
     JD_JV(path, "[\"id\",1]");
-    jdt_is_json(jd__traverse_path(data, path, 0), "2", "traverse hash path");
+    jdt_is_json(jd_traverse_path(data, path, 0), "2", "traverse hash path");
   }
   scope {
     JD_JV(data, "{\"id\":[1,2,3]}");
     JD_JV(path, "[\"id\",\"1\"]");
-    jdt_is_json(jd__traverse_path(data, path, 0), "2", "traverse hash path, string key");
+    jdt_is_json(jd_traverse_path(data, path, 0), "2", "traverse hash path, string key");
   }
   scope {
     JD_VAR(data);
     JD_JV(path, "[\"id\",1]");
-    jd_assign(jd__traverse_path(data, path, 1), jd_nsv("Boo!"));
+    jd_assign(jd_traverse_path(data, path, 1), jd_nsv("Boo!"));
     jdt_is_json(data, "{\"id\":[null,\"Boo!\"]}", "vivify path");
   }
   scope {
     JD_VAR(data);
     JD_JV(path, "[\"id\",\"1\"]");
-    jd_assign(jd__traverse_path(data, path, 1), jd_nsv("Boo!"));
+    jd_assign(jd_traverse_path(data, path, 1), jd_nsv("Boo!"));
     jdt_is_json(data, "{\"id\":[null,\"Boo!\"]}", "vivify path, string key");
+  }
+}
+
+static void test_traverse_array(void) {
+  scope {
+    jd_var *data = jd_njv("{\"foo\":[0,\"one\",{\"name\":\"two\"}]}");
+    jd_var *path = jd_njv("[[],\"foo\"]");
+    jd_var *got = jd_traverse_path(data, path, 0);
+    jdt_is(got, jd_rv(data, "$.foo"), "traverse array");
   }
 }
 
@@ -187,6 +196,7 @@ void test_main(void) {
   test_parser();
   test_compile();
   test_traverse();
+  test_traverse_array();
   test_iter(MODEL);
 }
 

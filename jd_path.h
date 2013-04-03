@@ -16,7 +16,6 @@ enum {
   JP_KEY
 };
 
-jd_var *jd__traverse_path(jd_var *v, jd_var *path, int vivify);
 void jd__path_init_parser(jd__path_parser *p, jd_var *path);
 jd_var *jd__path_token(jd__path_parser *p);
 jd_var *jd__path_parse(jd_var *out, jd_var *path);

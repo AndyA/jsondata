@@ -171,7 +171,7 @@ static int iterate_walk(jd_var *result, jd_var *context, jd_var *args) {
   if (jd_count(stack) == 0) return 1;
 
   jd_pop(stack, 1, result);
-  jd_var *slot = jd__traverse_path(root, result, 0);
+  jd_var *slot = jd_traverse_path(root, result, 0);
 
   if (slot) {
     if (slot->type == ARRAY) {
@@ -449,11 +449,11 @@ static int is_positive_int(jd_var *v) {
   return 1;
 }
 
-jd_var *jd__traverse_path(jd_var *v, jd_var *path, int vivify) {
+jd_var *jd_traverse_path(jd_var *v, jd_var *path, int vivify) {
   if (path->type == ARRAY) {
     size_t cnt = jd_count(path);
     for (unsigned i = 0; i < cnt && v; i++)
-      v = jd__traverse_path(v, jd_get_idx(path, i), vivify);
+      v = jd_traverse_path(v, jd_get_idx(path, i), vivify);
     return v;
   }
 
@@ -492,7 +492,7 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
     slot_stk[0] = var;
 
     for (ipos = 0; ipos < jd_count(path_stk); ipos++)
-      slot_stk[ipos + 1] = jd__traverse_path(
+      slot_stk[ipos + 1] = jd_traverse_path(
         slot_stk[ipos], jd_get_idx(path_stk, ipos), vivify);
 
     while (jd_count(path_stk) < jd_count(path)) {
@@ -508,7 +508,7 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
 
       if (nv->type != VOID) {
         ipos = jd_count(path_stk);
-        slot_stk[ipos + 1] = jd__traverse_path(slot_stk[ipos], nv, vivify);
+        slot_stk[ipos + 1] = jd_traverse_path(slot_stk[ipos], nv, vivify);
         if (slot_stk[ipos + 1]) {
           jd_assign(jd_push(path_stk, 1), nv);
           continue;
