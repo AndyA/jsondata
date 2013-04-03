@@ -450,7 +450,7 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
       jd_set_array(args, 2);
       jd_var *rs = jd_push(args, 2);
       jd__path_to_string(rs++, path_stk); /* path */
-      jd_set_array(rs++, 1); /* captures */
+      jd_set_array(rs++, 1); /* TODO captures */
     }
 
     jd_pop(path_stk, 1, NULL);
