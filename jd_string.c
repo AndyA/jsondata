@@ -205,6 +205,9 @@ jd_var *jd__string_numify(jd_string *jds, jd_var *out) {
   if (end - jds->data == sl)
     return jd_set_int(out, iv);
 
+  /* If you happen to notice a valgrind error for this line see:
+   *   http://sourceware.org/bugzilla/show_bug.cgi?id=12424
+   */
   rv = strtod(jds->data, &end);
   if (end - jds->data == sl)
     return jd_set_real(out, rv);
