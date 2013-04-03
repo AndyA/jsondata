@@ -337,28 +337,32 @@ jd_var *jd__path_token(jd__path_parser *p) {
   return NULL;
 }
 
-#define PARSER_COMMON(alt, tok) \
+#define PARSER_COMMON \
   default:                                                     \
   jd_throw("Unhandled token: %J", tok);                        \
   case '*':                                                    \
+  jd_set_int(jd_push(capture, 1), jd_count(path));             \
   make_wild_factory(jd_push(alt, 1));                          \
   break;                                                       \
   case JP_DOTDOT:                                              \
+  jd_set_int(jd_push(capture, 1), jd_count(path));             \
   make_walk_factory(jd_push(alt, 1));                          \
   break;                                                       \
   case JP_KEY:                                                 \
   make_literal_factory(jd_push(alt, 1), jd_get_idx(tok, 1));   \
   break;                                                       \
   case JP_SLICE:                                               \
+  jd_set_int(jd_push(capture, 1), jd_count(path));             \
   make_slice_factory(jd_push(alt, 1), tok);                    \
   break;
 
-static void parse_index(jd_var *alt, jd__path_parser *p) {
+static void parse_index(jd_var *alt, jd__path_parser *p,
+                        jd_var *path, jd_var *capture) {
   for (;;) {
     jd_var *tok = jd__path_token(p);
     if (!tok) jd_throw("Missing ] in path");
     switch (jd_get_int(jd_get_idx(tok, 0))) {
-      PARSER_COMMON(alt, tok)
+      PARSER_COMMON
     case ']':
       return;
     case ',':
@@ -403,11 +407,11 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       break;
     case S_REGULAR:
       switch (tokv) {
-        PARSER_COMMON(alt, tok)
+        PARSER_COMMON
       case '.':
         break;
       case '[':
-        parse_index(alt, p);
+        parse_index(alt, p, path, capture);
         break;
       }
       break;
