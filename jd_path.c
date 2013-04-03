@@ -388,7 +388,6 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
   jd_set_array(out, 2);
   jd_var *path = jd_set_array(jd_push(out, 2), 10);
   jd_var *capture = jd_set_array(path + 1, 10);
-  (void) capture;
 
   jd_var *tok;
   while (tok = jd__path_token(p), tok) {
