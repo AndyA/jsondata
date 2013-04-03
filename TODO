@@ -1,0 +1,8 @@
+Captures.
+
+  Captures are arrays in the case of '..'
+
+Path rendering:
+
+  Make jd__path_to_string public.
+  Make it always generate a parseable path - quoting keys if necessary.
