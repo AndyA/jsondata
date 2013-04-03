@@ -644,16 +644,18 @@ jd_var *jd_flatten(jd_var *out, jd_var *v) {
   if (v->type != ARRAY) return jd_assign(out, v);
 
   size_t sz = jd_count(v);
-  jd_var tmp = JD_INIT;
-  jd_set_array(out, sz);
+  jd_var tmp = JD_INIT, res = JD_INIT;
+  jd_set_array(&res, sz);
   for (unsigned i = 0; i < sz; i++) {
     jd_flatten(&tmp, jd_get_idx(v, i));
     if (tmp.type == ARRAY)
-      jd_append(out, &tmp);
+      jd_append(&res, &tmp);
     else
-      jd_assign(jd_push(out, 1), &tmp);
+      jd_assign(jd_push(&res, 1), &tmp);
   }
+  jd_assign(out, &res);
   jd_release(&tmp);
+  jd_release(&res);
   return out;
 }
 
