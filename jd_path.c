@@ -354,10 +354,8 @@ jd_var *jd__path_token(jd__path_parser *p) {
   break;
 
 static void parse_index(jd_var *alt, jd__path_parser *p) {
-  JD_VAR(tok);
-
   for (;;) {
-    tok = jd__path_token(p);
+    jd_var *tok = jd__path_token(p);
     if (!tok) jd_throw("Missing ] in path");
     switch (jd_get_int(jd_get_idx(tok, 0))) {
       PARSER_COMMON(alt, tok)
@@ -381,13 +379,14 @@ enum {
  */
 static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
   unsigned state = S_INIT;
-  JD_2VARS(tok, alt);
+  jd_var *alt = jd_nv();
 
   jd_set_array(out, 2);
   jd_var *path = jd_set_array(jd_push(out, 2), 10);
   jd_var *capture = jd_set_array(path + 1, 10);
   (void) capture;
 
+  jd_var *tok;
   while (tok = jd__path_token(p), tok) {
     jd_int tokv = jd_get_int(jd_get_idx(tok, 0));
     jd_set_array(alt, 10);
