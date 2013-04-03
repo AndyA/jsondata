@@ -171,6 +171,7 @@ static int iterate_walk(jd_var *result, jd_var *context, jd_var *args) {
   if (jd_count(stack) == 0) return 1;
 
   jd_pop(stack, 1, result);
+  jd_flatten(result, result);
   jd_var *slot = jd_traverse_path(root, result, 0);
 
   if (slot) {
@@ -178,7 +179,7 @@ static int iterate_walk(jd_var *result, jd_var *context, jd_var *args) {
       size_t sz = jd_count(slot);
       unsigned i;
       for (i = 0; i < sz; i++) {
-        jd_var *itm = jd_set_array(jd_push(stack, 1), 2);
+        jd_var *itm = jd_push(jd_set_array(jd_push(stack, 1), 2), 2);
         jd_assign(itm++, result);
         jd_set_int(itm++, sz - i - 1);
       }
@@ -190,7 +191,7 @@ static int iterate_walk(jd_var *result, jd_var *context, jd_var *args) {
       size_t sz = jd_count(&keys);
       unsigned i;
       for (i = 0; i < sz; i++) {
-        jd_var *itm = jd_set_array(jd_push(stack, 1), 2);
+        jd_var *itm = jd_push(jd_set_array(jd_push(stack, 1), 2), 2);
         jd_assign(itm++, result);
         jd_assign(itm++, jd_get_idx(&keys, sz - 1 - i));
       }
@@ -208,7 +209,7 @@ static int spawn_walk(jd_var *result, jd_var *context, jd_var *args) {
   jd_var *slot = jd_push(jd_set_array(
                            jd_context(jd_set_closure(result, iterate_walk)), 3), 3);
   jd_assign(slot++, args);
-  jd_set_array(jd_push(jd_set_array(slot++, 50), 1), 0);
+  jd_set_array(jd_push(jd_set_array(slot++, 50), 1), 1);
   jd_set_int(slot++, vivify);
   return 1;
 }
@@ -471,7 +472,9 @@ jd_var *jd_traverse_path(jd_var *v, jd_var *path, int vivify) {
 jd_var *jd__path_to_string(jd_var *volatile out, jd_var *path) {
   if (path->type == STRING)
     return jd_assign(out, path);
-  scope jd_join(out, jd_nsv("."), path);
+  scope {
+    jd_join(out, jd_nsv("."), jd_flatten(jd_nv(), path));
+  }
   return out;
 }
 
@@ -575,6 +578,7 @@ jd_var *jd_path_next(jd_var *iter, jd_var *path, jd_var *captures) {
 
   jd_release(&next);
   jd_release(&args);
+
   return rs;
 }
 

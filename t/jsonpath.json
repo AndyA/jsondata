@@ -489,14 +489,30 @@
    },
    {
       "in" : {
-         "data" : {},
+         "data" : {
+            "foo" : [
+               0,
+               "one",
+               {
+                  "name" : "two"
+               }
+            ]
+         },
          "path" : "$..",
          "vivify" : false
       },
       "out" : {
-         "data" : {},
+         "data" : {
+            "foo" : [
+               0,
+               "one",
+               {
+                  "name" : "two"
+               }
+            ]
+         },
          "path" : [
-            "$.[]"
+            "$"
          ]
       }
    },
