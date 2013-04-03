@@ -2,3 +2,7 @@ Path rendering:
 
   Make jd__path_to_string public.
   Make it always generate a parseable path - quoting keys if necessary.
+
+Path parsing:
+
+  Make syntax stricter and test it.
