@@ -345,16 +345,18 @@ jd_var *jd_get(jd_var *v, jd_var *key, int vivify) {
   switch (v->type) {
   case HASH:
     return jd_get_key(v, key, vivify);
-  case ARRAY:
+  case ARRAY: {
+    jd_var iv = JD_INIT;
+    if (!jd_try_numify(&iv, key)) return NULL;
+    jd_int idx = jd_cast_int(&iv);
     if (vivify) {
-      jd_int idx = jd_get_int(key);
       jd_int diff = idx - (jd_int) jd_count(v);
       return diff >= 0 ? jd_push(v, diff + 1) + diff : jd_get_idx(v, idx);
     }
     else {
-      jd_int idx = jd_get_int(key);
       return idx < (jd_int) jd_count(v) ? jd_get_idx(v, idx) : NULL;
     }
+  }
   default:
     jd_throw("Bad type for get"); /* TODO typename in error messages */
   }
