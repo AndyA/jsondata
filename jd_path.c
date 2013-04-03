@@ -416,7 +416,10 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       }
       break;
     }
-    if (jd_count(alt) != 0)
+    size_t asz = jd_count(alt);
+    if (asz > 1)
+      jd_set_int(jd_push(capture, 1), jd_count(path));
+    if (asz != 0)
       make_append_factory(jd_push(path, 1), alt);
   }
   if (state == S_INIT)
@@ -537,11 +540,17 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
     jd_set_object(result, slot_stk[jd_count(path_stk)], NULL);
 
     if (args) {
-      /* return [ path, captures ] */
-      jd_set_array(args, 2);
-      jd_var *rs = jd_push(args, 2);
+      /* return [ path, capture ] */
+      jd_var *rs = jd_push(jd_set_array(args, 2), 2);
+
       jd__path_to_string(rs++, path_stk); /* path */
-      jd_set_array(rs++, 1); /* TODO captures */
+
+      /* captures */
+      size_t csz = jd_count(capture);
+      jd_var *caps = jd_set_array(rs++, csz);
+      for (unsigned i = 0; i < csz; i++)
+        jd_assign(jd_push(caps, 1),
+                  jd_get_idx(path_stk, jd_get_int(jd_get_idx(capture, i))));
     }
 
     jd_pop(path_stk, 1, NULL);

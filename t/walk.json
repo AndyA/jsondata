@@ -15,12 +15,57 @@
       },
       "out" : {
          "path" : [
-            "$",
-            "$.foo",
-            "$.foo.0",
-            "$.foo.1",
-            "$.foo.2",
-            "$.foo.2.name"
+            [
+               "$",
+               [
+                  []
+               ]
+            ],
+            [
+               "$.foo",
+               [
+                  [
+                     "foo"
+                  ]
+               ]
+            ],
+            [
+               "$.foo.0",
+               [
+                  [
+                     "foo",
+                     0
+                  ]
+               ]
+            ],
+            [
+               "$.foo.1",
+               [
+                  [
+                     "foo",
+                     1
+                  ]
+               ]
+            ],
+            [
+               "$.foo.2",
+               [
+                  [
+                     "foo",
+                     2
+                  ]
+               ]
+            ],
+            [
+               "$.foo.2.name",
+               [
+                  [
+                     "foo",
+                     2,
+                     "name"
+                  ]
+               ]
+            ]
          ]
       }
    },
@@ -32,7 +77,12 @@
       },
       "out" : {
          "path" : [
-            "$"
+            [
+               "$",
+               [
+                  []
+               ]
+            ]
          ]
       }
    },
@@ -64,9 +114,39 @@
       },
       "out" : {
          "path" : [
-            "$.extra.extra.foo.info.name",
-            "$.extra.foo.info.name",
-            "$.extra.extra.foo.info.name"
+            [
+               "$.extra.extra.foo.info.name",
+               [
+                  [],
+                  [
+                     "extra",
+                     "foo",
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.extra.foo.info.name",
+               [
+                  [],
+                  [
+                     "foo",
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.extra.extra.foo.info.name",
+               [
+                  [
+                     "extra"
+                  ],
+                  [
+                     "foo",
+                     "info"
+                  ]
+               ]
+            ]
          ]
       }
    },
@@ -112,13 +192,86 @@
       },
       "out" : {
          "path" : [
-            "$.foo.extra.foo.info.name",
-            "$.foo.extra.more.foo.info.name",
-            "$.foo.info.name",
-            "$.extra.foo.info.name",
-            "$.extra.more.foo.info.name",
-            "$.foo.extra.foo.info.name",
-            "$.foo.extra.more.foo.info.name"
+            [
+               "$.foo.extra.foo.info.name",
+               [
+                  [],
+                  [
+                     "extra",
+                     "foo",
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.foo.extra.more.foo.info.name",
+               [
+                  [],
+                  [
+                     "extra",
+                     "more",
+                     "foo",
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.foo.info.name",
+               [
+                  [],
+                  [
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.extra.foo.info.name",
+               [
+                  [
+                     "extra"
+                  ],
+                  [
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.extra.more.foo.info.name",
+               [
+                  [
+                     "extra",
+                     "more"
+                  ],
+                  [
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.foo.extra.foo.info.name",
+               [
+                  [
+                     "foo",
+                     "extra"
+                  ],
+                  [
+                     "info"
+                  ]
+               ]
+            ],
+            [
+               "$.foo.extra.more.foo.info.name",
+               [
+                  [
+                     "foo",
+                     "extra",
+                     "more"
+                  ],
+                  [
+                     "info"
+                  ]
+               ]
+            ]
          ]
       }
    },
@@ -149,8 +302,24 @@
       },
       "out" : {
          "path" : [
-            "$.array.0.name",
-            "$.hash.bar.name"
+            [
+               "$.array.0.name",
+               [
+                  [
+                     "array",
+                     0
+                  ]
+               ]
+            ],
+            [
+               "$.hash.bar.name",
+               [
+                  [
+                     "hash",
+                     "bar"
+                  ]
+               ]
+            ]
          ]
       }
    }
