@@ -30,12 +30,193 @@
  *  alternation: ^^^^^^^^^^^^^^^^^^^^^^^^^
  */
 
-/* TODO the various iterator factories that always return the same sequence
- * could be implemented as a standard factory that clones and returns the
- * closure it's supplied.
- */
+/* === Iterator stuff === */
 
-/* parsing */
+/* == Primitives == */
+
+/* = A list of items = */
+
+static int iterate_list(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_var *ctx = jd_get_idx(context, 0);
+  jd_int cnt = (jd_int) jd_count(&ctx[0]);
+  jd_int idx = jd_get_int(&ctx[1]);
+  if (idx < cnt) {
+    jd_assign(result, jd_get_idx(&ctx[0], idx));
+    jd_set_int(&ctx[1], idx + 1);
+  }
+  else {
+    jd_set_void(result);
+  }
+  return 1;
+}
+
+static jd_var *make_list_iter(jd_var *out, jd_var *list) {
+  jd_set_closure(out, iterate_list);
+  jd_var *slot = jd_push(jd_set_array(jd_context(out), 2), 2);
+  jd_assign(slot++, list);
+  jd_set_int(slot++, 0);
+  return out;
+}
+
+/* = A start / end / step slice = */
+
+static int iterate_slice(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_int idx = jd_get_int(jd_get_idx(context, 0));
+  jd_int lim = jd_get_int(jd_get_idx(context, 1));
+  jd_int stp = jd_get_int(jd_get_idx(context, 2));
+  if (idx < lim) {
+    jd_assign(result, jd_get_idx(context, 0));
+    jd_set_int(jd_get_idx(context, 0), idx + stp);
+  }
+  else {
+    jd_set_void(result);
+  }
+  return 1;
+}
+
+static jd_var *make_slice(jd_var *out, jd_int idx, jd_int lim, jd_int stp) {
+  jd_set_closure(out, iterate_slice);
+  jd_var *slot = jd_push(jd_set_array(jd_context(out), 3), 3);
+  jd_set_int(slot++, idx);
+  jd_set_int(slot++, lim);
+  jd_set_int(slot++, stp);
+  return out;
+}
+
+/* == Factories == */
+
+/* = A literal = */
+
+static int iterate_literal(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_assign(result, context);
+  jd_release(context);
+  return 1;
+}
+
+static int spawn_literal(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_set_closure(result, iterate_literal);
+  jd_assign(jd_context(result), context);
+  return 1;
+}
+
+static jd_var *make_literal_factory(jd_var *out, jd_var *lit) {
+  jd_assign(jd_context(jd_set_closure(out, spawn_literal)), lit);
+  return out;
+}
+
+/* = A wildcard = */
+
+static int spawn_wild(jd_var *result, jd_var *context, jd_var *args) {
+  (void) context;
+  if (args && args->type == HASH) {
+    jd_var keys = JD_INIT;
+    jd_keys(&keys, args);
+    jd_sort(&keys);
+    make_list_iter(result, &keys);
+    jd_release(&keys);
+    return 1;
+  }
+  if (args && args->type == ARRAY) {
+    make_slice(result, 0, (jd_int) jd_count(args), 1);
+    return 1;
+  }
+  make_slice(result, 0, 0, 1); /* empty */
+  return 1;
+}
+
+static jd_var *make_wild_factory(jd_var *out) {
+  jd_set_closure(out, spawn_wild);
+  return out;
+}
+
+/* = A frozen factory = */
+
+static int iterate_frozen(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_clone(result, context, 1);
+  return 1;
+}
+
+static void make_frozen_factory(jd_var *out, jd_var *cl) {
+  jd_assign(jd_context(jd_set_closure(out, iterate_frozen)), cl);
+}
+
+/* = A slice = */
+
+static jd_var *make_slice_factory(jd_var *out, jd_var *tok) {
+  size_t tsz = jd_count(tok);
+
+  if (tsz == 1) {
+    make_literal_factory(out, jd_get_idx(tok, 1));
+    return out;
+  }
+
+  jd_int start = jd_get_int(jd_get_idx(tok, 1));
+  jd_int end = tsz > 2 ? jd_get_int(jd_get_idx(tok, 2)) : start + 1;
+  jd_int step = tsz > 3 ? jd_get_int(jd_get_idx(tok, 3)) : 1;
+
+  make_frozen_factory(out, make_slice(jd_nv(), start, end, step));
+  return out;
+}
+
+/* == Plumbing == */
+
+/* = Append multiple iterators = */
+
+static int iterate_append(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  jd_var *slot = jd_get_idx(context, 0);
+  jd_var *iters = slot++;
+  jd_var *idx = slot++;
+  for (;;) {
+    if (jd_get_int(idx) == (jd_int) jd_count(iters)) {
+      jd_set_void(result);
+      return 1;
+    }
+    jd_eval(jd_get_idx(iters, jd_get_int(idx)), result, NULL);
+    if (result->type != VOID) return 1;
+    jd_set_int(idx, jd_get_int(idx) + 1);
+  }
+}
+
+jd_var *make_append(jd_var *out, jd_var *iters) {
+  jd_var *slot = jd_push(jd_set_array(jd_context(jd_set_closure(out, iterate_append)), 2), 2);
+  jd_assign(slot++, iters);
+  jd_set_int(slot++, 0);
+  return out;
+}
+
+static int spawn_append(jd_var *result, jd_var *context, jd_var *args) {
+  (void) args;
+  size_t cnt = jd_count(context);
+  jd_var iters = JD_INIT;
+
+  jd_set_array(&iters, cnt);
+  jd_var *slot = jd_push(&iters, cnt);
+
+  for (unsigned i = 0; i < cnt; i++)
+    jd_eval(jd_get_idx(context, i), slot++, args);
+
+  make_append(result, &iters);
+  jd_release(&iters);
+  return 1;
+}
+
+jd_var *make_append_factory(jd_var *out, jd_var *factories) {
+  if (factories->type == CLOSURE)
+    jd_assign(out, factories);
+  else if (jd_count(factories) == 1)
+    jd_assign(out, jd_get_idx(factories, 0));
+  else
+    jd_assign(jd_context(jd_set_closure(out, spawn_append)), factories);
+  return out;
+}
+
+/* === Parser === */
 
 void jd__path_init_parser(jd__path_parser *p, jd_var *path) {
   size_t len;
@@ -100,169 +281,6 @@ jd_var *jd__path_token(jd__path_parser *p) {
   return NULL;
 }
 
-static int static_iter(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_clone(result, context, 1);
-  return 1;
-}
-
-static void static_factory(jd_var *out, jd_var *cl) {
-  jd_assign(jd_context(jd_set_closure(out, static_iter)), cl);
-}
-
-static int if_list(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_var *ctx = jd_get_idx(context, 0);
-  jd_int cnt = (jd_int) jd_count(&ctx[0]);
-  jd_int idx = jd_get_int(&ctx[1]);
-  if (idx < cnt) {
-    jd_assign(result, jd_get_idx(&ctx[0], idx));
-    jd_set_int(&ctx[1], idx + 1);
-  }
-  else {
-    jd_set_void(result);
-  }
-  return 1;
-}
-
-static int if_seq(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_int idx = jd_get_int(jd_get_idx(context, 0));
-  jd_int lim = jd_get_int(jd_get_idx(context, 1));
-  jd_int stp = jd_get_int(jd_get_idx(context, 2));
-  if (idx < lim) {
-    jd_assign(result, jd_get_idx(context, 0));
-    jd_set_int(jd_get_idx(context, 0), idx + stp);
-  }
-  else {
-    jd_set_void(result);
-  }
-  return 1;
-}
-
-static void list_iter(jd_var *out, jd_var *list) {
-  jd_set_closure(out, if_list);
-  jd_var *slot = jd_push(jd_set_array(jd_context(out), 2), 2);
-  jd_assign(slot++, list);
-  jd_set_int(slot++, 0);
-}
-
-static jd_var *seq_iter(jd_var *out, jd_int idx, jd_int lim, jd_int stp) {
-  jd_set_closure(out, if_seq);
-  jd_var *slot = jd_push(jd_set_array(jd_context(out), 3), 3);
-  jd_set_int(slot++, idx);
-  jd_set_int(slot++, lim);
-  jd_set_int(slot++, stp);
-  return out;
-}
-
-static int pf_wild(jd_var *result, jd_var *context, jd_var *args) {
-  (void) context;
-  if (args && args->type == HASH) {
-    jd_var keys = JD_INIT;
-    jd_keys(&keys, args);
-    jd_sort(&keys);
-    list_iter(result, &keys);
-    jd_release(&keys);
-    return 1;
-  }
-  if (args && args->type == ARRAY) {
-    seq_iter(result, 0, (jd_int) jd_count(args), 1);
-    return 1;
-  }
-  seq_iter(result, 0, 0, 1); /* empty */
-  return 1;
-}
-
-#if 0
-static int pf_list(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  list_iter(result, context);
-  return 1;
-}
-#endif
-
-static int if_literal(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_assign(result, context);
-  jd_release(context);
-  return 1;
-}
-
-/* context: the literal key
- * args:    a jd_var to iterate (ignored)
- * result:  a closure that will iterate all the keys
- */
-static int spawn_literal(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_set_closure(result, if_literal);
-  jd_assign(jd_context(result), context);
-  return 1;
-}
-
-static jd_var *make_literal(jd_var *out, jd_var *lit) {
-  jd_assign(jd_context(jd_set_closure(out, spawn_literal)), lit);
-  return out;
-}
-
-static int append_iter(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_var *slot = jd_get_idx(context, 0);
-  jd_var *iters = slot++;
-  jd_var *idx = slot++;
-  for (;;) {
-    if (jd_get_int(idx) == (jd_int) jd_count(iters)) {
-      jd_set_void(result);
-      return 1;
-    }
-    jd_eval(jd_get_idx(iters, jd_get_int(idx)), result, NULL);
-    if (result->type != VOID) return 1;
-    jd_set_int(idx, jd_get_int(idx) + 1);
-  }
-}
-
-jd_var *jd__make_append_iter(jd_var *out, jd_var *iters) {
-  jd_var *slot = jd_push(jd_set_array(jd_context(jd_set_closure(out, append_iter)), 2), 2);
-  jd_assign(slot++, iters);
-  jd_set_int(slot++, 0);
-  return out;
-}
-
-static int factory_iter(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  size_t cnt = jd_count(context);
-  jd_var iters = JD_INIT;
-
-  jd_set_array(&iters, cnt);
-  jd_var *slot = jd_push(&iters, cnt);
-
-  for (unsigned i = 0; i < cnt; i++)
-    jd_eval(jd_get_idx(context, i), slot++, args);
-
-  jd__make_append_iter(result, &iters);
-  jd_release(&iters);
-  return 1;
-}
-
-jd_var *jd__make_append_factory(jd_var *out, jd_var *factories) {
-  if (factories->type == CLOSURE)
-    jd_assign(out, factories);
-  else if (jd_count(factories) == 1)
-    jd_assign(out, jd_get_idx(factories, 0));
-  else
-    jd_assign(jd_context(jd_set_closure(out, factory_iter)), factories);
-  return out;
-}
-
-static void slice_iter(jd_var *out, jd_var *tok) {
-  size_t tsz = jd_count(tok);
-  jd_int start = jd_get_int(jd_get_idx(tok, 1));
-  jd_int end = tsz > 2 ? jd_get_int(jd_get_idx(tok, 2)) : start + 1;
-  jd_int step = tsz > 3 ? jd_get_int(jd_get_idx(tok, 3)) : 1;
-
-  static_factory(out, seq_iter(jd_nv(), start, end, step));
-}
-
 static void parse_index(jd_var *alt, jd__path_parser *p) {
   JD_VAR(tok);
 
@@ -275,13 +293,13 @@ static void parse_index(jd_var *alt, jd__path_parser *p) {
     case ',':
       break;
     case '*':
-      jd_set_closure(jd_push(alt, 1), pf_wild);
+      make_wild_factory(jd_push(alt, 1));
       break;
     case JP_KEY:
-      make_literal(jd_push(alt, 1), jd_get_idx(tok, 1));
+      make_literal_factory(jd_push(alt, 1), jd_get_idx(tok, 1));
       break;
     case JP_SLICE:
-      slice_iter(jd_push(alt, 1), tok);
+      make_slice_factory(jd_push(alt, 1), tok);
       break;
     }
   }
@@ -308,7 +326,7 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
     case S_INIT:
       switch (tokv) {
       case '$':
-        make_literal(jd_push(alt, 1), jd_nsv("$"));
+        make_literal_factory(jd_push(alt, 1), jd_nsv("$"));
         state = S_REGULAR;
         break;
       default:
@@ -323,13 +341,13 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
         parse_index(alt, p);
         break;
       case JP_KEY:
-        make_literal(jd_push(alt, 1), jd_get_idx(tok, 1));
+        make_literal_factory(jd_push(alt, 1), jd_get_idx(tok, 1));
         break;
       case JP_SLICE:
-        slice_iter(jd_push(alt, 1), tok);
+        make_slice_factory(jd_push(alt, 1), tok);
         break;
       case '*':
-        jd_set_closure(jd_push(alt, 1), pf_wild);
+        make_wild_factory(jd_push(alt, 1));
         break;
       default:
         jd_throw("Unhandled token: %J", tok);
@@ -337,7 +355,7 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       break;
     }
     if (jd_count(alt) != 0)
-      jd__make_append_factory(jd_push(out, 1), alt);
+      make_append_factory(jd_push(out, 1), alt);
   }
   if (state == S_INIT)
     jd_throw("Bad path");
@@ -359,6 +377,8 @@ jd_var *jd__path_compile(jd_var *path) {
     jd__path_parse(magic, path);
   return magic;
 }
+
+/* === Runtime === */
 
 static int is_positive_int(jd_var *v) {
   jd_string *jds;
