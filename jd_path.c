@@ -298,6 +298,22 @@ jd_var *jd__path_token(jd__path_parser *p) {
   return NULL;
 }
 
+#define PARSER_COMMON(alt, tok) \
+  default:                                                     \
+  jd_throw("Unhandled token: %J", tok);                        \
+  case '*':                                                    \
+  make_wild_factory(jd_push(alt, 1));                          \
+  break;                                                       \
+  case JP_DOTDOT:                                              \
+  make_walk_factory(jd_push(alt, 1));                          \
+  break;                                                       \
+  case JP_KEY:                                                 \
+  make_literal_factory(jd_push(alt, 1), jd_get_idx(tok, 1));   \
+  break;                                                       \
+  case JP_SLICE:                                               \
+  make_slice_factory(jd_push(alt, 1), tok);                    \
+  break;
+
 static void parse_index(jd_var *alt, jd__path_parser *p) {
   JD_VAR(tok);
 
@@ -305,18 +321,10 @@ static void parse_index(jd_var *alt, jd__path_parser *p) {
     tok = jd__path_token(p);
     if (!tok) jd_throw("Missing ] in path");
     switch (jd_get_int(jd_get_idx(tok, 0))) {
+      PARSER_COMMON(alt, tok)
     case ']':
       return;
     case ',':
-      break;
-    case '*':
-      make_wild_factory(jd_push(alt, 1));
-      break;
-    case JP_KEY:
-      make_literal_factory(jd_push(alt, 1), jd_get_idx(tok, 1));
-      break;
-    case JP_SLICE:
-      make_slice_factory(jd_push(alt, 1), tok);
       break;
     }
   }
@@ -352,22 +360,12 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
       break;
     case S_REGULAR:
       switch (tokv) {
+        PARSER_COMMON(alt, tok)
       case '.':
         break;
       case '[':
         parse_index(alt, p);
         break;
-      case JP_KEY:
-        make_literal_factory(jd_push(alt, 1), jd_get_idx(tok, 1));
-        break;
-      case JP_SLICE:
-        make_slice_factory(jd_push(alt, 1), tok);
-        break;
-      case '*':
-        make_wild_factory(jd_push(alt, 1));
-        break;
-      default:
-        jd_throw("Unhandled token: %J", tok);
       }
       break;
     }
