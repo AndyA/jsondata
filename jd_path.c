@@ -98,8 +98,7 @@ static int iterate_literal(jd_var *result, jd_var *context, jd_var *args) {
 
 static int spawn_literal(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
-  jd_set_closure(result, iterate_literal);
-  jd_assign(jd_context(result), context);
+  jd_assign(jd_context(jd_set_closure(result, iterate_literal)), context);
   return 1;
 }
 
