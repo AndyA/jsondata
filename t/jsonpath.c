@@ -1,6 +1,8 @@
 /* path.t */
 
+#include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "util.h"
@@ -9,12 +11,16 @@
 #include "jd_pretty.h"
 #include "jd_path.h"
 
+static int should_save(void) {
+  return !!getenv("JD_TEST_WRITEBACK");
+}
+
 static jd_var *load_string(jd_var *out, const char *filename) {
   FILE *f;
   char buf[512];
   size_t got;
 
-  if (f = fopen(filename, "r"), !f) jd_die("Can't read %s", filename);
+  if (f = fopen(filename, "r"), !f) jd_die("Can't read %s: %m", filename);
   jd_set_empty_string(out, 100);
   while (got = fread(buf, 1, sizeof(buf), f), got) {
     jd_append_bytes(out, buf, got);
@@ -28,6 +34,16 @@ static jd_var *load_json(jd_var *out, const char *filename) {
   jd_from_json(out, load_string(&json, filename));
   jd_release(&json);
   return out;
+}
+
+static jd_var *save_json(jd_var *data, const char *filename) {
+  scope {
+    FILE *f;
+    if (f = fopen(filename, "w"), !f) jd_die("Can't write %s: %m", filename);
+    jd_fprintf(f, "%V", jd_to_json_pretty(jd_nv(), data));
+    fclose(f);
+  }
+  return data;
 }
 
 static void test_toker(void) {
@@ -156,9 +172,14 @@ static void test_traverse_array(void) {
 
 static void test_iter(const char *specfile) {
   scope {
-    JD_4VARS(model, data, iter, cpath);
-    JD_VAR(got);
+    jd_var *model = jd_nv();
+    jd_var *data = jd_nv();
+    jd_var *iter = jd_nv();
+    jd_var *cpath = jd_nv();
+    jd_var *capture = jd_nv();
+    jd_var *got = jd_nv();
     unsigned i;
+    int writeback = should_save();
 
     subtest(specfile) {
       load_json(model, specfile);
@@ -177,23 +198,36 @@ static void test_iter(const char *specfile) {
 
           jd_set_array(got, 1);
           jd_var *slot;
-          while (slot = jd_path_next(iter, cpath, NULL), slot) {
-            jd_assign(jd_push(got, 1), cpath);
+          while (slot = jd_path_next(iter, cpath, capture), slot) {
+            jd_set_array_with(jd_push(got, 1), cpath, capture, NULL);
             jd_assign(slot, cpath);
           }
-          jdt_is(got, jd_get_ks(out, "path", 0), "iterated");
-          jdt_is(data, jd_get_ks(out, "data", 0), "data structure");
+          if (writeback) {
+            jd_assign(jd_get_ks(out, "path", 1), got);
+            jd_assign(jd_get_ks(out, "data", 1), data);
+          }
+          else {
+            jdt_is(got, jd_get_ks(out, "path", 0), "iterated");
+            jdt_is(data, jd_get_ks(out, "data", 0), "data structure");
+          }
         }
       }
+      if (writeback)
+        save_json(model, specfile);
     }
   }
 }
 
 static void test_walk(const char *specfile) {
   scope {
-    JD_4VARS(model, data, iter, cpath);
-    JD_VAR(got);
+    jd_var *model = jd_nv();
+    jd_var *data = jd_nv();
+    jd_var *iter = jd_nv();
+    jd_var *cpath = jd_nv();
+    jd_var *capture = jd_nv();
+    jd_var *got = jd_nv();
     unsigned i;
+    int writeback = should_save();
 
     subtest(specfile) {
       load_json(model, specfile);
@@ -212,12 +246,17 @@ static void test_walk(const char *specfile) {
 
           jd_set_array(got, 1);
           jd_var *slot;
-          while (slot = jd_path_next(iter, cpath, NULL), slot) {
-            jd_assign(jd_push(got, 1), cpath);
+          while (slot = jd_path_next(iter, cpath, capture), slot) {
+            jd_set_array_with(jd_push(got, 1), cpath, capture, NULL);
           }
-          jdt_is(got, jd_get_ks(out, "path", 0), "iterated");
+          if (writeback)
+            jd_assign(jd_get_ks(out, "path", 1), got);
+          else
+            jdt_is(got, jd_get_ks(out, "path", 0), "iterated");
         }
       }
+      if (writeback)
+        save_json(model, specfile);
     }
   }
 }
