@@ -209,8 +209,6 @@ jd_var *jd__string_numify(jd_string *jds, jd_var *out) {
   if (end - jds->data == sl)
     return jd_set_real(out, rv);
 
-  jd_throw("Can't convert to a number");
-
   return NULL;
 }
 

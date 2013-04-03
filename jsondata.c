@@ -477,7 +477,7 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
   return out;
 }
 
-jd_var *jd_numify(jd_var *out, jd_var *v) {
+jd_var *jd_try_numify(jd_var *out, jd_var *v) {
   switch (v->type) {
   case VOID:
   case BOOL:
@@ -493,6 +493,12 @@ jd_var *jd_numify(jd_var *out, jd_var *v) {
     jd_throw("Can't numify");
     return NULL;
   }
+}
+
+jd_var *jd_numify(jd_var *out, jd_var *v) {
+  jd_var *rc = jd_try_numify(out, v);
+  if (!rc) jd_throw("Can't convert to a number");
+  return rc;
 }
 
 int jd_test(jd_var *v) {
@@ -522,17 +528,15 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
 #define CAST(vtype, name)                    \
   vtype name(jd_var *v) {                    \
     vtype rv = 0;                            \
-    jd_var tmp = JD_INIT;                    \
-    jd_numify(&tmp, v);                      \
-    switch (tmp.type) {                      \
+    switch (v->type) {                       \
     case INTEGER:                            \
-      rv = (vtype) tmp.v.i;                  \
+      rv = (vtype) v->v.i;                   \
       break;                                 \
     case REAL:                               \
-      rv = (vtype) tmp.v.r;                  \
+      rv = (vtype) v->v.r;                   \
       break;                                 \
     case BOOL:                               \
-      rv = (vtype) tmp.v.b;                  \
+      rv = (vtype) v->v.b;                   \
       break;                                 \
     default:                                 \
       jd_throw("Oops - expected a numeric"); \
@@ -540,12 +544,24 @@ jd_var *jd_split(jd_var *out, jd_var *v, jd_var *sep) {
       rv = 0;                                \
       break;                                 \
     }                                        \
-    jd_release(&tmp);                        \
     return rv;                               \
   }
 
-CAST(jd_int, jd_get_int)
-CAST(double, jd_get_real)
+CAST(jd_int, jd_cast_int)
+CAST(double, jd_cast_real)
+
+#define GET_NUM(vtype, name, cast) \
+  vtype name(jd_var *v) {          \
+    vtype rv = 0;                  \
+    jd_var tmp = JD_INIT;          \
+    jd_numify(&tmp, v);            \
+    rv = cast(&tmp);               \
+    jd_release(&tmp);              \
+    return rv;                     \
+  }
+
+GET_NUM(jd_int, jd_get_int, jd_cast_int)
+GET_NUM(double, jd_get_real, jd_cast_real)
 
 jd_var *jd_sortv(jd_var *v, int (*cmp)(jd_var *, jd_var *)) {
   jd__array_sort(jd__as_array(v), cmp);
