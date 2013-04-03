@@ -1,7 +1,3 @@
-Captures.
-
-  Captures are arrays in the case of '..'
-
 Path rendering:
 
   Make jd__path_to_string public.
