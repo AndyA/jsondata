@@ -193,11 +193,16 @@ static int if_literal(jd_var *result, jd_var *context, jd_var *args) {
  * args:    a jd_var to iterate (ignored)
  * result:  a closure that will iterate all the keys
  */
-static int pf_literal(jd_var *result, jd_var *context, jd_var *args) {
+static int spawn_literal(jd_var *result, jd_var *context, jd_var *args) {
   (void) args;
   jd_set_closure(result, if_literal);
   jd_assign(jd_context(result), context);
   return 1;
+}
+
+static jd_var *make_literal(jd_var *out, jd_var *lit) {
+  jd_assign(jd_context(jd_set_closure(out, spawn_literal)), lit);
+  return out;
 }
 
 static int append_iter(jd_var *result, jd_var *context, jd_var *args) {
@@ -273,8 +278,7 @@ static void parse_index(jd_var *alt, jd__path_parser *p) {
       jd_set_closure(jd_push(alt, 1), pf_wild);
       break;
     case JP_KEY:
-      jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
-                jd_get_idx(tok, 1));
+      make_literal(jd_push(alt, 1), jd_get_idx(tok, 1));
       break;
     case JP_SLICE:
       slice_iter(jd_push(alt, 1), tok);
@@ -304,8 +308,7 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
     case S_INIT:
       switch (tokv) {
       case '$':
-        jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
-                  jd_nsv("$"));
+        make_literal(jd_push(alt, 1), jd_nsv("$"));
         state = S_REGULAR;
         break;
       default:
@@ -320,8 +323,7 @@ static jd_var *path_parse(jd_var *out, jd__path_parser *p) {
         parse_index(alt, p);
         break;
       case JP_KEY:
-        jd_assign(jd_context(jd_set_closure(jd_push(alt, 1), pf_literal)),
-                  jd_get_idx(tok, 1));
+        make_literal(jd_push(alt, 1), jd_get_idx(tok, 1));
         break;
       case JP_SLICE:
         slice_iter(jd_push(alt, 1), tok);
