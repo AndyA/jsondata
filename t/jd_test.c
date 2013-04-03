@@ -97,7 +97,7 @@ void jdt_diag(const char *msg, ...) {
     va_list ap;
 
     va_start(ap, msg);
-    jd_vprintf(vmsg, msg, ap);
+    jd_vsprintf(vmsg, msg, ap);
     va_end(ap);
     diag(jd_bytes(vmsg, NULL));
   }

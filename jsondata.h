@@ -249,10 +249,10 @@ jd_var *jd_to_json_pretty(jd_var *out, jd_var *v);
 jd_var *jd_from_json(jd_var *out, jd_var *json);
 jd_var *jd_from_jsons(jd_var *out, const char *json);
 
-jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap);
-jd_var *jd_vprintf(jd_var *out, const char *fmt, va_list ap);
-jd_var *jd_printvf(jd_var *out, jd_var *fmt, ...);
-jd_var *jd_printf(jd_var *v, const char *fmt, ...);
+jd_var *jd_vsprintvf(jd_var *out, jd_var *fmt, va_list ap);
+jd_var *jd_vsprintf(jd_var *out, const char *fmt, va_list ap);
+jd_var *jd_sprintvf(jd_var *out, jd_var *fmt, ...);
+jd_var *jd_sprintf(jd_var *v, const char *fmt, ...);
 
 jd_var *jd_context(jd_var *v);
 jd_var *jd_eval(jd_var *cl, jd_var *rv, jd_var *arg);

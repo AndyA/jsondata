@@ -153,45 +153,45 @@ static void test_printf(void) {
   scope {
     JD_2VARS(v, p1);
 
-    jdt_is_string(jd_printf(v, "foo"), "foo", "printf");
+    jdt_is_string(jd_sprintf(v, "foo"), "foo", "printf");
 
-    jdt_is_string(jd_printf(v, "%%"), "%", "printf %");
+    jdt_is_string(jd_sprintf(v, "%%"), "%", "printf %");
 
-    jdt_is_string(jd_printf(v, "%d %i %o %u %x %X %ld %llx %Lg %p",
+    jdt_is_string(jd_sprintf(v, "%d %i %o %u %x %X %ld %llx %Lg %p",
     1, 2, 100, 200, 300, 399, 1l, 10ll, (long double) 1.25, (void *) 0xff),
     "1 2 144 200 12c 18F 1 a 1.25 0xff",
     "printf ints");
 
-    jdt_is_string(jd_printf(v, "%s bar", "foo"), "foo bar", "printf char *");
-    jdt_is_string(jd_printf(v, "%s %s", "foo", "bar"), "foo bar", "printf char *");
+    jdt_is_string(jd_sprintf(v, "%s bar", "foo"), "foo bar", "printf char *");
+    jdt_is_string(jd_sprintf(v, "%s %s", "foo", "bar"), "foo bar", "printf char *");
 
-    jdt_is_string(jd_printf(v, "%s %-7s ", "foo", "bar"),
+    jdt_is_string(jd_sprintf(v, "%s %-7s ", "foo", "bar"),
     "foo bar     ", "printf char * (padded)");
 
     jd_set_string(p1, "bar");
-    jdt_is_string(jd_printf(v, "foo %V", p1), "foo bar", "printf jd_var *");
+    jdt_is_string(jd_sprintf(v, "foo %V", p1), "foo bar", "printf jd_var *");
 
     jd_from_jsons(p1, "{\"name\":\"foo\",\"value\":1.25}");
-    jdt_is_string(jd_printf(v, "rec=%J", p1),
+    jdt_is_string(jd_sprintf(v, "rec=%J", p1),
     "rec={\"name\":\"foo\",\"value\":1.25}",
     "printf json jd_var *");
 
-    jdt_is_string(jd_printf(v, "rec=%lJ", p1),
+    jdt_is_string(jd_sprintf(v, "rec=%lJ", p1),
     "rec={\n  \"name\": \"foo\",\n  \"value\": 1.25\n}",
     "printf pretty json jd_var *");
 
     jd_set_string(p1, "bar");
-    jd_printvf(v, p1);
+    jd_sprintvf(v, p1);
     ok(jd_bytes(v, NULL) == jd_bytes(p1, NULL), "printf format referenced");
 
     jd_set_string(p1, "JUNK ");
     while (jd_length(p1) < 20000) {
       jd_append(p1, p1);
     }
-    jd_printf(v, "%s", jd_bytes(p1, NULL));
+    jd_sprintf(v, "%s", jd_bytes(p1, NULL));
     jdt_is(v, p1, "printf long string");
 
-    jd_printf(v, "%^foo");
+    jd_sprintf(v, "%^foo");
     jdt_is_string(v, "%^foo", "unknown escape");
 
   }

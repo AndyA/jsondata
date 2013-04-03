@@ -175,7 +175,7 @@ static void throw(const char *file, int line,
   jd_var *bt = jd_lv(&e, "$.backtrace");
   jd_backtrace(bt);
   bt_slot(jd_unshift(bt, 1), file, line);
-  jd_vprintf(jd_lv(&e, "$.message"), msg, ap);
+  jd_vsprintf(jd_lv(&e, "$.message"), msg, ap);
   if (info) jd_assign(jd_lv(&e, "$.info"), info);
   rethrow(&e, 1);
 }

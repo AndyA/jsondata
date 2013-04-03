@@ -109,7 +109,7 @@ static void fstash_json_pretty(jd_var *out, char **bp, char *pc, char *ep, jd_va
   *bp = ep;
 }
 
-jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
+jd_var *jd_vsprintvf(jd_var *out, jd_var *fmt, va_list ap) {
   JD_SCOPE {
     JD_VAR(tmp);
     size_t len;
@@ -210,26 +210,26 @@ jd_var *jd_vprintvf(jd_var *out, jd_var *fmt, va_list ap) {
   return out;
 }
 
-jd_var *jd_vprintf(jd_var *out, const char *fmt, va_list ap) {
+jd_var *jd_vsprintf(jd_var *out, const char *fmt, va_list ap) {
   JD_SCOPE {
     JD_SV(vfmt, fmt);
-    jd_vprintvf(out, vfmt, ap);
+    jd_vsprintvf(out, vfmt, ap);
   }
   return out;
 }
 
-jd_var *jd_printf(jd_var *out, const char *fmt, ...) {
+jd_var *jd_sprintf(jd_var *out, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  jd_vprintf(out, fmt, ap);
+  jd_vsprintf(out, fmt, ap);
   va_end(ap);
   return out;
 }
 
-jd_var *jd_printvf(jd_var *out, jd_var *fmt, ...) {
+jd_var *jd_sprintvf(jd_var *out, jd_var *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  jd_vprintvf(out, fmt, ap);
+  jd_vsprintvf(out, fmt, ap);
   va_end(ap);
   return out;
 }

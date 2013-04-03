@@ -40,7 +40,7 @@ static void test_throw_info(void) {
 
 static void go_deep(int depth) {
   JD_VAR(a);
-  jd_printf(a, "depth=%d", depth);
+  jd_sprintf(a, "depth=%d", depth);
   if (depth == 0)
     jd_throw("Reached the bottom");
   else
@@ -62,7 +62,7 @@ static void test_deep_throw(void) {
 static void nest_deep(int depth) {
   try {
     JD_VAR(a);
-    jd_printf(a, "depth=%d", depth);
+    jd_sprintf(a, "depth=%d", depth);
     if (depth == 0)
       jd_throw("Reached the bottom");
     else
@@ -114,7 +114,7 @@ try {
 static int fib(int x) {
   scope {
     JD_VAR(msg);
-    jd_printf(msg, "fib(%d)", x);
+    jd_sprintf(msg, "fib(%d)", x);
     if (x < 2) JD_RETURN(1);
     JD_RETURN(fib(x - 1) + fib(x - 2));
   }

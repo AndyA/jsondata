@@ -599,7 +599,7 @@ static jd_var *getter(jd_var *root, const char *path, va_list ap, int vivify) {
   jd_var *rv = NULL;
   scope {
     JD_VAR(pv);
-    jd_vprintf(pv, path, ap);
+    jd_vsprintf(pv, path, ap);
     rv = jd_get_context(root, pv, vivify);
   }
   return rv;

@@ -36,13 +36,13 @@ static int path_iter_f(jd_var *result, jd_var *context, jd_var *arg) {
     if (slot->type == ARRAY) {
       cnt = jd_count(slot);
       for (i = cnt - 1; i >= 0; i--)
-        jd_printf(jd_push(stack, 1), "%V.%u", result, i);
+        jd_sprintf(jd_push(stack, 1), "%V.%u", result, i);
     }
     else if (slot->type == HASH) {
       jd_var *keys = jd_keys(jd_nv(), slot);
       cnt = jd_count(keys);
       for (i = cnt - 1; i >= 0; i--)
-        jd_printf(jd_push(stack, 1), "%V.%V", result, jd_get_idx(keys, i));
+        jd_sprintf(jd_push(stack, 1), "%V.%V", result, jd_get_idx(keys, i));
     }
   }
 

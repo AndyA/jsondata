@@ -449,10 +449,10 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
       jd_set_string(&tmp, v->v.b ? "true" : "false");
       break;
     case INTEGER:
-      jd_printf(&tmp, JD_INT_FMT, v->v.i);
+      jd_sprintf(&tmp, JD_INT_FMT, v->v.i);
       break;
     case REAL:
-      jd_printf(&tmp, "%g", v->v.r);
+      jd_sprintf(&tmp, "%g", v->v.r);
       break;
     case STRING:
       jd_assign(&tmp, v);
@@ -463,9 +463,9 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
       break;
     default:
       if (v->type < MAXTYPE)
-        jd_printf(&tmp, "<%s:%p>", typename[v->type], v);
+        jd_sprintf(&tmp, "<%s:%p>", typename[v->type], v);
       else
-        jd_printf(&tmp, "<UNKNOWN(%u):%p>", v->type, v);
+        jd_sprintf(&tmp, "<UNKNOWN(%u):%p>", v->type, v);
       break;
     }
   }

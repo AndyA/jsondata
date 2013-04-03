@@ -66,7 +66,7 @@ static void test_hashcode(void) {
       jd_var *slot;
 
       jd_from_jsons(v, obj[i]);
-      jd_printf(key, "%lx", jd_hashcalc(v));
+      jd_sprintf(key, "%lx", jd_hashcalc(v));
 
       slot = jd_get_key(stats, key, 1);
       jd_set_int(slot, jd_get_int(slot) + 1);

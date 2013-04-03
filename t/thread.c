@@ -48,7 +48,7 @@ static void do_stuff(jd_var *v, int depth) {
         do_stuff(jd_lv(v, "$.%s", kn[i]), depth + 1);
       break;
     default:
-      jd_printf(v, "At depth %d", depth);
+      jd_sprintf(v, "At depth %d", depth);
       break;
     }
   }
