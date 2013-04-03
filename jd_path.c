@@ -133,33 +133,31 @@ static jd_var *make_wild_factory(jd_var *out) {
   return out;
 }
 
-/* = A frozen factory = */
+/* = A slice = */
 
-static int iterate_frozen(jd_var *result, jd_var *context, jd_var *args) {
-  (void) args;
-  jd_clone(result, context, 1);
+static int spawn_slice(jd_var *result, jd_var *context, jd_var *args) {
+  size_t tsz = jd_count(context);
+
+  jd_int vivify = jd_get_int(result);
+  jd_int start = jd_get_int(jd_get_idx(context, 1));
+  jd_int end = tsz > 2 ? jd_get_int(jd_get_idx(context, 2)) : start + 1;
+  jd_int step = tsz > 3 ? jd_get_int(jd_get_idx(context, 3)) : 1;
+
+  if (!vivify && args && args->type == ARRAY) {
+    jd_int sz = (jd_int) jd_count(args);
+    if (end > sz) end = sz;
+  }
+
+  make_slice(result, start, end, step);
+
   return 1;
 }
 
-static void make_frozen_factory(jd_var *out, jd_var *cl) {
-  jd_assign(jd_context(jd_set_closure(out, iterate_frozen)), cl);
-}
-
-/* = A slice = */
-
 static jd_var *make_slice_factory(jd_var *out, jd_var *tok) {
-  size_t tsz = jd_count(tok);
-
-  if (tsz == 1) {
+  if (jd_count(tok) == 2)
     make_literal_factory(out, jd_get_idx(tok, 1));
-    return out;
-  }
-
-  jd_int start = jd_get_int(jd_get_idx(tok, 1));
-  jd_int end = tsz > 2 ? jd_get_int(jd_get_idx(tok, 2)) : start + 1;
-  jd_int step = tsz > 3 ? jd_get_int(jd_get_idx(tok, 3)) : 1;
-
-  make_frozen_factory(out, make_slice(jd_nv(), start, end, step));
+  else
+    jd_assign(jd_context(jd_set_closure(out, spawn_slice)), tok);
   return out;
 }
 
@@ -444,8 +442,12 @@ static int iter_func(jd_var *result, jd_var *context, jd_var *args) {
 
     while (jd_count(path_stk) < jd_count(path)) {
       if (jd_count(iter_stk) < jd_count(path_stk)) jd_die("Oops!");
-      if (ipos = jd_count(iter_stk), ipos == jd_count(path_stk))
-        jd_eval(jd_get_idx(path, ipos), jd_push(iter_stk, 1), slot_stk[ipos]);
+      if (ipos = jd_count(iter_stk), ipos == jd_count(path_stk)) {
+        jd_var *slot = jd_push(iter_stk, 1);
+        /* cheeky: pass vivify flag in via result */
+        jd_set_int(slot, vivify);
+        jd_eval(jd_get_idx(path, ipos), slot, slot_stk[ipos]);
+      }
 
       jd_eval(jd_get_idx(iter_stk, -1), nv, NULL);
 
