@@ -90,3 +90,11 @@ rev: abf850061e3d45b720087725d05f3da470d7b225
 jsonpath: 319788 operations, 10.033 seconds, 31872.242 op/s, 31.375 us/op
 jsonpath-cache-compile: 1284822 operations, 10.007 seconds, 128395.672 op/s, 7.788 us/op
 ---
+===
+date: 2013/04/04 16:36:45
+uname: Linux idaeus 3.6.11+ #397 PREEMPT Mon Mar 18 22:17:49 GMT 2013 armv6l GNU/Linux
+rev: 00e08a121a602de3c931177813efa5fbfc548ba3
++++
+jsonpath: 14742 operations, 10.624 seconds, 1387.603 op/s, 720.667 us/op
+jsonpath-cache-compile: 58968 operations, 10.066 seconds, 5858.364 op/s, 170.696 us/op
+---
