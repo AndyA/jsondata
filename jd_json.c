@@ -24,6 +24,7 @@ static void to_json_flat(jd_var *out, jd_var *v, struct json_opt *opt, int depth
 
 static jd_var *escape_string(jd_var *out, jd_var *str) {
   size_t sz;
+  char tmp[8];
   const char *buf = jd_bytes(str, &sz);
   const char *be = buf + sz - 1;
   const char *bp, *ep;
@@ -56,7 +57,9 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
         ep = "\\\\";
         break;
       default:
-        jd_die("Oops: unhandled escape");
+        sprintf(tmp, "\\u%04X", (unsigned char) *bp);
+        ep = tmp;
+        break;
       }
       jd_append_bytes(out, ep, strlen(ep));
       buf = bp + 1;
