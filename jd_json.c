@@ -55,6 +55,8 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
       case '\\':
         ep = "\\\\";
         break;
+      default:
+        jd_die("Oops: unhandled escape");
       }
       jd_append_bytes(out, ep, strlen(ep));
       buf = bp + 1;
