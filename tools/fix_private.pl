@@ -7,7 +7,7 @@ use Path::Class;
 use Data::Dumper;
 
 use constant PUBLIC => ('jsondata.h');
-use constant PRIVATE => ( 'jd_private.h', 'jd_path.h' );
+use constant PRIVATE => ( 'jd_private.h', 'jd_path.h', 'jd_utf8.h' );
 
 my @bad_public  = my @good_public  = map read_header($_), PUBLIC;
 my @bad_private = my @good_private = map read_header($_), PRIVATE;

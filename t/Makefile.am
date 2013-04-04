@@ -1,6 +1,6 @@
 TESTBIN = 00misc array clone closure compare exception exit get \
 	  hash json jsonpath magic map model object path string \
-	  thread
+	  thread utf8
 
 EXTRA_DIST = model.json
 
