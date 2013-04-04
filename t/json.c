@@ -97,6 +97,8 @@ static void test_exceptions(void) {
   throws("!!", "Syntax error", 0);
 }
 
+#define ONE80 "\x31\x38\x30\xc2\xb0"
+
 static void test_utf8(void) {
   uint8_t u8[] = {
     0x00, 0x7f, 0xc2, 0x80, 0xdf, 0xbf, 0xe0, 0xa0, 0x80, 0xef, 0xbf, 0xbf
@@ -111,7 +113,17 @@ static void test_utf8(void) {
     if (ok(sz == sizeof(u8) + 1, "utf8: size matches")) {
       ok(0 == memcmp(bytes, u8, sz - 1), "utf8: bytes match");
     }
+  }
 
+  scope {
+    const char one80[] = ONE80;
+    const char *one80json = "\"" ONE80 "\"";
+    jd_var *got = jd_from_json(jd_nv(), jd_nsv(one80json));
+    size_t sz;
+    const char *bytes = jd_bytes(got, &sz);
+    if (ok(sz == sizeof(one80), "180 degrees: size matches")) {
+      ok(0 == memcmp(bytes, one80, sz), "180 degrees: bytes match");
+    }
   }
 }
 

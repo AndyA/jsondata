@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "jd_utf8.h"
 #include "jsondata.h"
@@ -32,7 +33,7 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
   jd_set_empty_string(out, sz);
 
   for (bp = buf; bp != be; bp++) {
-    if (NEED_ESCAPE(*bp)) {
+    if (NEED_ESCAPE((uint8_t) *bp)) {
       jd_append_bytes(out, buf, bp - buf);
       switch (*bp) {
       case 0x08:
@@ -57,8 +58,8 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
         ep = "\\\\";
         break;
       default:
-        sprintf(tmp, "\\u%04X", (unsigned char) *bp);
-        ep = tmp;
+        sprintf(tmp, "\\u%04X", *bp);
+        ep =  tmp;
         break;
       }
       jd_append_bytes(out, ep, strlen(ep));
@@ -253,12 +254,10 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
   return out;
 }
 
-static void append_utf32(struct parser *p, jd_var *out, uint32_t c) {
+static void append_utf32(jd_var *out, uint32_t c) {
   uint8_t buf[6];
   struct buf8 b8;
   struct buf32 b32;
-
-  (void) p;
 
   b8.pos = buf;
   b8.lim = buf + sizeof(buf);
@@ -270,9 +269,8 @@ static void append_utf32(struct parser *p, jd_var *out, uint32_t c) {
   jd_append_bytes(out, buf, b8.pos - buf);
 }
 
-static void append_byte(struct parser *p, jd_var *out, uint32_t c) {
-  if (c >= 0x80) append_utf32(p, out, c);
-  else jd_append_bytes(out, &c, 1);
+static void append_byte(jd_var *out, uint32_t c) {
+  jd_append_bytes(out, &c, 1);
 }
 
 static uint32_t parse_escape(struct parser *p) {
@@ -303,37 +301,37 @@ static jd_var *from_json_string(jd_var *out, struct parser *p) {
       STEP(p);
       switch (CHAR(p)) {
       case 'b':
-        append_byte(p, out, 0x08);
+        append_byte(out, 0x08);
         break;
       case 't':
-        append_byte(p, out, 0x09);
+        append_byte(out, 0x09);
         break;
       case 'n':
-        append_byte(p, out, 0x0A);
+        append_byte(out, 0x0A);
         break;
       case 'f':
-        append_byte(p, out, 0x0C);
+        append_byte(out, 0x0C);
         break;
       case 'r':
-        append_byte(p, out, 0x0D);
+        append_byte(out, 0x0D);
         break;
       case '\\':
-        append_byte(p, out, '\\');
+        append_byte(out, '\\');
         break;
       case '"':
-        append_byte(p, out, '"');
+        append_byte(out, '"');
         break;
       case '/':
-        append_byte(p, out, '/');
+        append_byte(out, '/');
         break;
       case 'u':
         STEP(p);
-        append_utf32(p, out, parse_escape(p));
+        append_utf32(out, parse_escape(p));
         break;
       }
     }
     else {
-      append_byte(p, out, c);
+      append_byte(out, c);
     }
   }
   STEP(p);
