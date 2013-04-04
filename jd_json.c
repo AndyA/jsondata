@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "jd_utf8.h"
 #include "jsondata.h"
 
 struct json_opt {
@@ -19,11 +20,10 @@ struct json_opt {
 static void to_json_flat(jd_var *out, jd_var *v, struct json_opt *opt, int depth);
 
 #define NEED_ESCAPE(c) \
-  ((c) < ' ' || (c) >= 0x7f || (c) == '"' || (c) == '\\')
+  ((c) < ' ' || (c) == '"' || (c) == '\\')
 
 static jd_var *escape_string(jd_var *out, jd_var *str) {
   size_t sz;
-  char tmp[8];
   const char *buf = jd_bytes(str, &sz);
   const char *be = buf + sz - 1;
   const char *bp, *ep;
@@ -54,10 +54,6 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
         break;
       case '\\':
         ep = "\\\\";
-        break;
-      default:
-        sprintf(tmp, "\\u%04X", (unsigned char) *bp);
-        ep = tmp;
         break;
       }
       jd_append_bytes(out, ep, strlen(ep));
@@ -252,18 +248,35 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
   return out;
 }
 
-static void append_byte(struct parser *p, jd_var *out, unsigned c) {
-  if (c >= 0x100) jd_throw_info(pinfo(p), "Can't handle unicode");
-  jd_append_bytes(out, &c, 1);
+static void append_utf32(struct parser *p, jd_var *out, uint32_t c) {
+  uint8_t buf[6];
+  struct buf8 b8;
+  struct buf32 b32;
+
+  (void) p;
+
+  b8.pos = buf;
+  b8.lim = buf + sizeof(buf);
+
+  b32.pos = &c;
+  b32.lim = b32.pos + 1;
+
+  jd__to_utf8(&b8, &b32);
+  jd_append_bytes(out, buf, b8.pos - buf);
 }
 
-static unsigned parse_escape(struct parser *p) {
+static void append_byte(struct parser *p, jd_var *out, uint32_t c) {
+  if (c >= 0x80) append_utf32(p, out, c);
+  else jd_append_bytes(out, &c, 1);
+}
+
+static uint32_t parse_escape(struct parser *p) {
   char buf[5], *ep;
-  unsigned esc;
+  uint32_t esc;
   if (p->pp + 4 > p->ep) goto bad;
   memcpy(buf, p->pp, 4);
   buf[4] = '\0';
-  esc = (unsigned) strtoul(buf, &ep, 16);
+  esc = (uint32_t) strtoul(buf, &ep, 16);
   if (*ep) goto bad;
   JUMP(p, 3);
   return esc;
@@ -310,7 +323,7 @@ static jd_var *from_json_string(jd_var *out, struct parser *p) {
         break;
       case 'u':
         STEP(p);
-        append_byte(p, out, parse_escape(p));
+        append_utf32(p, out, parse_escape(p));
         break;
       }
     }

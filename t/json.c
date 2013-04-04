@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "util.h"
 #include "tap.h"
@@ -43,7 +44,6 @@ static void check_from_json(const char *json) {
 static void test_from_json(void) {
   int i;
   static const char *json[] = {
-    "\"\\u00FF\"",
     "[]",
     "\"foo\"",
     "{}",
@@ -58,8 +58,6 @@ static void test_from_json(void) {
     "[1,1.25,null,false,\"foo\",{\"k\":-1}]",
     "\"\\\"\\\"\"",
     "\"\\b\\t\\n\\f\\r\\\\\\\"\"",
-    "\"\\b\\t\\n\\f\\r\\\\\\\"\\u00FF\"",
-    "\"\\b\\t\\n\\f\\r\\\\\\\"\\u00FFFF\"",
     NULL
   };
 
@@ -97,13 +95,31 @@ static void test_exceptions(void) {
   throws("triffic", "Expected true or false", 0);
   throws("nice", "Expected null", 0);
   throws("!!", "Syntax error", 0);
-  throws("\"\\u0100\"", "Can't handle unicode", 1);
+}
+
+static void test_utf8(void) {
+  uint8_t u8[] = {
+    0x00, 0x7f, 0xc2, 0x80, 0xdf, 0xbf, 0xe0, 0xa0, 0x80, 0xef, 0xbf, 0xbf
+  };
+
+  scope {
+    jd_var *got = jd_from_json(jd_nv(),
+    jd_nsv("\"\\u0000\\u007F\\u0080\\u07FF\\u0800\\uFFFF\""));
+    size_t sz;
+    const char *bytes = jd_bytes(got, &sz);
+
+    if (ok(sz == sizeof(u8) + 1, "utf8: size matches")) {
+      ok(0 == memcmp(bytes, u8, sz - 1), "utf8: bytes match");
+    }
+
+  }
 }
 
 void test_main(void) {
   test_to_json();
   test_from_json();
   test_exceptions();
+  test_utf8();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
