@@ -99,10 +99,26 @@ static void test_span(void) {
   ok(rem == 0, "utf8 no remainder");
 }
 
+static void check_length(const char *src, size_t len) {
+  scope {
+    jd_var *str = jd_nsv(src);
+    size_t got = jd_utf8_length(str);
+    if (!ok(len == got, "length of %s is %lu", src, (unsigned long) len)) {
+      diag("# got %lu", (unsigned long) got);
+    }
+  }
+}
+
+static void test_utf8_api(void) {
+  check_length("", 0);
+  check_length("\x31\x38\x30\xc2\xb0", 4);
+}
+
 void test_main(void) {
   scope {} /* memory accounting */
   test_basic();
   test_span();
+  test_utf8_api();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

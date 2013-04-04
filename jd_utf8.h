@@ -19,6 +19,7 @@ void jd__to_utf8(struct buf8 *out, struct buf32 *in);
 void jd__from_utf8(struct buf32 *out, struct buf8 *in);
 size_t jd__span_utf8(uint8_t *buf, size_t len, size_t *rem);
 size_t jd__span_utf32(uint32_t *buf, size_t len);
+int jd__pos_utf8(uint8_t *buf, size_t len, unsigned pos);
 
 #endif
 

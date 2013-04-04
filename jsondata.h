@@ -242,6 +242,8 @@ jd_var *jd_rtrim(jd_var *out, jd_var *v);
 jd_var *jd_trim(jd_var *out, jd_var *v);
 jd_var *jd_flatten(jd_var *out, jd_var *v);
 
+size_t jd_utf8_length(jd_var *v);
+
 jd_var *jd_traverse_path(jd_var *v, jd_var *path, int vivify);
 jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify);
 jd_var *jd_lv(jd_var *root, const char *path, ...);

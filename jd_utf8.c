@@ -112,16 +112,26 @@ void jd__from_utf8(struct buf32 *out, struct buf8 *in) {
   }
 }
 
+#define UTF8LEN(ch) \
+  ((((ch) & 0xfe) == 0xfc) ? 6       \
+   : (((ch) & 0xfc) == 0xf8) ? 5     \
+   : (((ch) & 0xf8) == 0xf0) ? 4     \
+   : (((ch) & 0xf0) == 0xe0) ? 3     \
+   : (((ch) & 0xe0) == 0xc0) ? 2 : 1)
+
+#define UTF32LEN(ch) \
+  ((ch) >= 0x04000000 ? 6            \
+   : (ch) >= 0x00200000 ? 5          \
+   : (ch) >= 0x00010000 ? 4          \
+   : (ch) >= 0x00000800 ? 3          \
+   : (ch) >= 0x00000080 ? 2 : 1)
+
 size_t jd__span_utf8(uint8_t *buf, size_t len, size_t *rem) {
   size_t len32 = 0;
   uint8_t *lim = buf + len;
   while (buf != lim) {
     uint8_t ch = *buf;
-    size_t step = ((ch & 0xfe) == 0xfc) ? 6
-                  : ((ch & 0xfc) == 0xf8) ? 5
-                  : ((ch & 0xf8) == 0xf0) ? 4
-                  : ((ch & 0xf0) == 0xe0) ? 3
-                  : ((ch & 0xe0) == 0xc0) ? 2 : 1;
+    size_t step = UTF8LEN(ch);
     if (buf + step > lim) break;
     len32++;
     buf += step;
@@ -136,15 +146,30 @@ size_t jd__span_utf32(uint32_t *buf, size_t len) {
 
   while (buf != lim) {
     uint32_t ch = *buf++;
-    len8 += ch >= 0x04000000 ? 6
-            : ch >= 0x00200000 ? 5
-            : ch >= 0x00010000 ? 4
-            : ch >= 0x00000800 ? 3
-            : ch >= 0x00000080 ? 2
-            : 1;
+    len8 += UTF32LEN(ch);
   }
 
   return len8;
+}
+
+/* Return the byte offset that corresponds with character offset pos
+ * or -1 if pos is outside string
+ */
+int jd__pos_utf8(uint8_t *buf, size_t len, unsigned pos) {
+  uint8_t *bp = buf;
+  uint8_t *lim = buf + len;
+  for (;;) {
+    if (pos == 0) return bp - buf;
+    if (bp >= lim) return -1;
+    bp += UTF8LEN(*bp);
+    pos--;
+  }
+}
+
+size_t jd_utf8_length(jd_var *v) {
+  size_t sz;
+  uint8_t *oct = (uint8_t *) jd_bytes(v, &sz);
+  return jd__span_utf8(oct, sz - 1, NULL);
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
