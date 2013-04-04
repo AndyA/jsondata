@@ -129,8 +129,9 @@ static void rethrow(jd_var *e, int release) {
   }
   else {
     jd_var *bt;
-    fprintf(stderr, "Uncaught exception: %s\n",
-            jd_bytes(jd_get_ks(e, "message", 0), NULL));
+    jd_fprintf(stderr, "Uncaught exception: %V", jd_get_ks(e, "message", 0));
+    if (bt = jd_get_ks(e, "info", 0), bt) jd_fprintf(stderr, " (info: %J)", bt);
+    jd_fprintf(stderr, "\n");
     if (bt = jd_get_ks(e, "backtrace", 0), bt) {
       int count = (int) jd_count(bt);
       int i;
