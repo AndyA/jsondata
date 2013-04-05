@@ -30,7 +30,7 @@ static jd_var *escape_string(jd_var *out, jd_var *str) {
   const char *be = buf + sz - 1;
   const char *bp, *ep;
 
-  jd_set_empty_string(out, sz);
+  jd_set_empty_string(out, sz - 1);
 
   for (bp = buf; bp != be; bp++) {
     if (NEED_ESCAPE((uint8_t) *bp)) {

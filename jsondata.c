@@ -126,8 +126,8 @@ static jd_var *set_string(jd_var *v, jd_string *jds) {
   return v;
 }
 
-jd_var *jd_set_empty_string(jd_var *v, size_t size) {
-  return set_string(v, jd__string_new(size));
+jd_var *jd_set_empty_string(jd_var *v, size_t len) {
+  return set_string(v, jd__string_new(len + 1));
 }
 
 jd_var *jd_set_string(jd_var *v, const char *s) {

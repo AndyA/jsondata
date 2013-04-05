@@ -135,7 +135,7 @@ jd_var *jd__string_sub(jd_string *jds, int volatile from, int volatile len, jd_v
     JD_VAR(tmp);
     jd_string *jo;
     if (from + len > sl) len = sl - from;
-    jd_set_empty_string(tmp, len + 1);
+    jd_set_empty_string(tmp, len);
     jo = jd__as_string(tmp);
     memcpy(jo->data, jds->data + from, len);
     jo->data[len] = '\0';

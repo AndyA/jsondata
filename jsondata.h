@@ -191,7 +191,7 @@ void jd_retain(jd_var *v);
 jd_var *jd_assign(jd_var *dst, jd_var *src);
 jd_var *jd_set_string(jd_var *v, const char *s);
 jd_var *jd_set_bytes(jd_var *v, const void *s, size_t size);
-jd_var *jd_set_empty_string(jd_var *v, size_t size);
+jd_var *jd_set_empty_string(jd_var *v, size_t len);
 jd_var *jd_set_array(jd_var *v, size_t size);
 jd_var *jd_set_array_with(jd_var *v, ...);
 jd_var *jd_set_hash_with(jd_var *v, ...);
