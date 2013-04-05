@@ -678,16 +678,23 @@ jd_var *jd_flatten(jd_var *out, jd_var *v) {
 }
 
 jd_var *jd_reverse(jd_var *out, jd_var *v) {
+  jd_var tmp = JD_INIT;
   switch (v->type) {
-  case ARRAY:
-    return jd__array_reverse(out, jd__as_array(v));
-  case HASH:
-    return jd__hash_reverse(out, jd__as_hash(v));
-  case STRING:
-    return jd__string_reverse(out, jd__as_string(v));
   default:
     return jd_assign(out, v);
+  case ARRAY:
+    jd__array_reverse(&tmp, jd__as_array(v));
+    break;
+  case HASH:
+    jd__hash_reverse(&tmp, jd__as_hash(v));
+    break;
+  case STRING:
+    jd__string_reverse(&tmp, jd__as_string(v));
+    break;
   }
+  jd_assign(out, &tmp);
+  jd_release(&tmp);
+  return out;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
