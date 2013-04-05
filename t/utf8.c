@@ -162,6 +162,27 @@ static void test_append(void) {
   }
 }
 
+static void test_unpack(void) {
+  scope {
+    jd_var *str = jd_utf8_append(jd_nsv(""), u32, countof(u32));
+    jd_var *chr = jd_utf8_unpack(jd_nv(), str);
+    if (ok(jd_count(chr) == countof(u32), "unpack length")) {
+      for (unsigned i = 0; i < countof(u32); i++) {
+        ok(jd_get_int(jd_get_idx(chr, i)) == (jd_int) u32[i], "char[%u] = %08lx",
+        i, (unsigned long) u32[i]);
+      }
+    }
+
+    while (jd_count(chr) < 1000) {
+      jd_append(str, str);
+      jd_append(chr, chr);
+    }
+
+    jd_var *chr2 = jd_utf8_unpack(jd_nv(), str);
+    jdt_is(chr, chr2, "unpack long string");
+  }
+}
+
 void test_main(void) {
   scope {} /* memory accounting */
   test_basic();
@@ -169,6 +190,7 @@ void test_main(void) {
   test_utf8_api();
   test_extract();
   test_append();
+  test_unpack();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

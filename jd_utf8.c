@@ -232,7 +232,28 @@ jd_var *jd_utf8_append(jd_var *out, uint32_t *str, size_t len) {
 }
 
 jd_var *jd_utf8_unpack(jd_var *out, jd_var *v) {
-  (void) v;
+  uint32_t buf[128];
+  struct buf32 b32;
+  struct buf8 b8;
+  size_t sz;
+
+  b8.pos = (uint8_t *) jd_bytes(v, &sz);
+  b8.lim = b8.pos + sz - 1;
+
+  jd_set_array(out, sz);
+
+  for (;;) {
+    b32.pos = buf;
+    b32.lim = b32.pos + sizeof(buf) / sizeof(buf[0]);
+    jd__from_utf8(&b32, &b8);
+    size_t got = b32.pos - buf;
+    if (got == 0) break;
+    jd_var *slot = jd_push(out, got);
+    for (unsigned i = 0; i < got; i++) {
+      jd_set_int(slot++, (jd_int) buf[i]);
+    }
+  }
+
   return out;
 }
 
