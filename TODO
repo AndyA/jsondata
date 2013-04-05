@@ -8,9 +8,7 @@ Path parsing:
   Make syntax stricter and test it.
 
 UTF8
-
-  jd_utf8_pack        // array -> string
-
   Under some circumstances it will be quicker to scan utf8 backwards
-  from the end.
+  from the end. Maybe use a magic slot to maintain octet<->utf8
+  cursor(s).
 

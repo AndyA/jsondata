@@ -258,7 +258,20 @@ jd_var *jd_utf8_unpack(jd_var *out, jd_var *v) {
 }
 
 jd_var *jd_utf8_pack(jd_var *out, jd_var *v) {
-  (void) v;
+  uint32_t buf[128];
+  size_t len = jd_count(v);
+  jd_set_empty_string(out, len);
+
+  for (unsigned i = 0; i < len;) {
+    size_t avail = sizeof(buf) / sizeof(buf[0]);
+    if (avail > len - i) avail = len - i;
+    jd_var *slot = jd_get_idx(v, i);
+    for (unsigned j = 0; j < avail; j++)
+      buf[j] = (uint32_t) jd_get_int(slot++);
+    jd_utf8_append(out, buf, avail);
+    i += avail;
+  }
+
   return out;
 }
 

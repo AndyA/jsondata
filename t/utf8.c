@@ -162,7 +162,7 @@ static void test_append(void) {
   }
 }
 
-static void test_unpack(void) {
+static void test_un_pack(void) {
   scope {
     jd_var *str = jd_utf8_append(jd_nsv(""), u32, countof(u32));
     jd_var *chr = jd_utf8_unpack(jd_nv(), str);
@@ -173,10 +173,16 @@ static void test_unpack(void) {
       }
     }
 
+    jd_var *pack1 = jd_utf8_pack(jd_nv(), chr);
+    jdt_is(pack1, str, "pack short string");
+
     while (jd_count(chr) < 1000) {
       jd_append(str, str);
       jd_append(chr, chr);
     }
+
+    jd_var *pack2 = jd_utf8_pack(jd_nv(), chr);
+    jdt_is(pack2, str, "pack long string");
 
     jd_var *chr2 = jd_utf8_unpack(jd_nv(), str);
     jdt_is(chr, chr2, "unpack long string");
@@ -190,7 +196,7 @@ void test_main(void) {
   test_utf8_api();
   test_extract();
   test_append();
-  test_unpack();
+  test_un_pack();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
