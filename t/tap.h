@@ -3,6 +3,10 @@
 #ifndef __TAP_H
 #define __TAP_H
 
+#include <stdio.h>
+#include <stdarg.h>
+
+void set_vfpf(int (*nvfpf)(FILE *f, const char *msg, va_list ap));
 int test(int flag, const char *msg, va_list ap);
 void diag(const char *fmt, ...);
 void die(const char *fmt, ...);

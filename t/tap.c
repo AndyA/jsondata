@@ -1,8 +1,6 @@
 /* tap.c */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 
 #include "tap.h"
 
@@ -13,27 +11,42 @@ static int test_no = 0;
 static const char *pfx[MAX_PREFIX];
 static size_t npfx = 0;
 
+static int (*vfpf)(FILE *f, const char *msg, va_list ap) = vfprintf;
+
+void set_vfpf(int (*nvfpf)(FILE *f, const char *msg, va_list ap)) {
+  vfpf = nvfpf;
+}
+
+static int fpf(FILE *f, const char *msg, ...) {
+  va_list ap;
+  int rc;
+  va_start(ap, msg);
+  rc = vfpf(f, msg, ap);
+  va_end(ap);
+  return rc;
+}
+
 void diag(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  fprintf(stderr, "# ");
-  vfprintf(stderr, fmt, ap);
-  fprintf(stderr, "\n");
+  fpf(stderr, "# ");
+  vfpf(stderr, fmt, ap);
+  fpf(stderr, "\n");
   va_end(ap);
 }
 
 void die(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  vfprintf(stderr, fmt, ap);
-  fprintf(stderr, "\n");
+  vfpf(stderr, fmt, ap);
+  fpf(stderr, "\n");
   va_end(ap);
   exit(1);
 }
 
 void done_testing(void) {
   if (0 == test_no) die("No tests run!");
-  printf("1..%d\n", test_no);
+  fpf(stdout, "1..%d\n", test_no);
 }
 
 int nest_in(const char *p) {
@@ -51,15 +64,15 @@ int nest_out(void) {
 static void prefix(void) {
   unsigned i;
   for (i = 0; i < npfx; i++) {
-    printf("%s: ", pfx[i]);
+    fpf(stdout, "%s: ", pfx[i]);
   }
 }
 
 int test(int flag, const char *msg, va_list ap) {
-  printf("%sok %d - ", flag ? "" : "not ", ++test_no);
+  fpf(stdout, "%sok %d - ", flag ? "" : "not ", ++test_no);
   prefix();
-  vprintf(msg, ap);
-  printf("\n");
+  vfpf(stdout, msg, ap);
+  fpf(stdout, "\n");
   return flag;
 }
 
