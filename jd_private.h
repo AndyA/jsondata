@@ -33,6 +33,7 @@ int jd__string_find(jd_string *jds, jd_var *pat, int from);
 jd_var *jd__string_split(jd_string *jds, jd_var *pat, jd_var *out);
 jd_var *jd__string_numify(jd_string *jds, jd_var *out);
 const char *jd__string_bytes(jd_string *jds, size_t *sp);
+jd_var *jd__string_reverse(jd_var *out, jd_string *jds);
 
 jd_string *jd__as_string(jd_var *v);
 jd_array *jd__as_array(jd_var *v);
@@ -56,6 +57,7 @@ jd_array *jd__array_splice(jd_array *jda, int idx, jd_var *v);
 jd_array *jd__array_append(jd_array *jda, jd_var *v);
 jd_array *jd__array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *));
 jd_var *jd__array_clone(jd_var *out, jd_array *jda, int deep);
+jd_var *jd__array_reverse(jd_var *out, jd_array *jda);
 
 jd_hash *jd__hash_new(size_t size);
 void jd__hash_retain(jd_hash *jdh);
@@ -68,6 +70,7 @@ jd_var *jd__hash_merge(jd_var *out, jd_hash *jdh, int deep);
 jd_var *jd__hash_clone(jd_var *out, jd_hash *jdh, int deep);
 jd_hash *jd__hash_rehash(jd_hash *jdh);
 int jd__hash_maint(jd_hash *jdh);
+jd_var *jd__hash_reverse(jd_var *out, jd_hash *jdh);
 
 jd_closure *jd__closure_new(jd_closure_func f);
 void jd__closure_free(jd_closure *jdc);

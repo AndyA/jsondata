@@ -183,5 +183,17 @@ jd_var *jd__array_clone(jd_var *out, jd_array *jda, int deep) {
   return out;
 }
 
+jd_var *jd__array_reverse(jd_var *out, jd_array *jda) {
+  size_t count = jd__array_count(jda);
+
+  jd_set_array(out, count);
+  jd_var *src = BASE(jda);
+  jd_var *dst = jd_push(out, count);
+  for (unsigned i = 0; i < count; i++)
+    jd_assign(&dst[count - i - 1], &src[i]);
+
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

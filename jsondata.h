@@ -242,6 +242,7 @@ jd_var *jd_ltrim(jd_var *out, jd_var *v);
 jd_var *jd_rtrim(jd_var *out, jd_var *v);
 jd_var *jd_trim(jd_var *out, jd_var *v);
 jd_var *jd_flatten(jd_var *out, jd_var *v);
+jd_var *jd_reverse(jd_var *out, jd_var *v);
 
 size_t jd_utf8_length(jd_var *v);
 jd_var *jd_utf8_substr(jd_var *out, jd_var *v, int from, int len);

@@ -677,5 +677,18 @@ jd_var *jd_flatten(jd_var *out, jd_var *v) {
   return out;
 }
 
+jd_var *jd_reverse(jd_var *out, jd_var *v) {
+  switch (v->type) {
+  case ARRAY:
+    return jd__array_reverse(out, jd__as_array(v));
+  case HASH:
+    return jd__hash_reverse(out, jd__as_hash(v));
+  case STRING:
+    return jd__string_reverse(out, jd__as_string(v));
+  default:
+    return jd_assign(out, v);
+  }
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

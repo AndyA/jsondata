@@ -220,5 +220,18 @@ const char *jd__string_bytes(jd_string *jds, size_t *sp) {
   return jds->data;
 }
 
+jd_var *jd__string_reverse(jd_var *out, jd_string *jds) {
+  size_t len = jds->used - 1;
+  jd_set_empty_string(out, len);
+  jd_string *os = jd__as_string(out);
+  char *src = jds->data;
+  char *dst = os->data;
+  for (unsigned i = 0; i < len; i++)
+    dst[len - i - 1] = src[i];
+  dst[len] = '\0';
+  os->used = len + 1;
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

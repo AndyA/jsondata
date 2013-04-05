@@ -263,6 +263,28 @@ static void test_promise(void) {
   }
 }
 
+static void check_reverse(const char *in, const char *want) {
+  scope {
+    jd_var *src = jd_njv(in);
+    jd_var *dst = jd_reverse(jd_nv(), src);
+    jdt_is_json(dst, want, "reverse %s = %s (got %J)", in, want, dst);
+  }
+}
+
+static void test_reverse(void) {
+  check_reverse("1", "1");
+  check_reverse("[1,2,3]", "[3,2,1]");
+  check_reverse("[1,2]", "[2,1]");
+  check_reverse("[1]", "[1]");
+  check_reverse("[]", "[]");
+  check_reverse("\"ABC\"", "\"CBA\"");
+  check_reverse("\"AB\"", "\"BA\"");
+  check_reverse("\"A\"", "\"A\"");
+  check_reverse("\"\"", "\"\"");
+  check_reverse("{\"one\":\"1\",\"two\":\"2\"}", "{\"1\":\"one\",\"2\":\"two\"}");
+  check_reverse("{}", "{}");
+}
+
 void test_main(void) {
   test_version();
   test_retain_release();
@@ -273,6 +295,7 @@ void test_main(void) {
   test_object();
   test_constructors();
   test_promise();
+  test_reverse();
 }
 
 

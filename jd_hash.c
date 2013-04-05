@@ -154,5 +154,21 @@ jd_var *jd__hash_clone(jd_var *out, jd_hash *jdh, int deep) {
   return jd__hash_merge(out, jdh, deep);
 }
 
+jd_var *jd__hash_reverse(jd_var *out, jd_hash *jdh) {
+  jd_var keys = JD_INIT;
+  size_t count = jd__hash_count(jdh);
+
+  jd__hash_keys(jdh, &keys);
+  jd_set_hash(out, count * 2);
+
+  for (unsigned i = 0; i < count; i++) {
+    jd_var *k = jd_get_idx(&keys, i);
+    jd_assign(jd_get_key(out, jd__hash_get(jdh, k, 0), 1), k);
+  }
+
+  jd_release(&keys);
+  return out;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
