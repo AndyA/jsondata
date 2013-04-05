@@ -121,6 +121,45 @@ static void check_length(const char *src, size_t len) {
 static void test_utf8_api(void) {
   check_length("", 0);
   check_length("\x31\x38\x30\xc2\xb0", 4);
+  check_length("\x7f\xc2\x80\xdf\xbf\xe0\xa0\x80\xef\xbf\xbf\xf0\x90\x80\x80"
+               "\xf7\xbf\xbf\xbf\xf8\x88\x80\x80\x80\xfb\xbf\xbf\xbf\xbf\xfc"
+               "\x84\x80\x80\x80\x80\xfd\xbf\xbf\xbf\xbf\xbf", 11);
+}
+
+static void test_extract(void) {
+  scope {
+    uint32_t buf[ countof(u32) ];
+    jd_var *in = jd_append_bytes(jd_nsv(""), u8, countof(u8));
+
+    size_t len = jd_utf8_length(in);
+    ok(len == countof(u32), "utf8 length is %lu (got %lu)",
+    (unsigned long) countof(u32), (unsigned long) len);
+
+    size_t got = jd_utf8_extract(buf, in, 0, len);
+    ok(got == len, "extracted length is %lu (got %lu)",
+    (unsigned long) len, (unsigned long) got);
+
+    ok(0 == memcmp(u32, buf, sizeof(u32)), "extracted buffer matches");
+
+    for (unsigned i = 0; i < len; i++) {
+      uint32_t ch;
+      jd_utf8_extract(&ch, in, i, 1);
+      ok(ch == u32[i], "individual char %u (%08x == %08x)", i, ch, u32[i]);
+    }
+  }
+}
+
+static void test_append(void) {
+  scope {
+    jd_var *str = jd_utf8_append(jd_nsv(""), u32, countof(u32));
+    size_t ulen = jd_utf8_length(str);
+    ok(ulen == countof(u32), "utf8 length is %lu (got %lu)",
+    (unsigned long) countof(u32), (unsigned long) ulen);
+    size_t len = jd_length(str);
+    ok(len == countof(u8), "raw length is %lu (got %lu)",
+    (unsigned long) countof(u8), (unsigned long) len);
+    ok(0 == memcmp(jd_bytes(str, NULL), u8, countof(u8)), "buffer OK");
+  }
 }
 
 void test_main(void) {
@@ -128,6 +167,8 @@ void test_main(void) {
   test_basic();
   test_span();
   test_utf8_api();
+  test_extract();
+  test_append();
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

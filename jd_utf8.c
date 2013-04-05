@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "jd_utf8.h"
+#include "jd_private.h"
 #include "jd_pretty.h"
 
 /*
@@ -172,15 +173,72 @@ size_t jd_utf8_length(jd_var *v) {
   return jd__span_utf8(oct, sz - 1, NULL);
 }
 
-jd_var *jd_utf8_substr(jd_var *out, jd_var *v, int from, int len) {
+static uint8_t *utf8_slice(jd_var *v, int from, int len, int *rfrom, int *rlen) {
   size_t sz;
   uint8_t *buf = (uint8_t *) jd_bytes(v, &sz);
   if (len < 0) len += jd_utf8_length(v);
-  int rfrom = jd__pos_utf8(buf, sz - 1, from);
-  if (rfrom < 0) return jd_set_string(out, "");
-  int rlen = jd__pos_utf8(buf + rfrom, sz - 1 - rfrom, len);
-  if (rlen < 0) rlen = sz - 1 - rfrom;
+  *rfrom = jd__pos_utf8(buf, sz - 1, from);
+  if (*rfrom < 0) {
+    *rfrom = 0;
+    *rlen = 0;
+  }
+  else {
+    *rlen = jd__pos_utf8(buf + *rfrom, sz - 1 - *rfrom, len);
+    if (*rlen < 0) *rlen = sz - 1 - *rfrom;
+  }
+  return buf;
+}
+
+jd_var *jd_utf8_substr(jd_var *out, jd_var *v, int from, int len) {
+  int rfrom, rlen;
+  utf8_slice(v, from, len, &rfrom, &rlen);
   return jd_substr(out, v, rfrom, rlen);
+}
+
+size_t jd_utf8_extract(uint32_t *out, jd_var *v, int from, int len) {
+  int rfrom, rlen;
+  uint8_t *buf = utf8_slice(v, from, len, &rfrom, &rlen);
+
+  struct buf32 b32;
+  struct buf8 b8;
+
+  b32.pos = out;
+  b32.lim = out + len;
+  b8.pos = buf + rfrom;
+  b8.lim = b8.pos + rlen;
+
+  jd__from_utf8(&b32, &b8);
+
+  return b32.pos - out;
+}
+
+jd_var *jd_utf8_append(jd_var *out, uint32_t *str, size_t len) {
+  jd_string *jds = jd__as_string(out);
+  size_t need = jd__span_utf32(str, len);
+  struct buf32 b32;
+  struct buf8 b8;
+
+  jd__string_space(jds, need);
+
+  b32.pos = str;
+  b32.lim = str + len;
+  b8.pos = (uint8_t *) jds->data + jds->used - 1;
+  b8.lim = (uint8_t *) jds->data + jds->size - 1;
+  jd__to_utf8(&b8, &b32);
+  jds->used += need;
+  jds->data[jds->used - 1] = '\0';
+
+  return out;
+}
+
+jd_var *jd_utf8_unpack(jd_var *out, jd_var *v) {
+  (void) v;
+  return out;
+}
+
+jd_var *jd_utf8_pack(jd_var *out, jd_var *v) {
+  (void) v;
+  return out;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c

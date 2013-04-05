@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <setjmp.h>
+#include <stdint.h>
 
 typedef long jd_int;
 #define JD_INT_FMT "%ld"
@@ -244,6 +245,10 @@ jd_var *jd_flatten(jd_var *out, jd_var *v);
 
 size_t jd_utf8_length(jd_var *v);
 jd_var *jd_utf8_substr(jd_var *out, jd_var *v, int from, int len);
+size_t jd_utf8_extract(uint32_t *out, jd_var *v, int from, int len);
+jd_var *jd_utf8_append(jd_var *out, uint32_t *str, size_t len);
+jd_var *jd_utf8_unpack(jd_var *out, jd_var *v);
+jd_var *jd_utf8_pack(jd_var *out, jd_var *v);
 
 jd_var *jd_traverse_path(jd_var *v, jd_var *path, int vivify);
 jd_var *jd_get_context(jd_var *root, jd_var *path, int vivify);
