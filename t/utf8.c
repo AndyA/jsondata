@@ -106,6 +106,15 @@ static void check_length(const char *src, size_t len) {
     if (!ok(len == got, "length of %s is %lu", src, (unsigned long) len)) {
       diag("# got %lu", (unsigned long) got);
     }
+    jd_var *chrs = jd_nav(got);
+    for (unsigned pos = 0; pos != got; pos++) {
+      jd_var *chr = jd_utf8_substr(jd_nv(), str, pos, 1);
+      size_t chrlen = jd_utf8_length(chr);
+      ok(chrlen == 1, "substr %u, length = 1 (got %lu)", pos, (unsigned long) chrlen);
+      jd_assign(jd_push(chrs, 1), chr);
+    }
+    jd_var *joined = jd_join(jd_nv(), jd_nsv(""), chrs);
+    jdt_is(joined, str, "%V reassembled as %V", str, joined);
   }
 }
 

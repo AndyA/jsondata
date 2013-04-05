@@ -9,6 +9,5 @@ Path parsing:
 
 UTF8
 
-  jd_utf8_substr
   jd_utf8_extract     // extract substr to uint32_t array
   jd_utf8_splice      // splice in uint32_t chars

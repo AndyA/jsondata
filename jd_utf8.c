@@ -172,5 +172,23 @@ size_t jd_utf8_length(jd_var *v) {
   return jd__span_utf8(oct, sz - 1, NULL);
 }
 
+static size_t lazy_utf8_length(jd_var *v, ssize_t *cache) {
+  if (*cache == -1)
+    *cache = jd_utf8_length(v);
+  return (size_t) * cache;
+}
+
+jd_var *jd_utf8_substr(jd_var *out, jd_var *v, int from, int len) {
+  ssize_t ulen_cache = -1;
+  size_t sz;
+  uint8_t *buf = (uint8_t *) jd_bytes(v, &sz);
+  if (len < 0) len += lazy_utf8_length(v, &ulen_cache);
+  int rfrom = jd__pos_utf8(buf, sz - 1, from);
+  if (rfrom < 0) return jd_set_string(out, "");
+  int rlen = jd__pos_utf8(buf + rfrom, sz - 1 - rfrom, len);
+  if (rlen < 0) rlen = lazy_utf8_length(v, &ulen_cache) - rfrom;
+  return jd_substr(out, v, rfrom, rlen);
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
