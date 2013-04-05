@@ -11,3 +11,5 @@ UTF8
 
   jd_utf8_extract     // extract substr to uint32_t array
   jd_utf8_splice      // splice in uint32_t chars
+  jd_utf8_unpack      // string -> array of 32 bit chars
+  jd_utf8_pack        // array -> string
