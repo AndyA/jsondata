@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 lib_LTLIBRARIES = libjsondata.la
 
-noinst_PROGRAMS = jdtest
+noinst_PROGRAMS = jdtest jsonpretty
 
 libjsondata_la_SOURCES = jsondata.h jd_private.h \
 	jsondata.c jd_string.c jd_array.c jd_hash.c \
@@ -19,6 +19,10 @@ libjsondata_la_LDFLAGS = -avoid-version
 jdtest_SOURCES = jdtest.c
 
 jdtest_LDADD = libjsondata.la
+
+jsonpretty_SOURCES = jsonpretty.c
+
+jsonpretty_LDADD = libjsondata.la
 
 test: all
 	cd t && $(MAKE) test

@@ -29,6 +29,7 @@
 /depcomp
 /install-sh
 /jdtest
+/jsonpretty
 /libtool
 /ltmain.sh
 /missing
