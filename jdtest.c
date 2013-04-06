@@ -44,7 +44,7 @@ static jd_var *save_json(jd_var *data, const char *filename) {
 int main(int argc, char *argv[]) {
   scope {
     jd_var *path = jd_nsv("$.*.*.annotation");
-    for (int a = 1; a < argc; a++) {
+    for (int volatile a = 1; a < argc; a++) {
       scope {
         jd_var *data = load_json(jd_nv(), argv[a]);
         jd_var *iter = jd_path_iter(jd_nv(), data, path, 0);
