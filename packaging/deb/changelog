@@ -1,0 +1,5 @@
+jsondata (0.03-0) unstable; urgency=low
+
+  * First release packaged for Debian
+
+ -- Andy Armstrong <andy@hexten.net>  Mon, 8 Apr 2013 20:37:18 +0000

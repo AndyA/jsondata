@@ -13,6 +13,10 @@
 .deps
 .gdb_history
 .libs
+/*.deb
+/*.gz
+/*.rpm
+/.build/
 /TAGS
 /andy/
 /autom4te.cache

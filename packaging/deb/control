@@ -1,0 +1,12 @@
+Source: jsondata
+Section: sound
+Priority: optional
+Maintainer: Andy Armstrong <andy@hexten.net>
+Build-Depends: debhelper (>= 4.0.0), autotools-dev
+Standards-Version: 3.6.2
+
+Package: jsondata
+Architecture: any
+Depends: 
+Description: A C library for handling JSON data structures.
+

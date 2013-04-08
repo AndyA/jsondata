@@ -2,7 +2,7 @@ TESTBIN = 00misc array clone closure compare exception exit get \
 	  hash json jsonpath magic map model object path string \
 	  thread utf8
 
-EXTRA_DIST = model.json
+EXTRA_DIST = model.json jsonpath.json walk.json
 
 noinst_PROGRAMS = $(TESTBIN)
 
