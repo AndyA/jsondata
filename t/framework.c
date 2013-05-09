@@ -1,10 +1,10 @@
-/* util.c */
+/* framework.c */
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <pthread.h>
 
-#include "util.h"
+#include "framework.h"
 #include "tap.h"
 
 #include "jd_pretty.h"

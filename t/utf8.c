@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "util.h"
+#include "framework.h"
 #include "tap.h"
 #include "jd_test.h"
 #include "jd_pretty.h"

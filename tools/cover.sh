@@ -10,7 +10,7 @@ CFLAGS="-fprofile-arcs -ftest-coverage" LDFLAGS="-lgcov" ./configure && \
 infos=""
 
 for test in t/*.c; do
-  [ $test = 't/jd_test.c' -o $test = 't/tap.c' -o $test = 't/util.c' ] && continue
+  [ $test = 't/jd_test.c' -o $test = 't/tap.c' -o $test = 't/framework.c' ] && continue
   bin=${test%.*}
   target=$( basename $bin )
   info="$target.info"
