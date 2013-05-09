@@ -88,7 +88,7 @@ static void check_leaks(void) {
   }
 }
 
-static void expect_leak(size_t size) {
+void expect_leak(size_t size) {
   expected_leak_count++;
   expected_leak_size += size;
 }

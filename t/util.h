@@ -6,6 +6,7 @@
 #include "jsondata.h"
 
 void test_main(void);
+void expect_leak(size_t size);
 
 #endif
 
