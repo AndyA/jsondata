@@ -1,5 +1,10 @@
 # JSON and JSONPath in C
 
+libjsondata provides data structures with JSON semantics (dictionaries and arrays), JSON 
+serialisation and efficient support for JSONPath:
+
+http://goessner.net/articles/JsonPath/
+
 ## Build
 
 ```shell
