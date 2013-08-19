@@ -218,6 +218,7 @@ static jd_var *from_json_array(jd_var *out, struct parser *p) {
   jd_set_array(out, 10);
   for (;;) {
     STEP(p);
+    SKIP(p);
     if (CHAR(p) == ']') break;
     from_json(jd_push(out, 1), p);
     SKIP(p);
@@ -236,6 +237,7 @@ static jd_var *from_json_hash(jd_var *out, struct parser *p) {
     jd_set_hash(out, 10);
     for (;;) {
       STEP(p);
+      SKIP(p);
       if (CHAR(p) == '}') break;
       from_json(key, p);
       SKIP(p);
