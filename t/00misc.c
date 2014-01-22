@@ -216,11 +216,23 @@ static void test_object(void) {
   }
 }
 
+static void throw_requires(void *ctx) {
+  jd_require((char *) ctx);
+}
+
 static void test_version(void) {
   scope {
     JD_VAR(v);
     jd_version(v);
     jdt_diag("Testing libjsondata %V", jd_rv(v, "$.version"));
+    jd_require("0.01");
+    jd_require("0.02");
+    jd_require("0.03");
+    jd_require("0.04");
+    jd_require("0.05");
+    jdt_throws(throw_requires, (void *) "0.06",
+    "Requires libjsondata 0.06, this is 0.05",
+    "null pointer exception");
   }
 }
 

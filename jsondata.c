@@ -662,6 +662,11 @@ jd_var *jd_version(jd_var *out) {
   return out;
 }
 
+void jd_require(const char *version) {
+  if (strcmp(version, VERSION) > 0)
+    jd_throw("Requires libjsondata %s, this is %s", version, VERSION);
+}
+
 jd_var *jd_flatten(jd_var *out, jd_var *v) {
   if (v->type != ARRAY) return jd_assign(out, v);
 
