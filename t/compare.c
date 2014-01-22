@@ -39,6 +39,8 @@ static void test_sort(void) {
     check_sort("[1,2,3]", "[3,2,1]", backwards);
     check_sort("[[1,2,4],[1,2,3]]", "[[1,2,3],[1,2,4]]", jd_compare);
     check_sort("[[1,2,3,4],[],[1,2,3]]", "[[],[1,2,3],[1,2,3,4]]", jd_compare);
+    check_sort("[{\"a\":2},{\"b\":2},{\"a\":1}]",
+    "[{\"b\":2},{\"a\":1},{\"a\":2}]", jd_compare);
   }
 }
 

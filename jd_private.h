@@ -72,6 +72,7 @@ jd_var *jd__hash_clone(jd_var *out, jd_hash *jdh, int deep);
 jd_hash *jd__hash_rehash(jd_hash *jdh);
 int jd__hash_maint(jd_hash *jdh);
 jd_var *jd__hash_reverse(jd_var *out, jd_hash *jdh);
+int jd__hash_compare(jd_hash *ha, jd_hash *hb);
 
 jd_closure *jd__closure_new(jd_closure_func f);
 void jd__closure_free(jd_closure *jdc);

@@ -406,6 +406,8 @@ static int compare(jd_var *a, jd_var *b) {
     return jd__string_compare(jd__as_string(a), b);
   case ARRAY:
     return jd__array_compare(jd__as_array(a), jd__as_array(b));
+  case HASH:
+    return jd__hash_compare(jd__as_hash(a), jd__as_hash(b));
   default:
     jd_throw("Can't compare");
     return 0;

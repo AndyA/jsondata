@@ -170,5 +170,30 @@ jd_var *jd__hash_reverse(jd_var *out, jd_hash *jdh) {
   return out;
 }
 
+static int do_hash_compare(jd_hash *ha, jd_hash *hb, jd_var *keys) {
+  size_t count = jd_count(keys);
+  for (unsigned i = 0; i < count; i++) {
+    jd_var *key = jd_get_idx(keys, i);
+    jd_var *va = jd__hash_get(ha, key, 0);
+    jd_var *vb = jd__hash_get(hb, key, 0);
+    int cmp = jd_compare(va, vb);
+    if (cmp) return cmp;
+  }
+  return 0;
+}
+
+int jd__hash_compare(jd_hash *ha, jd_hash *hb) {
+  jd_var keys = JD_INIT;
+  jd_var hm = JD_INIT;
+  jd__hash_clone(&hm, ha, 0);
+  jd__hash_merge(&hm, hb, 0);
+  jd_keys(&keys, &hm);
+  jd_release(&hm);
+  jd_sort(&keys);
+  int cmp = do_hash_compare(ha, hb, &keys);
+  jd_release(&keys);
+  return cmp;
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
