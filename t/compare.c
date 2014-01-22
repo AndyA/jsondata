@@ -37,6 +37,8 @@ static void test_sort(void) {
     check_sort("[true,false,\"pi\",4,3.25,2,1.25]",
     "[false,true,1.25,2,3.25,4,\"pi\"]", jd_compare);
     check_sort("[1,2,3]", "[3,2,1]", backwards);
+    check_sort("[[1,2,4],[1,2,3]]", "[[1,2,3],[1,2,4]]", jd_compare);
+    check_sort("[[1,2,3,4],[],[1,2,3]]", "[[],[1,2,3],[1,2,3,4]]", jd_compare);
   }
 }
 
@@ -93,8 +95,8 @@ static void test_compare(void) {
 static void throw_cant_compare(void *ctx) {
   (void) ctx;
   scope {
-    JD_AV(a1, 0);
-    JD_AV(a2, 0);
+    JD_CV(a1, NULL);
+    JD_CV(a2, NULL);
     jd_compare(a1, a2);
   }
 }

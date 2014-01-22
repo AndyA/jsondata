@@ -58,6 +58,7 @@ jd_array *jd__array_append(jd_array *jda, jd_var *v);
 jd_array *jd__array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *));
 jd_var *jd__array_clone(jd_var *out, jd_array *jda, int deep);
 jd_var *jd__array_reverse(jd_var *out, jd_array *jda);
+int jd__array_compare(jd_array *jda, jd_array *jdb);
 
 jd_hash *jd__hash_new(size_t size);
 void jd__hash_retain(jd_hash *jdh);

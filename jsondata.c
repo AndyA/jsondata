@@ -404,6 +404,8 @@ static int compare(jd_var *a, jd_var *b) {
     return a->v.r < b->v.r ? -1 : a->v.r > b->v.r ? 1 : 0;
   case STRING:
     return jd__string_compare(jd__as_string(a), b);
+  case ARRAY:
+    return jd__array_compare(jd__as_array(a), jd__as_array(b));
   default:
     jd_throw("Can't compare");
     return 0;

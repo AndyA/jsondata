@@ -163,7 +163,7 @@ jd_array *jd__array_append(jd_array *jda, jd_var *v) {
 
 jd_array *jd__array_sort(jd_array *jda, int (*cmp)(jd_var *, jd_var *)) {
   qsort(jda->s.data, jd__array_count(jda), sizeof(jd_var),
-        (int ( *)(const void *, const void *)) cmp);
+        (int (*)(const void *, const void *)) cmp);
   return jda;
 }
 
@@ -193,6 +193,18 @@ jd_var *jd__array_reverse(jd_var *out, jd_array *jda) {
     jd_assign(&dst[count - i - 1], &src[i]);
 
   return out;
+}
+
+int jd__array_compare(jd_array *aa, jd_array *ab) {
+  size_t ca = jd__array_count(aa);
+  size_t cb = jd__array_count(ab);
+
+  for (unsigned i = 0; i < ca && i < cb; i++) {
+    int cmp = jd_compare(ELT(aa, i), ELT(ab, i));
+    if (cmp) return cmp;
+  }
+
+  return ca < cb ? -1 : ca > cb ? 1 : 0;
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
