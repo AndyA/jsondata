@@ -262,6 +262,7 @@ jd_var *jd_path_object(jd_var *iter);
 
 jd_var *jd_to_json(jd_var *out, jd_var *v);
 jd_var *jd_to_json_pretty(jd_var *out, jd_var *v);
+jd_var *jd_from_json_buffer(jd_var *out, const char *buf, size_t size);
 jd_var *jd_from_json(jd_var *out, jd_var *json);
 jd_var *jd_from_jsons(jd_var *out, const char *json);
 
@@ -323,3 +324,4 @@ jd_var *jd_root_exception_tls(void);
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+

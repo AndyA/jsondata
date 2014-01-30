@@ -407,28 +407,37 @@ static jd_var *from_json(jd_var *out, struct parser *p) {
   return out;
 }
 
+jd_var *jd_from_json_buffer(jd_var *out, const char *buf, size_t size) {
+  struct parser p;
+  p.sp = p.tp = p.pp = buf;
+  p.ep = p.pp + size;
+  from_json(out, &p);
+  return out;
+}
+
 jd_var *jd_from_json(jd_var *out, jd_var *json) {
   JD_SCOPE {
     JD_VAR(tmp);
-    struct parser p;
     size_t size;
 
     jd_stringify(tmp, json);
-    p.sp = p.tp = p.pp = jd_bytes(tmp, &size);
-    p.ep = p.pp + size - 1;
-    from_json(out, &p);
+    const char *buf = jd_bytes(tmp, &size);
+    jd_from_json_buffer(out, buf, size - 1);
   }
 
   return out;
 }
 
 jd_var *jd_from_jsons(jd_var *out, const char *json) {
-  JD_SCOPE {
-    JD_SV(jv, json);
-    jd_from_json(out, jv);
-  }
-  return out;
+  return jd_from_json_buffer(out, json, strlen(json));
 }
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+
+
+
+
+
+
+
