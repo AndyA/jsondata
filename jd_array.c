@@ -21,8 +21,8 @@ jd_array *jd__array_new(size_t size) {
   return jda;
 }
 
-void jd__array_retain(jd_array *jda) {
-  jd__string_retain(&jda->s);
+void jd__array_retain(jd_var *v) {
+  v->v.o.refs++;
 }
 
 static void release(jd_array *jda, unsigned from, size_t count) {
@@ -30,10 +30,10 @@ static void release(jd_array *jda, unsigned from, size_t count) {
   for (i = from; i < from + count; i++) jd_release(ELT(jda, i));
 }
 
-void jd__array_release(jd_array *jda) {
-  if (jda->s.hdr.refs == 1)
-    release(jda, 0, jd__array_count(jda));
-  jd__string_release(&jda->s);
+void jd__array_release(jd_var *v) {
+  if (v->v.o.refs == 1)
+    release(v->o.v.a, 0, jd__array_count(v->o.v.a));
+  jd__string_release(&v->o.v.a->s);
 }
 
 static unsigned cook_idx(int idx, size_t count, size_t max) {

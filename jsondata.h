@@ -47,20 +47,14 @@ typedef struct _jd_closure jd_closure;
 
 typedef int (*jd_closure_func)(jd_var *result, jd_var *context, jd_var *args);
 
-typedef struct {
-  unsigned refs;
-} jd_ohdr;
-
 /* jd_string is used both directly as a string and internally as a
  * growable buffer. jd_array contains a jd_string and can,
  * for operations that affect only the string part, be cast to
  * jd_string.
  */
 typedef struct {
-  jd_ohdr hdr;
   size_t size, used;
   char *data;
-  jd_dvar *magic;
 } jd_string;
 
 typedef struct {
@@ -68,14 +62,12 @@ typedef struct {
 } jd_array;
 
 typedef struct {
-  jd_ohdr hdr;
   size_t size;
   size_t used;
   jd_hash_bucket **b;
 } jd_hash;
 
 typedef struct {
-  jd_ohdr hdr;
   void *o;
   void (*free)(void *);
 } jd_object;
@@ -83,19 +75,24 @@ typedef struct {
 struct _jd_var {
   jd_type type;
   union {
+    struct {
+      unsigned refs;
+      jd_dvar *magic;
+      union {
+        jd_string *s;
+        jd_array *a;
+        jd_hash *h;
+        jd_closure *c;
+        jd_object *o;
+      } v;
+    } o;
     int b;
     jd_int i;
     double r;
-    jd_string *s;
-    jd_array *a;
-    jd_hash *h;
-    jd_closure *c;
-    jd_object *o;
   } v;
 };
 
 struct _jd_closure {
-  jd_ohdr hdr;
   jd_var ctx;
   jd_closure_func f;
 };
@@ -324,4 +321,8 @@ jd_var *jd_root_exception_tls(void);
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+
+
+
+
 

@@ -66,19 +66,19 @@ jd_string *jd__string_space(jd_string *jds, size_t minspace) {
   return jds;
 }
 
-void jd__string_free(jd_string *jds) {
-  jd__free_vars(jds->magic);
-  jd_free(jds->data);
-  jd_free(jds);
+void jd__string_free(jd_var *v) {
+  jd__thing_free(v);
+  jd_free(v->v.o.v.s->data);
+  jd_free(v->v.o.v.s);
 }
 
-void jd__string_retain(jd_string *jds) {
-  jds->hdr.refs++;
+void jd__string_retain(jd_var *v) {
+  v->v.o.refs++;
 }
 
-void jd__string_release(jd_string *jds) {
-  if (jds->hdr.refs-- <= 1)
-    jd__string_free(jds);
+void jd__string_release(jd_var *v) {
+  if (v->v.o.refs-- <= 1)
+    jd__string_free(v);
 }
 
 size_t jd__string_length(jd_string *jds) {
@@ -235,3 +235,7 @@ jd_var *jd__string_reverse(jd_var *out, jd_string *jds) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+
+
+
+

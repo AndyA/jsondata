@@ -20,9 +20,9 @@ jd_string *jd__string_from_bytes(const char *s, size_t size);
 jd_string *jd__string_from(const char *s);
 jd_string *jd__string_ensure(jd_string *jds, size_t size);
 jd_string *jd__string_space(jd_string *jds, size_t minspace);
-void jd__string_free(jd_string *jds);
-void jd__string_retain(jd_string *jds);
-void jd__string_release(jd_string *jds);
+void jd__string_free(jd_var *v);
+void jd__string_retain(jd_var *v);
+void jd__string_release(jd_var *v);
 size_t jd__string_length(jd_string *jds);
 jd_string *jd__string_append(jd_string *jds, jd_var *v);
 jd_string *jd__string_append_bytes(jd_string *jds, const void *b, size_t size);
@@ -42,8 +42,8 @@ jd_closure *jd__as_closure(jd_var *v);
 jd_object *jd__as_object(jd_var *v);
 
 jd_array *jd__array_new(size_t size);
-void jd__array_retain(jd_array *jda);
-void jd__array_release(jd_array *jds);
+void jd__array_retain(jd_var *v);
+void jd__array_release(jd_var *v);
 jd_var *jd__array_insert(jd_array *jda, int idx, size_t count);
 size_t jd__array_remove(jd_array *jda, int idx, size_t count, jd_var *slot);
 jd_var *jd__array_push(jd_array *jda, size_t count);
@@ -61,8 +61,8 @@ jd_var *jd__array_reverse(jd_var *out, jd_array *jda);
 int jd__array_compare(jd_array *jda, jd_array *jdb);
 
 jd_hash *jd__hash_new(size_t size);
-void jd__hash_retain(jd_hash *jdh);
-void jd__hash_release(jd_hash *jdh);
+void jd__hash_retain(jd_var *v);
+void jd__hash_release(jd_var *v);
 size_t jd__hash_count(jd_hash *jdh);
 jd_var *jd__hash_get(jd_hash *jdh, jd_var *key, int vivify);
 int jd__hash_delete(jd_hash *jdh, jd_var *key, jd_var *slot);
@@ -76,16 +76,16 @@ int jd__hash_compare(jd_hash *ha, jd_hash *hb);
 
 jd_closure *jd__closure_new(jd_closure_func f);
 void jd__closure_free(jd_closure *jdc);
-void jd__closure_retain(jd_closure *jdc);
-void jd__closure_release(jd_closure *jdc);
+void jd__closure_retain(jd_var *v);
+void jd__closure_release(jd_var *v);
 jd_var *jd__closure_clone(jd_var *out, jd_closure *jdc, int deep);
 jd_var *jd__closure_context(jd_closure *jdc);
 int jd__closure_call(jd_closure *jdc, jd_var *rv, jd_var *arg);
 
 jd_object *jd__object_new(void *o, void (*free)(void *));
 void jd__object_free(jd_object *jdo);
-void jd__object_retain(jd_object *jdo);
-void jd__object_release(jd_object *jdo);
+void jd__object_retain(jd_var *v);
+void jd__object_release(jd_var *v);
 
 void jd__free_vars(jd_dvar *dv);
 
@@ -95,3 +95,4 @@ jd_var *jd__get_magic(jd_var *v, unsigned mtype);
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+

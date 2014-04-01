@@ -16,7 +16,7 @@ jd_closure *jd__closure_new(jd_closure_func f) {
 }
 
 void jd__closure_retain(jd_closure *jdc) {
-  jdc->hdr.refs++;
+  v->v.o.refs++;
 }
 
 void jd__closure_free(jd_closure *jdc) {
@@ -25,8 +25,8 @@ void jd__closure_free(jd_closure *jdc) {
 }
 
 void jd__closure_release(jd_closure *jdc) {
-  if (jdc->hdr.refs-- <= 1)
-    jd__closure_free(jdc);
+  if (v->v.o.refs-- <= 1)
+    jd__closure_free(v->v.o.v.o);
 }
 
 jd_var *jd__closure_context(jd_closure *jdc) {
@@ -46,3 +46,4 @@ int jd__closure_call(jd_closure *jdc, jd_var *rv, jd_var *arg) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+

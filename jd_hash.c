@@ -17,8 +17,8 @@ jd_hash *jd__hash_new(size_t size) {
   return jdh;
 }
 
-void jd__hash_retain(jd_hash *jdh) {
-  jdh->hdr.refs++;
+void jd__hash_retain(jd_var *v) {
+  v->v.o.refs++;
 }
 
 static void free_contents(jd_hash *jdh) {
@@ -41,9 +41,9 @@ void jd_hash_free(jd_hash *jdh) {
   jd_free(jdh);
 }
 
-void jd__hash_release(jd_hash *jdh) {
-  if (jdh->hdr.refs-- <= 1)
-    jd_hash_free(jdh);
+void jd__hash_release(jd_var *v) {
+  if (v->v.o.refs-- <= 1)
+    jd_hash_free(v->v.o.v.h);
 }
 
 size_t jd__hash_count(jd_hash *jdh) {
@@ -197,3 +197,4 @@ int jd__hash_compare(jd_hash *ha, jd_hash *hb) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+

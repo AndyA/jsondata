@@ -61,19 +61,19 @@ void jd_release(jd_var *v) {
   case REAL:
     break;
   case STRING:
-    jd__string_release(v->v.s);
+    jd__string_release(v);
     break;
   case ARRAY:
-    jd__array_release(v->v.a);
+    jd__array_release(v);
     break;
   case HASH:
-    jd__hash_release(v->v.h);
+    jd__hash_release(v);
     break;
   case CLOSURE:
-    jd__closure_release(v->v.c);
+    jd__closure_release(v);
     break;
   case OBJECT:
-    jd__object_release(v->v.o);
+    jd__object_release(v);
     break;
   default:
     jd_throw("Unhandled type in release: %V", v);
@@ -91,19 +91,19 @@ void jd_retain(jd_var *v) {
   case REAL:
     break;
   case STRING:
-    jd__string_retain(v->v.s);
+    jd__string_retain(v);
     break;
   case ARRAY:
-    jd__array_retain(v->v.a);
+    jd__array_retain(v);
     break;
   case HASH:
-    jd__hash_retain(v->v.h);
+    jd__hash_retain(v);
     break;
   case CLOSURE:
-    jd__closure_retain(v->v.c);
+    jd__closure_retain(v);
     break;
   case OBJECT:
-    jd__object_retain(v->v.o);
+    jd__object_retain(v);
     break;
   default:
     jd_throw("Unhandled type in retain: %V", v);
@@ -706,5 +706,12 @@ jd_var *jd_reverse(jd_var *out, jd_var *v) {
   return out;
 }
 
+void jd__thing_free(jd_var *v) {
+  jd__free_vars(v->v.o.magic);
+}
+
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+
+
+
