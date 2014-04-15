@@ -1,6 +1,5 @@
 *.a
 *.cat
-*.d
 *.dylib
 *.exe
 *.la
@@ -33,6 +32,7 @@
 /cover/
 /depcomp
 /install-sh
+/jd_dtrace.h
 /jdtest
 /jsonpretty
 /libtool

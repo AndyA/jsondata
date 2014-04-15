@@ -20,6 +20,7 @@ libjsondata_la_SOURCES = jsondata.h jd_private.h \
 	jd_printf.c jd_exception.c jd_map.c jd_magic.c \
 	jd_utf8.c
 
+
 libjsondata_la_LDFLAGS = -avoid-version
 
 jdtest_SOURCES = jdtest.c
@@ -29,6 +30,27 @@ jdtest_LDADD = libjsondata.la
 jsonpretty_SOURCES = jsonpretty.c
 
 jsonpretty_LDADD = libjsondata.la
+
+CLEANFILES =
+libjsondata_la_DEPENDENCIES =
+libjsondata_la_LIBADD =
+
+if BUILD_DTRACE
+libjsondata_la_SOURCES += jd_dtrace.h
+CLEANFILES += jd_dtrace.h
+endif
+
+if DTRACE_INSTRUMENT_OBJ
+libjsondata_la_LIBADD += jd_dtrace.o
+libjsondata_la_DEPENDENCIES += jd_dtrace.o
+CLEANFILES += jd_dtrace.o jd_debug_dtrace.o
+endif
+
+jd_dtrace.h: jd_dtrace.d
+	${DTRACE} -h -s jd_dtrace.d
+
+jd_dtrace.o: $(libjsondata_la_OBJECTS)
+	$(DTRACE) $(DTRACEFLAGS) -G -o jd_dtrace.o -s ${srcdir}/jd_dtrace.d $(libjsondata_la_OBJECTS)
 
 test: all
 	cd t && $(MAKE) test

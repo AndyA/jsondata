@@ -4,6 +4,9 @@
 #define JD_PRIVATE_H_
 
 #include "jsondata.h"
+#ifdef ENABLE_DTRACE
+#include "jd_dtrace.h"
+#endif
 
 #include <stddef.h>
 #include <stdarg.h>
@@ -95,3 +98,4 @@ jd_var *jd__get_magic(jd_var *v, unsigned mtype);
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+

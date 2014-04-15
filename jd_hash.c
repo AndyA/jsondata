@@ -79,6 +79,7 @@ jd_var *jd__hash_get(jd_hash *jdh, jd_var *key, int vivify) {
 }
 
 jd_hash *jd__hash_rehash(jd_hash *jdh) {
+  JSONDATA_REHASH(jdh);
   size_t count = jd__hash_count(jdh);
   jd_hash *tmp = jd__hash_new(count * 4);
   unsigned i;
@@ -197,3 +198,4 @@ int jd__hash_compare(jd_hash *ha, jd_hash *hb) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+

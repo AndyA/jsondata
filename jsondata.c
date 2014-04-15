@@ -53,6 +53,7 @@ void jd_free(void *m) {
 }
 
 void jd_release(jd_var *v) {
+  JSONDATA_RELEASE(v);
   notnull(v);
   switch (v->type) {
   case VOID:
@@ -83,6 +84,7 @@ void jd_release(jd_var *v) {
 }
 
 void jd_retain(jd_var *v) {
+  JSONDATA_RETAIN(v);
   notnull(v);
   switch (v->type) {
   case VOID:
@@ -708,3 +710,4 @@ jd_var *jd_reverse(jd_var *out, jd_var *v) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
+
