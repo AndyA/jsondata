@@ -1,6 +1,5 @@
 *.a
 *.cat
-*.d
 *.dylib
 *.exe
 *.la
