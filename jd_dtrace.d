@@ -2,7 +2,7 @@ provider jsondata {
   probe retain(void *v);
   probe release(void *v);
   probe rehash(void *v);
-  probe string_new(size_t size);
+  probe string__new(size_t size);
 };
 
 #pragma D attributes Evolving/Evolving/Common provider jsondata provider
