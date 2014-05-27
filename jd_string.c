@@ -21,7 +21,9 @@ jd_string *jd__string_init(jd_string *jds, size_t size) {
 }
 
 jd_string *jd__string_new(size_t size) {
+#ifdef ENABLE_DTRACE
   JSONDATA_STRING_NEW(size);
+#endif
   jd_string *jds = jd_alloc(sizeof(jd_string));
   if (size == 0) size = 1;
   jd__string_init(jds, size);

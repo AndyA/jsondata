@@ -53,7 +53,9 @@ void jd_free(void *m) {
 }
 
 void jd_release(jd_var *v) {
+#if ENABLE_DTRACE
   JSONDATA_RELEASE(v);
+#endif
   notnull(v);
   switch (v->type) {
   case VOID:
@@ -84,7 +86,9 @@ void jd_release(jd_var *v) {
 }
 
 void jd_retain(jd_var *v) {
+#if ENABLE_DTRACE
   JSONDATA_RETAIN(v);
+#endif
   notnull(v);
   switch (v->type) {
   case VOID:
