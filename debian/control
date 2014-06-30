@@ -7,17 +7,17 @@ Standards-Version: 3.6.2
 
 Package: libjsondata
 Architecture: any
-Depends: ${misc:Depends}, ${shlib:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: A C library for handling JSON data structures.
 
 Package: libjsondata-dev
 Architecture: any
-Depends: ${misc:Depends}, ${shlib:Depends}, libjsondata
+Depends: ${misc:Depends}, libjsondata
 Description: A C library for handling JSON data structures (development files)
 
-Package: libjsondata-utils
+Package: jsondata-utils
 Architecture: any
-Depends: ${misc:Depends}, ${shlib:Depends}, libjsondata
+Depends: ${misc:Depends}, libjsondata
 Description: A C library for handling JSON data structures (command-line utilities)
 
 

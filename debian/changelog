@@ -1,3 +1,15 @@
+jsondata (0.05-0) unstable; urgency=low
+
+  * Version bump.
+
+ -- Andy Armstrong <andy@hexten.net>  Wed, 22 Jan 2014 15:09:22 +0000
+
+jsondata (0.04-0) unstable; urgency=low
+
+  * Bump bersion.
+
+ -- Andy Armstrong <andy@hexten.net>  Mon, 19 Aug 2013 12:39:32 +0100
+
 jsondata (0.03-0) unstable; urgency=low
 
   * First release packaged for Debian
