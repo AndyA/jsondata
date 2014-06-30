@@ -1,0 +1,24 @@
+Source: jsondata
+Section: devel
+Priority: optional
+Maintainer: Andy Armstrong <andy@hexten.net>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.6.2
+
+Package: libjsondata
+Architecture: any
+Depends: ${misc:Depends}, ${shlib:Depends}
+Description: A C library for handling JSON data structures.
+
+Package: libjsondata-dev
+Architecture: any
+Depends: ${misc:Depends}, ${shlib:Depends}, libjsondata
+Description: A C library for handling JSON data structures (development files)
+
+Package: libjsondata-utils
+Architecture: any
+Depends: ${misc:Depends}, ${shlib:Depends}, libjsondata
+Description: A C library for handling JSON data structures (command-line utilities)
+
+
+

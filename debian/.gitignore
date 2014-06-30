@@ -1,0 +1,9 @@
+*.substvars
+*.log
+*.debhelper
+/files
+/tmp
+/libjsondata
+/libjsondata-dev
+/libjsondata-utils
+
