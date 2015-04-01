@@ -9,7 +9,7 @@ static void test_clone(void) {
   jd_var dst = JD_INIT, src = JD_INIT, ref = JD_INIT;
   jd_var json = JD_INIT;
 
-  jd_set_string(&json, "{\"a\":[1,2,3],\"b\":3.14,\"c\":\"foo\"}");
+  jd_set_string(&json, "{\"a\":[1,2,3],\"b\":3,\"c\":\"foo\"}");
   jd_from_json(&ref, &json);
 
   jd_clone(&src, &ref, 1);
@@ -37,12 +37,12 @@ static void test_clone(void) {
 static void test_merge(void) {
   jd_var dst = JD_INIT, src = JD_INIT, ref = JD_INIT;
 
-  jd_from_jsons(&dst, "{\"a\":[1,2,3],\"b\":3.14,\"c\":\"foo\"}");
-  jd_from_jsons(&src, "{\"c\":[4,5,6],\"d\":3.14,\"e\":\"foo\"}");
+  jd_from_jsons(&dst, "{\"a\":[1,2,3],\"b\":3,\"c\":\"foo\"}");
+  jd_from_jsons(&src, "{\"c\":[4,5,6],\"d\":3,\"e\":\"foo\"}");
 
   jd_merge(&dst, &src, 1);
   jdt_is_json(&dst,
-              "{\"a\":[1,2,3],\"b\":3.14,\"c\":[4,5,6],\"d\":3.14,\"e\":\"foo\"}",
+              "{\"a\":[1,2,3],\"b\":3,\"c\":[4,5,6],\"d\":3,\"e\":\"foo\"}",
               "merged");
 
   jd_release(&dst);

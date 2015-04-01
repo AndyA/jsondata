@@ -464,7 +464,7 @@ jd_var *jd_stringify(jd_var *out, jd_var *v) {
       jd_sprintf(&tmp, JD_INT_FMT, v->v.i);
       break;
     case REAL:
-      jd_sprintf(&tmp, "%g", v->v.r);
+      jd_sprintf(&tmp, "%.17g", v->v.r);
       break;
     case STRING:
       jd_assign(&tmp, v);
