@@ -434,10 +434,3 @@ jd_var *jd_from_jsons(jd_var *out, const char *json) {
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */
-
-
-
-
-
-
-

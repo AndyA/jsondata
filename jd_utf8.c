@@ -113,18 +113,18 @@ void jd__from_utf8(struct buf32 *out, struct buf8 *in) {
   }
 }
 
-#define UTF8LEN(ch) \
-  ((((ch) & 0xfe) == 0xfc) ? 6       \
-   : (((ch) & 0xfc) == 0xf8) ? 5     \
-   : (((ch) & 0xf8) == 0xf0) ? 4     \
-   : (((ch) & 0xf0) == 0xe0) ? 3     \
+#define UTF8LEN(ch)               \
+  ((((ch) & 0xfe) == 0xfc) ? 6    \
+   : (((ch) & 0xfc) == 0xf8) ? 5  \
+   : (((ch) & 0xf8) == 0xf0) ? 4  \
+   : (((ch) & 0xf0) == 0xe0) ? 3  \
    : (((ch) & 0xe0) == 0xc0) ? 2 : 1)
 
-#define UTF32LEN(ch) \
-  ((ch) >= 0x04000000 ? 6            \
-   : (ch) >= 0x00200000 ? 5          \
-   : (ch) >= 0x00010000 ? 4          \
-   : (ch) >= 0x00000800 ? 3          \
+#define UTF32LEN(ch)              \
+  ((ch) >= 0x04000000 ? 6         \
+   : (ch) >= 0x00200000 ? 5       \
+   : (ch) >= 0x00010000 ? 4       \
+   : (ch) >= 0x00000800 ? 3       \
    : (ch) >= 0x00000080 ? 2 : 1)
 
 size_t jd__span_utf8(uint8_t *buf, size_t len, size_t *rem) {
