@@ -16,7 +16,7 @@
  */
 
 #define PUT(buf, ch)  do { *(buf->pos)++ = (ch); } while (0)
-#define NEED(buf, sz) do { if (buf->pos + (sz) > buf->lim) break; } while (0)
+#define NEED(buf, sz) do { if (buf->pos + (sz) > buf->lim) goto done; } while (0)
 #define TAKE(buf, sz) do { NEED(buf, sz); buf->pos += (sz); } while (0)
 
 void jd__to_utf8(struct buf8 *out, struct buf32 *in) {
@@ -63,6 +63,8 @@ void jd__to_utf8(struct buf8 *out, struct buf32 *in) {
 
     in->pos++;
   }
+done:
+  ;
 }
 
 void jd__from_utf8(struct buf32 *out, struct buf8 *in) {
@@ -111,6 +113,8 @@ void jd__from_utf8(struct buf32 *out, struct buf8 *in) {
     }
     *(out->pos)++ = och;
   }
+done:
+  ;
 }
 
 #define UTF8LEN(ch)               \
