@@ -230,8 +230,9 @@ static void test_version(void) {
     jd_require("0.03");
     jd_require("0.04");
     jd_require("0.05");
-    jdt_throws(throw_requires, (void *) "0.06",
-    "Requires libjsondata 0.06, this is 0.05",
+    jd_require("0.06");
+    jdt_throws(throw_requires, (void *) "0.07",
+    "Requires libjsondata 0.07, this is 0.06",
     "null pointer exception");
   }
 }
