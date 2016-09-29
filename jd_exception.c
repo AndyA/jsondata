@@ -167,11 +167,11 @@ jd_var *jd_backtrace(jd_var *out) {
   return out;
 }
 
-static void throw(const char *file, int line,
-                  jd_var *info, const char *msg, va_list ap) JD_NORETURN;
+static void throw (const char *file, int line,
+                   jd_var *info, const char *msg, va_list ap) JD_NORETURN;
 
-static void throw(const char *file, int line,
-                  jd_var *info, const char *msg, va_list ap) {
+static void throw (const char *file, int line,
+                   jd_var *info, const char *msg, va_list ap) {
   jd_var e = JD_INIT;
   jd_var *bt = jd_lv(&e, "$.backtrace");
   jd_backtrace(bt);
@@ -185,7 +185,7 @@ void jd_ar_throw_info(const char *file, int line,
                       jd_var *info, const char *msg, ...) {
   va_list ap;
   va_start(ap, msg);
-  throw(file, line, info, msg, ap);
+  throw (file, line, info, msg, ap);
   va_end(ap);
 }
 
@@ -193,7 +193,7 @@ void jd_ar_throw(const char *file, int line,
                  const char *msg, ...) {
   va_list ap;
   va_start(ap, msg);
-  throw(file, line, NULL, msg, ap);
+  throw (file, line, NULL, msg, ap);
   va_end(ap);
 }
 
